@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms of Use · Carvessa</title>
+<meta name="description" content="The rules for using Carvessa, in plain English.">
+<link rel="icon" type="image/png" href="/assets/img/favicon.png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:title" content="Terms of Use · Carvessa">
+<meta property="og:description" content="The rules for using Carvessa, in plain English.">
+<meta property="og:image" content="https://carvessa.app/assets/img/share.jpg">
+<meta property="og:url" content="https://carvessa.app/terms/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FAFAF7">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header class="nav wrap">
+<a class="logo" href="/" aria-label="Carvessa home"><span class="car">CAR</span><svg class="v" viewBox="0 0 100 92" aria-hidden="true"><polygon points="0,0 27,0 52,70 40,92"/><polygon points="100,0 73,0 48,70 60,92"/></svg><span class="essa">essa</span></a>
+<nav aria-label="Main"><a href="/#features">Features</a><a href="/#app">The app</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+<a class="btn dark" href="/#notify">Join the list</a>
+</header>
+<main class="legal wrap">
+<div class="tabs" role="tablist"><a role="tab" href="/privacy/" class="">Privacy</a><a role="tab" href="/terms/" class="on">Terms</a></div>
+<div class="short"><div class="mono gold">THE SHORT VERSION</div><ul><li><span class="dot">$</span><span>Carvessa is free to use.</span></li><li><span class="dot">≈</span><span>Prices and payments are estimates, not offers. Check with the dealer.</span></li><li><span class="dot">✕</span><span>We are not a dealer, a lender or a mechanic.</span></li><li><span class="dot">★</span><span>Be kind and honest in reviews. No links and no personal info.</span></li><li><span class="dot">!</span><span>If your car feels unsafe, pull over and get help.</span></li><li><span class="dot">◆</span><span>Ads and dealer links are labeled. Other websites have their own rules.</span></li></ul></div>
+<button class="read" type="button" id="read">🔊 Read it out loud</button>
+<article id="doc"><h1>Terms of Use</h1><p class="date">Last updated October 12, 2026</p><h3>1. Using Carvessa</h3><p>By using Carvessa you agree to these terms and our Privacy Policy. If you do not agree, please do not use the app.</p><h3>2. Your account</h3><p>You must be 13 or older to make an account. Give us true info, keep your password safe, and tell us if someone else uses your account. You can delete your account any time in Me.</p><h3>3. Prices, payments and estimates</h3><p>Used prices, monthly payments, “What can I afford?”, cost to own and trade-in values are estimates to help you plan. They are not offers, not loan approvals and not financial advice. Real prices, rates and taxes come from the dealer and the lender. We never check your credit.</p><h3>4. Car info</h3><p>Recalls and safety ratings come from NHTSA. Gas mileage comes from the EPA. “About this car”, pros, cons and tips are Carvessa’s own notes. We work hard to be right, but info can be late or wrong. Check details with the dealer, and check recalls on nhtsa.gov.</p><h3>5. Safety</h3><p>Warning light and “car acting weird?” help is general info, not a repair or a diagnosis. If your car feels unsafe, pull over when it is safe and call for help. Always get a trained mechanic to check your car.</p><h3>6. Reviews</h3><p>Write about your own experience. Be kind and honest. No links, ads, hate, threats or other people’s personal info. You own what you write, and you let us show it in Carvessa and on our website. We may hide or remove reviews that break these rules. A review is hidden on its own after 3 reports.</p><h3>7. Ads, dealers and other websites</h3><p>Carvessa may show ads and links to dealers and other services. They are labeled “Ad” or “Sponsored”, and we may get paid. We are not part of your deal with a dealer, lender or other company. Their own terms apply.</p><h3>8. Please don’t</h3><p>Copy our data in bulk, try to break into Carvessa, pretend to be someone else, or use Carvessa for anything illegal.</p><h3>9. Ending</h3><p>You can stop using Carvessa and delete your account any time. We may pause or close accounts that break these terms.</p><h3>10. No promises, limits</h3><p>Carvessa is provided “as is”. As far as the law allows, we are not responsible for losses from using the app, from estimates, or from deals you make with others.</p><h3>11. Changes</h3><p>We may update these terms. We will change the date at the top, and tell you in the app if the change is big.</p><h3>12. Contact us</h3><p>Questions? Email carvessa.app@gmail.com.</p>
+<p><a href="mailto:carvessa.app@gmail.com">Email carvessa.app@gmail.com</a></p></article>
+<p class="draft">Also in the Carvessa app (Me › About &amp; legal). See our <a href="/privacy/">Privacy Policy</a>.</p>
+</main>
+<script>
+(function(){
+  var b=document.getElementById('read'); if(!('speechSynthesis' in window)){ b.hidden=true; return; }
+  b.addEventListener('click', function(){
+    if (speechSynthesis.speaking) { speechSynthesis.cancel(); b.textContent='🔊 Read it out loud'; return; }
+    var t=document.querySelector('.short').innerText+'. '+document.getElementById('doc').innerText;
+    var u=new SpeechSynthesisUtterance(t); u.onend=function(){ b.textContent='🔊 Read it out loud'; };
+    speechSynthesis.speak(u); b.textContent='■ Stop reading';
+  });
+})();
+</script>
+<footer class="foot wrap">
+<div>© 2026 Carvessa · <a href="mailto:carvessa.app@gmail.com">carvessa.app@gmail.com</a></div>
+<div class="links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="mailto:carvessa.app@gmail.com">Contact</a></div>
+</footer>
+</body>
+</html>
