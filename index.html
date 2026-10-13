@@ -66,11 +66,31 @@
 <script>
 (function(){
   var f=document.getElementById('list'), m=document.getElementById('msg'), b=f.querySelector('button');
+  var warned='';
+  var DOMAINS={gmial:'gmail',gmai:'gmail',gamil:'gmail',gnail:'gmail',gmal:'gmail',gmaill:'gmail',yaho:'yahoo',yahooo:'yahoo',yhoo:'yahoo',hotmial:'hotmail',hotmal:'hotmail',hotmai:'hotmail',outlok:'outlook',outllook:'outlook',iclod:'icloud',icoud:'icloud',icloud:'icloud'};
+  var BIG=['gmail','yahoo','hotmail','outlook','icloud','aol','live','msn'];
+  var ENDS={con:'com',cmo:'com',comm:'com',cm:'com',om:'com',ocm:'com',vom:'com',xom:'com',ner:'net',nte:'net'};
+  function suggest(e){
+    var at=e.lastIndexOf('@'); if (at<1) return null;
+    var parts=e.slice(at+1).toLowerCase().split('.'); if (parts.length<2) return null;
+    var end=parts.pop(), name=parts.join('.'), n2=DOMAINS[name]||name, e2=ENDS[end]||end;
+    if (BIG.indexOf(n2)>=0 && (e2==='co' || e2==='c')) e2='com';
+    var out=e.slice(0,at+1)+n2+'.'+e2;
+    return out.toLowerCase()===e.toLowerCase() ? null : out;
+  }
   f.addEventListener('submit', function(ev){
     ev.preventDefault();
     var email=f.email.value.trim();
     if (f.company.value) return;
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { m.textContent='Please type a real email.'; m.className='bad'; return; }
+    // Catch common email typos (like yahoo.con). Asks once; sending the same email again goes through.
+    var fix=suggest(email);
+    if (fix && warned!==email) {
+      warned=email; m.className='bad'; m.textContent='Did you mean '+fix+'? ';
+      var y=document.createElement('button'); y.type='button'; y.className='fix'; y.textContent='Yes, fix it';
+      y.onclick=function(){ f.email.value=fix; warned=''; m.textContent=''; f.email.focus(); };
+      m.appendChild(y); m.appendChild(document.createTextNode(' Or tap Notify me again to keep it.')); return;
+    }
     b.disabled=true; m.textContent='Saving…'; m.className='';
     fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/waitlist', {method:'POST', headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({email:email, source:'website'})})
       .then(function(r){

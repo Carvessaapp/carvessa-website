@@ -154,3 +154,4 @@ h1, h2, h3 { font-family: BC, "Arial Narrow", sans-serif; font-weight: 800; text
   .notify form { grid-template-columns: 1fr; }
   .legal h1 { font-size: 42px; }
 }
+.notify #msg .fix { font: inherit; font-weight: 700; color: #0E1014; background: #CDB38B; border: 0; border-radius: 8px; padding: 4px 10px; cursor: pointer; margin: 0 2px; }
