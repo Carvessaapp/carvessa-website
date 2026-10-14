@@ -14,8 +14,18 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#FAFAF7">
 <link rel="stylesheet" href="/assets/site.css">
+<script>try{if(!localStorage.getItem('carvessa:opened')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('opening')}catch(e){}</script>
 </head>
 <body>
+<div id="opening" aria-hidden="true">
+<div class="op-glow"></div>
+<button class="op-skip" id="op-skip" type="button">Skip</button>
+<div class="op-dial"><svg class="op-ring" viewBox="0 0 200 200"><circle class="op-ticks" cx="100" cy="100" r="97"/><path class="op-track" id="op-track" d=""/><path class="op-fill" id="op-fill" d=""/></svg>
+<div class="op-btn"><svg viewBox="0 0 100 92"><polygon points="0,0 27,0 52,70 40,92"/><polygon points="100,0 73,0 48,70 60,92"/></svg><span>START</span></div></div>
+<div class="op-logo">CAR<svg viewBox="0 0 100 92"><polygon points="0,0 27,0 52,70 40,92"/><polygon points="100,0 73,0 48,70 60,92"/></svg><span class="essa">essa</span></div>
+<div class="op-ready">READY</div>
+</div>
+<script src="/assets/opening.js" defer></script>
 <header class="nav wrap">
 <a class="logo" href="/" aria-label="Carvessa home"><span class="car">CAR</span><svg class="v" viewBox="0 0 100 92" aria-hidden="true"><polygon points="0,0 27,0 52,70 40,92"/><polygon points="100,0 73,0 48,70 60,92"/></svg><span class="essa">essa</span></a>
 <nav aria-label="Main"><a href="/#features">Features</a><a href="/#app">The app</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>

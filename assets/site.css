@@ -155,3 +155,37 @@ h1, h2, h3 { font-family: BC, "Arial Narrow", sans-serif; font-weight: 800; text
   .legal h1 { font-size: 42px; }
 }
 .notify #msg .fix { font: inherit; font-weight: 700; color: #0E1014; background: #CDB38B; border: 0; border-radius: 8px; padding: 4px 10px; cursor: pointer; margin: 0 2px; }
+
+/* Website opening (picture 44 · Mix 2): only shown when <html> has the "opening" class (first visit). */
+#opening { display: none; }
+html.opening, html.opening body { overflow: hidden; }
+html.opening #opening {
+  position: fixed; inset: 0; z-index: 100; cursor: pointer;
+  background: radial-gradient(circle at 50% 45%, #1A2130, #05070B 70%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px;
+  transition: opacity .5s ease;
+}
+#opening.gone { opacity: 0; pointer-events: none; }
+#opening .op-glow { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at 50% 45%, rgba(59,227,127,.30), transparent 60%); transition: opacity .45s ease; }
+#opening.lit .op-glow { opacity: 1; }
+#opening .op-skip { position: absolute; top: 14px; right: 18px; font: 700 15px Barlow, sans-serif; color: #8E97A5; background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 8px; }
+#opening .op-skip:focus-visible { outline: 3px solid #3BE37F; outline-offset: 3px; }
+#opening .op-dial { position: relative; width: min(64vw, 260px); aspect-ratio: 1; }
+#opening .op-ring { position: absolute; inset: 0; width: 100%; height: 100%; }
+#opening .op-ticks { fill: none; stroke: #2A303B; stroke-width: 1.5; stroke-dasharray: 2 6; }
+#opening .op-track { fill: none; stroke: #1E2430; stroke-width: 9; stroke-linecap: round; }
+#opening .op-fill { fill: none; stroke: #CDB38B; stroke-width: 9; stroke-linecap: round; transition: stroke .35s ease; filter: drop-shadow(0 0 6px rgba(205,179,139,.45)); }
+#opening.lit .op-fill { stroke: #3BE37F; filter: drop-shadow(0 0 10px rgba(59,227,127,.8)); }
+#opening .op-btn { position: absolute; left: 50%; top: 50%; width: 62%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; border: 5px solid #CDB38B; background: radial-gradient(circle at 35% 30%, #4A505C, #15181E 70%); box-shadow: 0 0 30px rgba(205,179,139,.22), inset 0 2px 6px rgba(255,255,255,.15); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; transition: border-color .35s ease, box-shadow .35s ease; }
+#opening .op-btn svg { width: 34%; fill: #CDB38B; transition: fill .35s ease; }
+#opening .op-btn span { font: 800 13px BC, sans-serif; letter-spacing: 2.5px; color: #CDB38B; transition: color .35s ease; }
+#opening.lit .op-btn { border-color: #3BE37F; box-shadow: 0 0 60px rgba(59,227,127,.6), inset 0 2px 6px rgba(255,255,255,.15); }
+#opening.lit .op-btn svg { fill: #3BE37F; }
+#opening.lit .op-btn span { color: #3BE37F; }
+#opening .op-logo { font-family: Michroma, sans-serif; font-size: 20px; letter-spacing: .06em; color: #FFFFFF; display: inline-flex; align-items: baseline; }
+#opening .op-logo svg { width: .815em; height: .75em; margin: 0 .07em 0 .12em; fill: #CDB38B; transition: fill .35s ease; }
+#opening .op-logo .essa { color: #CDB38B; transition: color .35s ease; }
+#opening.lit .op-logo svg { fill: #3BE37F; }
+#opening.lit .op-logo .essa { color: #3BE37F; }
+#opening .op-ready { font: 800 14px BC, sans-serif; letter-spacing: 4px; color: #3BE37F; opacity: 0; transition: opacity .3s ease; min-height: 1em; }
+#opening.lit .op-ready { opacity: 1; }
