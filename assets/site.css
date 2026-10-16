@@ -189,3 +189,30 @@ html.opening #opening {
 #opening.lit .op-logo .essa { color: #3BE37F; }
 #opening .op-ready { font: 800 14px BC, sans-serif; letter-spacing: 4px; color: #3BE37F; opacity: 0; transition: opacity .3s ease; min-height: 1em; }
 #opening.lit .op-ready { opacity: 1; }
+
+/* Picture 80 B (Oct 16, 2026): photo-first home top, like the app's first screen. */
+.nav.onphoto { position: relative; z-index: 3; }
+.nav.onphoto nav a { color: rgba(255,255,255,.85); }
+.nav.onphoto nav a:hover { color: #fff; }
+.nav.onphoto .logo .car { color: #fff; }
+.nav.onphoto .logo .essa { color: #CDB38B; }
+.nav.onphoto .logo .v { fill: #CDB38B; }
+.nav.onphoto .btn.dark { background: #CDB38B; color: #14161A; }
+.hero.photo { position: relative; margin-top: -96px; padding-top: 0; padding-bottom: 0; min-height: min(92vh, 860px); display: flex; align-items: flex-end; background-size: cover; background-position: center 60%; color: #fff; }
+.hero.photo::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,12,16,.55) 0%, rgba(10,12,16,0) 60%), linear-gradient(180deg, rgba(10,12,16,.6) 0%, rgba(10,12,16,.3) 35%, rgba(10,12,16,.88) 100%); }
+.hero.photo .wrap { position: relative; padding-top: 160px; padding-bottom: 64px; width: 100%; }
+.hero.photo .kicker { color: #CDB38B; font-size: 13px; letter-spacing: .14em; }
+.hero.photo h1 { color: #fff; font-size: clamp(46px, 7.2vw, 104px); line-height: .9; max-width: 13ch; margin-top: 14px; }
+.hero.photo .sub { color: rgba(255,255,255,.9); font-size: 20px; max-width: 34ch; margin: 18px 0 0; }
+.hero.photo .cta { display: flex; align-items: center; gap: 22px; margin: 28px 0 22px; flex-wrap: wrap; }
+.btn.gold { background: #CDB38B; color: #14161A; font-size: 17px; padding: 15px 26px; }
+.ghostlink { color: #fff; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.hero.photo .stores { opacity: .9; }
+.screens { grid-template-columns: repeat(4, 1fr) !important; }
+@media (max-width: 760px) {
+  .hero.photo { min-height: 640px; }
+  .hero.photo .wrap { padding-top: 120px; padding-bottom: 40px; }
+  .hero.photo .sub { font-size: 17px; }
+  .nav.onphoto nav { display: none; }
+  .screens { grid-template-columns: repeat(2, 1fr) !important; }
+}
