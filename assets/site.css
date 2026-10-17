@@ -209,10 +209,15 @@ html.opening #opening {
 .ghostlink { color: #fff; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
 .hero.photo .stores { opacity: .9; }
 .screens { grid-template-columns: repeat(4, 1fr) !important; }
+.screens > figure { min-width: 0; }
 @media (max-width: 760px) {
   .hero.photo { min-height: 640px; }
   .hero.photo .wrap { padding-top: 120px; padding-bottom: 40px; }
   .hero.photo .sub { font-size: 17px; }
   .nav.onphoto nav { display: none; }
   .screens { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 560px) {
+  .screens { grid-template-columns: 1fr !important; gap: 44px; }
+  .phone { width: 240px; }
 }
