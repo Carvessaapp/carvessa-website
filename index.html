@@ -12,8 +12,8 @@
 <meta property="og:image" content="https://carvessa.app/assets/img/share.jpg">
 <meta property="og:url" content="https://carvessa.app/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#FAFAF7">
-<link rel="stylesheet" href="/assets/site.css?v=59bde546">
+<meta name="theme-color" content="#F4F6FA">
+<link rel="stylesheet" href="/assets/site.css?v=68267396">
 <script>try{if(!localStorage.getItem('carvessa:opened')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('opening')}catch(e){}</script>
 </head>
 <body>
@@ -26,47 +26,65 @@
 <div class="op-ready">READY</div>
 </div>
 <script src="/assets/opening.js" defer></script>
-<header class="nav wrap onphoto">
+<header class="nav wrap">
 <a class="logo" href="/" aria-label="Carvessa home"><span class="car">CAR</span><svg class="v" viewBox="0 0 100 92" aria-hidden="true"><polygon points="0,0 27,0 52,70 40,92"/><polygon points="100,0 73,0 48,70 60,92"/></svg><span class="essa">essa</span></a>
-<nav aria-label="Main"><a href="/#features">Features</a><a href="/#app">The app</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
-<a class="btn dark" href="/#notify">Join the list</a>
+<nav aria-label="Main"><a href="/#fit">Cars that fit</a><a href="/#app">The app</a><a href="/#features">How it works</a></nav>
+<a class="btn small" href="/#notify">Get early access</a>
 </header>
 <main>
-<section class="hero photo" style="background-image:url(/assets/img/hero-camry.jpg)">
-<div class="wrap">
-<div class="mono kicker">ATLANTA FIRST · ENGLISH Y ESPAÑOL · FREE</div>
-<h1>Find a car you can really afford near you.</h1>
-<p class="sub">And buy it without getting ripped off. Free, in English y Español. Atlanta first.</p>
-<div class="cta"><a class="btn gold" href="#notify">Get early access →</a><a class="ghostlink" href="#features">See how it works</a></div>
-<div class="stores">
-<span class="store"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.9-3-.9C6.9 7.3 5.4 8.2 4.6 9.7c-1.7 2.9-.4 7.2 1.2 9.5.8 1.1 1.7 2.4 2.9 2.4s1.6-.8 3-.8 1.8.8 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.4-.9-2.4-3.9zM14.2 5.7c.6-.8 1.1-1.8.9-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1.1.1 2.1-.5 2.8-1.3z"/></svg><span><small>Coming soon on the</small>App Store</span></span>
-<span class="store"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 3.2v17.6c0 .5.5.8.9.6l15.2-8.8c.4-.2.4-.8 0-1L4.9 2.6c-.4-.2-.9.1-.9.6z"/></svg><span><small>Coming soon on</small>Google Play</span></span></div>
+<section class="wrap budget">
+<div class="kick">Free · Atlanta first · English y Español</div>
+<h1>What monthly payment works for you?</h1>
+<p class="lead">Pick a number. We show cars that really fit it, with the out-the-door price and a fair-price check.</p>
+<div class="chips" role="group" aria-label="Monthly payment"><button type="button" class="pay" data-cap="300" aria-pressed="false">$300/mo</button><button type="button" class="pay" data-cap="400" aria-pressed="true">$400/mo</button><button type="button" class="pay" data-cap="500" aria-pressed="false">$500/mo</button><button type="button" class="pay" data-cap="600" aria-pressed="false">$600+/mo</button></div>
+<div class="chips kinds" role="group" aria-label="Kind of car"><button type="button" class="kind" data-kind="Any" aria-pressed="true">Any</button><button type="button" class="kind" data-kind="SUV" aria-pressed="false">SUV</button><button type="button" class="kind" data-kind="Sedan" aria-pressed="false">Sedan</button><button type="button" class="kind" data-kind="Truck" aria-pressed="false">Truck</button><button type="button" class="kind" data-kind="Electric" aria-pressed="false">Electric</button></div>
+</section>
+<section id="fit" class="wrap">
+<div class="rowhead"><h2 id="fit-title">Cars that fit about $400/mo</h2><a href="#app">See all in the app →</a></div>
+<div class="fits" id="fits" aria-live="polite"></div>
+<p class="fine">Example estimates, not an offer: 2022 used models (new where it says new), Georgia tax and fees, good credit, $1,750 down, 72 months.</p>
+</section>
+<section id="app" class="wrap"><div class="show">
+<div><div class="kick">The Carvessa app · Coming to Android first</div>
+<h2>Your car coach in your pocket.</h2>
+<p class="lead">Your top 3 cars, the real payment, what each car wins, and cars you swipe like cards. Free, in English y Español.</p>
+<div class="cta"><a class="btn white" href="#notify">Get early access →</a><a class="btn ghost" href="#features">See how it works</a></div></div>
+<div class="phones"><div class="ph p1"><img src="/assets/img/app-compare.jpg" alt="Compare 3 cars: what each car wins" width="390" height="844" loading="lazy"></div><div class="ph p2"><img src="/assets/img/app-home.jpg" alt="The app home screen with your plan and top match" width="390" height="844" loading="lazy"></div><div class="ph p3"><img src="/assets/img/app-foryou.jpg" alt="For you: swipe cars like cards" width="390" height="844" loading="lazy"></div></div>
 </div></section>
-<section id="features" class="wrap feats"><div class="feat"><div class="num">01</div><h3>What fits your pay</h3><p>Tell us your budget or monthly payment. See cars that fit, with payments at real 2026 loan rates.</p></div><div class="feat"><div class="num">02</div><h3>Fair price + out the door</h3><p>Every car gets a tag: Looks low, Looks fair or Looks high. Plus the full price with your state’s tax and fees.</p></div><div class="feat"><div class="num">03</div><h3>Cars near you</h3><p>Real cars for sale near you, with drive times and colors. Coming soon for everyone.</p></div><div class="feat"><div class="num">04</div><h3>Safety, always free</h3><p>Crash ratings, recalls and warning lights, from U.S. government data.</p></div></section>
-<section id="app" class="grid sheet"><div class="wrap">
-<div class="sheethead"><h2>The app,<br>today.</h2><div class="mono gold">REAL SCREENS FROM THE APP · PRICES ARE ESTIMATES</div></div>
-<div class="screens"><figure><div class="phone"><img src="/assets/img/screen-top3.jpg" alt="Your top 3 cars with monthly payment estimates" width="260" height="563"></div>
-<figcaption><span class="mono">FIG. A · YOUR TOP 3</span>Cars that fit, with a payment for each</figcaption></figure><figure><div class="phone"><img src="/assets/img/screen-price.jpg" alt="A car page with a fair price range and the out-the-door price" width="260" height="563"></div>
-<figcaption><span class="mono">FIG. B · FAIR PRICE</span>Fair price range and the out-the-door math</figcaption></figure><figure><div class="phone"><img src="/assets/img/screen-check.jpg" alt="Check a car by VIN" width="260" height="563"></div>
-<figcaption><span class="mono">FIG. C · CHECK A CAR</span>Any car you found, by VIN</figcaption></figure><figure><div class="phone"><img src="/assets/img/screen-es.jpg" alt="The app in Spanish" width="260" height="563"></div>
-<figcaption><span class="mono">FIG. D · EN ESPAÑOL</span>The whole app in Spanish</figcaption></figure></div></div></section>
-<section class="wrap cars"><figure class="carpic"><img src="/assets/img/car-rav4.jpg" alt="Toyota RAV4">
-<figcaption><b>Toyota RAV4</b><span>From about $33,350 new</span></figcaption></figure><figure class="carpic"><img src="/assets/img/car-civic.jpg" alt="Honda Civic">
-<figcaption><b>Honda Civic</b><span>From about $25,890 new</span></figcaption></figure><figure class="carpic"><img src="/assets/img/car-telluride.jpg" alt="Kia Telluride">
-<figcaption><b>Kia Telluride</b><span>From about $37,500 new</span></figcaption></figure></section>
+<section id="features" class="wrap"><h2>What you get</h2><div class="feats"><div class="card"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v12H3zM3 11h18M7 15h3"/></svg></div><h3>What fits your pay</h3><p>Tell us your budget or monthly payment. See cars that fit, with payments at real 2026 loan rates.</p></div><div class="card"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></div><h3>Fair price + out the door</h3><p>Every car gets a tag: Looks low, Looks fair or Looks high. Plus the full price with your state’s tax and fees.</p></div><div class="card"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></div><h3>Cars near you</h3><p>Real cars for sale near you, with drive times and colors. Coming soon for everyone.</p></div><div class="card"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div><h3>Safety, always free</h3><p>Crash ratings, recalls and warning lights, from U.S. government data.</p></div></div></section>
 <section id="notify" class="wrap"><div class="notify">
-<svg class="bgv" viewBox="0 0 100 92" aria-hidden="true"><polygon points="0,0 27,0 52,70 40,92"/><polygon points="100,0 73,0 48,70 60,92"/></svg>
-<div><h2>Be first in Atlanta.</h2><p>Get one email when Carvessa opens in Atlanta and on Google Play. No spam.</p></div>
+<div><h2>Be first in Atlanta.</h2><p>One email when Carvessa opens in Atlanta and on Google Play. No spam, no selling your email.</p></div>
 <form id="list" novalidate>
 <label class="sr" for="email">Your email</label>
-<input id="email" name="email" type="email" autocomplete="email" placeholder="Your email" required maxlength="254">
+<input id="email" name="email" type="email" autocomplete="email" placeholder="you@email.com" required maxlength="254">
 <input class="hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
 <button type="submit">Notify me</button>
 <p id="msg" role="status" aria-live="polite"></p>
 <p class="fine">We only use your email to tell you about Carvessa. <a href="/privacy/">Privacy</a></p>
 </form></div></section>
-<p class="wrap credits">New prices are carmakers’ starting prices from public price guides; check with the dealer. Photos from Wikimedia Commons — Camry (top photo): MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2025_Toyota_Camry_LE,_front_left,_05-24-2025.jpg" rel="noopener">CC BY-SA 4.0</a> · RAV4: TTTNIS, <a href="https://commons.wikimedia.org/wiki/File:2026_Toyota_RAV4_PHEV_GR_Sport_Prototype.jpg" rel="noopener">CC0</a> · Civic: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2022_Honda_Civic_LX_Sedan,_front_right,_11-02-2022.jpg" rel="noopener">CC BY-SA 4.0</a> · Telluride: HJUdall, <a href="https://commons.wikimedia.org/wiki/File:24_Kia_Telluride_EX_X-Line.jpg" rel="noopener">CC0</a>. Prices and payments are estimates.</p>
+<p class="wrap credits">Prices and payments are estimates from the same math as the app; check with the dealer. Car photos from Wikimedia Commons (background removed) — Nissan Versa: Deathpallie325, <a href="https://commons.wikimedia.org/wiki/File:2024_Nissan_Versa_front_view.jpg" rel="noopener">CC BY 4.0</a> · Mitsubishi Mirage: Captainmorlypogi1959, <a href="https://commons.wikimedia.org/wiki/File:Mitsubishi_Mirage_1.2_GLX_2024_(1).jpg" rel="noopener">CC BY-SA 4.0</a> · Hyundai Elantra: Mr.choppers, <a href="https://commons.wikimedia.org/wiki/File:2021_Hyundai_Elantra_Limited_in_Quartz_White,_front_right.jpg" rel="noopener">CC BY-SA 3.0</a> · Kia K4: Elise240SX, <a href="https://commons.wikimedia.org/wiki/File:2025_Kia_K4_LX_in_Azure_Blue,_front_right,_2024-10-12.jpg" rel="noopener">CC BY-SA 4.0</a> · Toyota Corolla Hybrid: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2021_Toyota_Corolla_LE,_front_right,_07-13-2024.jpg" rel="noopener">CC BY-SA 4.0</a> · Honda Civic: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2022_Honda_Civic_LX_Sedan,_front_right,_11-02-2022.jpg" rel="noopener">CC BY-SA 4.0</a> · Chevy Trax: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2024_Chevrolet_Trax_1RS,_front_right,_05-18-2023.jpg" rel="noopener">CC BY-SA 4.0</a> · Hyundai Kona: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2024_Hyundai_Kona_SEL,_front_right,_05-18-2024.jpg" rel="noopener">CC BY-SA 4.0</a> · Buick Encore GX: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2024_Buick_Encore_GX_Avenir_AWD,_front_left,_10-29-2023.jpg" rel="noopener">CC BY-SA 4.0</a> · Toyota RAV4: TTTNIS, <a href="https://commons.wikimedia.org/wiki/File:2026_Toyota_RAV4_PHEV_GR_Sport_Prototype.jpg" rel="noopener">CC0</a> · Honda CR-V: Alexander-93, <a href="https://commons.wikimedia.org/wiki/File:Honda_CR-V_(6th_generation)_hybrid_1X7A1957.jpg" rel="noopener">CC BY-SA 4.0</a> · Toyota Camry: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2025_Toyota_Camry_LE,_front_left,_05-24-2025.jpg" rel="noopener">CC BY-SA 4.0</a> · Honda Accord: Chanokchon, <a href="https://commons.wikimedia.org/wiki/File:2023_Honda_Accord_e-HEV_RS.jpg" rel="noopener">CC BY-SA 4.0</a> · Subaru Outback: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2023_Subaru_Outback_Premium,_front_right,_09-09-2023.jpg" rel="noopener">CC BY-SA 4.0</a> · Tesla Model 3: Chanokchon, <a href="https://commons.wikimedia.org/wiki/File:2024_Tesla_Model_3_Highland_Performance_AWD.jpg" rel="noopener">CC BY-SA 4.0</a> · Tesla Model Y: OWS Photography, <a href="https://commons.wikimedia.org/wiki/File:Tesla_Model_Y_Juniper_Washington_DC_Metro_Area,_USA.jpg" rel="noopener">CC BY 4.0</a> · Ford Maverick: RL GNZLZ, <a href="https://commons.wikimedia.org/wiki/File:Ford_Maverick_Hybrid_Lariat_2023.jpg" rel="noopener">CC BY-SA 4.0</a> · Toyota Tacoma: Alexander-93, <a href="https://commons.wikimedia.org/wiki/File:Toyota_Tacoma_TRD_Off_Road_(N400)_IMG_9727_(cropped).jpg" rel="noopener">CC BY-SA 4.0</a> · Ford Bronco: Mr.choppers, <a href="https://commons.wikimedia.org/wiki/File:2021_Ford_Bronco_Outer_Banks_4-dr_in_Area_51,_front_right.jpg" rel="noopener">CC BY-SA 3.0</a> · Jeep Wrangler: Kidfly182, <a href="https://commons.wikimedia.org/wiki/File:Jeep_Wrangler_Sahara.jpg" rel="noopener">CC BY 4.0</a> · Toyota Highlander: Alexander Migl, <a href="https://commons.wikimedia.org/wiki/File:Toyota_Highlander_Hybrid_(XU70)_1X7A6356.jpg" rel="noopener">CC BY-SA 4.0</a> · Kia Telluride: HJUdall, <a href="https://commons.wikimedia.org/wiki/File:24_Kia_Telluride_EX_X-Line.jpg" rel="noopener">CC0</a> · Honda Odyssey: Deathpallie325, <a href="https://commons.wikimedia.org/wiki/File:2025_Honda_Odyssey_front_view.jpg" rel="noopener">CC BY 4.0</a> · Toyota Sienna: Zotyefan, <a href="https://commons.wikimedia.org/wiki/File:Toyota_Sienna_in_Shanghai_20220129a.jpg" rel="noopener">CC BY-SA 4.0</a> · Ford F-150: Deathpallie325, <a href="https://commons.wikimedia.org/wiki/File:2024_Ford_F-150_Lariat_front_view.jpg" rel="noopener">CC BY 4.0</a> · Chevy Silverado 1500: HJUdall, <a href="https://commons.wikimedia.org/wiki/File:18_Chevrolet_Silverado_1500_LT.jpg" rel="noopener">CC0</a> · Ram 1500: Deathpallie325, <a href="https://commons.wikimedia.org/wiki/File:2025_Ram_1500_front_view.jpg" rel="noopener">CC BY-SA 4.0</a>.</p>
 </main>
+<script>
+(function(){
+  var CARS=[{"id": "versa", "name": "2022 Nissan Versa", "price": 11500, "isNew": false, "pay": 212, "kind": "Sedan"}, {"id": "mirage", "name": "2022 Mitsubishi Mirage", "price": 11000, "isNew": false, "pay": 202, "kind": "Hatchback"}, {"id": "elantra", "name": "2022 Hyundai Elantra", "price": 15000, "isNew": false, "pay": 282, "kind": "Sedan"}, {"id": "k4", "name": "2026 Kia K4", "price": 23500, "isNew": true, "pay": 426, "kind": "Sedan"}, {"id": "corolla", "name": "2022 Toyota Corolla Hybrid", "price": 15500, "isNew": false, "pay": 291, "kind": "Sedan"}, {"id": "civic", "name": "2022 Honda Civic", "price": 16500, "isNew": false, "pay": 311, "kind": "Sedan"}, {"id": "trax", "name": "2022 Chevy Trax", "price": 15000, "isNew": false, "pay": 282, "kind": "SUV"}, {"id": "kona", "name": "2022 Hyundai Kona", "price": 16000, "isNew": false, "pay": 301, "kind": "SUV"}, {"id": "encore", "name": "2022 Buick Encore GX", "price": 17500, "isNew": false, "pay": 331, "kind": "SUV"}, {"id": "rav4", "name": "2022 Toyota RAV4", "price": 21000, "isNew": false, "pay": 401, "kind": "SUV"}, {"id": "crv", "name": "2022 Honda CR-V", "price": 20500, "isNew": false, "pay": 391, "kind": "SUV"}, {"id": "camry", "name": "2022 Toyota Camry", "price": 18500, "isNew": false, "pay": 351, "kind": "Sedan"}, {"id": "accord", "name": "2022 Honda Accord", "price": 18000, "isNew": false, "pay": 341, "kind": "Sedan"}, {"id": "outback", "name": "2022 Subaru Outback", "price": 22000, "isNew": false, "pay": 420, "kind": "Wagon"}, {"id": "model3", "name": "2022 Tesla Model 3", "price": 24500, "isNew": false, "pay": 470, "kind": "Electric"}, {"id": "modely", "name": "2022 Tesla Model Y", "price": 26000, "isNew": false, "pay": 500, "kind": "Electric"}, {"id": "maverick", "name": "2022 Ford Maverick", "price": 17500, "isNew": false, "pay": 331, "kind": "Truck"}, {"id": "tacoma", "name": "2022 Toyota Tacoma", "price": 20500, "isNew": false, "pay": 391, "kind": "Truck"}, {"id": "bronco", "name": "2022 Ford Bronco", "price": 25500, "isNew": false, "pay": 490, "kind": "SUV"}, {"id": "wrangler", "name": "2022 Jeep Wrangler", "price": 22000, "isNew": false, "pay": 420, "kind": "SUV"}, {"id": "highlander", "name": "2022 Toyota Highlander", "price": 29000, "isNew": false, "pay": 559, "kind": "SUV"}, {"id": "telluride", "name": "2022 Kia Telluride", "price": 23500, "isNew": false, "pay": 450, "kind": "SUV"}, {"id": "odyssey", "name": "2022 Honda Odyssey", "price": 27000, "isNew": false, "pay": 519, "kind": "Minivan"}, {"id": "sienna", "name": "2022 Toyota Sienna", "price": 25500, "isNew": false, "pay": 490, "kind": "Minivan"}, {"id": "f150", "name": "2022 Ford F-150", "price": 23500, "isNew": false, "pay": 450, "kind": "Truck"}, {"id": "silverado", "name": "2022 Chevy Silverado 1500", "price": 23000, "isNew": false, "pay": 440, "kind": "Truck"}, {"id": "ram1500", "name": "2022 Ram 1500", "price": 26500, "isNew": false, "pay": 510, "kind": "Truck"}], cap=400, kind='Any';
+  var box=document.getElementById('fits'), title=document.getElementById('fit-title');
+  function money(n){ return '$'+n.toLocaleString('en-US'); }
+  function draw(){
+    var top=cap===600?700:cap;
+    var list=CARS.filter(function(c){ return c.pay<=top && (kind==='Any'||c.kind===kind); }).sort(function(a,b){ return b.pay-a.pay; }).slice(0,4);
+    title.textContent='Cars that fit about '+money(cap)+(cap===600?'+':'')+'/mo';
+    box.innerHTML=list.length?list.map(function(c){
+      return '<div class="card carcard"><div class="pic"><img src="/assets/cutouts/'+c.id+'.webp" alt="'+c.name+'" loading="lazy"></div><b>'+c.name+'</b><div class="num">'+money(c.price)+(c.isNew?' new':' used')+' est. · ≈ '+money(c.pay)+'/mo</div><span class="tag ok">Fits your plan</span></div>';
+    }).join(''):'<p class="none">No '+kind.toLowerCase()+' fits this payment yet. Try a higher number.</p>';
+  }
+  function pick(sel, attr, set){
+    document.querySelectorAll(sel).forEach(function(b){ b.addEventListener('click', function(){
+      document.querySelectorAll(sel).forEach(function(x){ x.setAttribute('aria-pressed', x===b?'true':'false'); });
+      set(b.getAttribute(attr)); draw(); }); });
+  }
+  pick('.pay','data-cap',function(v){ cap=Number(v); }); pick('.kind','data-kind',function(v){ kind=v; }); draw();
+})();
+</script>
 <script>
 (function(){
   var f=document.getElementById('list'), m=document.getElementById('msg'), b=f.querySelector('button');
