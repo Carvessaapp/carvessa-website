@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /try/
+Disallow: /unsubscribe/
 Sitemap: https://carvessa.app/sitemap.xml
