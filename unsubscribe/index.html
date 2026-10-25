@@ -13,16 +13,20 @@
 <meta property="og:url" content="https://carvessa.app/unsubscribe/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F4F6FA">
-<link rel="stylesheet" href="/assets/site.css?v=1ec91430">
+<link rel="stylesheet" href="/assets/site.css?v=e0cba9e6">
 
 </head>
 <body>
 
 <header class="nav wrap">
 <a class="logo" href="/" aria-label="Carvessa home"><span class="car">CAR</span><svg class="v" viewBox="0 0 100 92" aria-hidden="true"><polygon points="0,0 27,0 52,70 40,92"/><polygon points="100,0 73,0 48,70 60,92"/></svg><span class="essa">essa</span></a>
-<nav aria-label="Main"><a href="/#fit">Cars that fit</a><a href="/#app">The app</a><a href="/#features">How it works</a><a href="/partners/">For businesses</a></nav>
-<a class="btn small" href="/#notify">Get early access</a>
+<nav id="mainnav" aria-label="Main"><a href="/#fit">Cars that fit</a><a href="/#app">The app</a><a href="/#features">How it works</a><a href="/partners/">For businesses</a></nav>
+<div class="navr"><a class="btn small" href="/#notify"><span class="gx">Get early access</span><span class="gs">Early access</span></a><button type="button" class="menu" aria-controls="mainnav" aria-expanded="false" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>
 </header>
+<script>(function(){var h=document.currentScript.previousElementSibling,b=h.querySelector('.menu');
+b.addEventListener('click',function(){var o=h.classList.toggle('open');b.setAttribute('aria-expanded',o);b.setAttribute('aria-label',o?'Close menu':'Menu');});
+h.querySelectorAll('nav a').forEach(function(a){a.addEventListener('click',function(){h.classList.remove('open');b.setAttribute('aria-expanded','false');});});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&h.classList.contains('open')){h.classList.remove('open');b.setAttribute('aria-expanded','false');b.focus();}});})();</script>
 <main class="wrap legal" style="max-width:560px"><h1>Unsubscribe</h1>
 <p id="msg">Stop getting Carvessa emails at <b id="who"></b>?</p>
 <p><button id="go" class="btn" type="button" style="border:0;cursor:pointer">Yes, unsubscribe me</button></p>
