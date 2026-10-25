@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Carvessa · Find a car you can really afford near you</title>
-<meta name="description" content="Find a car you can really afford near you. And buy it without getting ripped off. Free, in English y Español. Atlanta first.">
+<meta name="description" content="Find a car you can really afford near you. And know the fair price before you buy. Free, in English y Español. Atlanta first.">
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <meta property="og:title" content="Carvessa · Find a car you can really afford near you">
-<meta property="og:description" content="Find a car you can really afford near you. And buy it without getting ripped off. Free, in English y Español. Atlanta first.">
+<meta property="og:description" content="Find a car you can really afford near you. And know the fair price before you buy. Free, in English y Español. Atlanta first.">
 <meta property="og:image" content="https://carvessa.app/assets/img/share.jpg">
 <meta property="og:url" content="https://carvessa.app/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F4F6FA">
-<link rel="stylesheet" href="/assets/site.css?v=094b7c72">
+<link rel="stylesheet" href="/assets/site.css?v=1ec91430">
 <script>try{if(!localStorage.getItem('carvessa:opened')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('opening')}catch(e){}</script>
 </head>
 <body>
@@ -28,7 +28,7 @@
 <script src="/assets/opening.js" defer></script>
 <header class="nav wrap">
 <a class="logo" href="/" aria-label="Carvessa home"><span class="car">CAR</span><svg class="v" viewBox="0 0 100 92" aria-hidden="true"><polygon points="0,0 27,0 52,70 40,92"/><polygon points="100,0 73,0 48,70 60,92"/></svg><span class="essa">essa</span></a>
-<nav aria-label="Main"><a href="/#fit">Cars that fit</a><a href="/#app">The app</a><a href="/#features">How it works</a></nav>
+<nav aria-label="Main"><a href="/#fit">Cars that fit</a><a href="/#app">The app</a><a href="/#features">How it works</a><a href="/partners/">For businesses</a></nav>
 <a class="btn small" href="/#notify">Get early access</a>
 </header>
 <main>
@@ -46,10 +46,21 @@
 </section>
 <section id="video" class="wrap">
 <div class="rowhead"><h2>See Carvessa in 30 seconds</h2></div>
-<button type="button" class="vid" data-lang="en" aria-label="Play the Carvessa video"><img src="/assets/video/maya-poster.jpg" alt="Maya, a cartoon car shopper, wonders what she would pay a month" width="1280" height="720" loading="lazy"><span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></button>
-<div class="vidrow"><button type="button" class="btn vplay" data-lang="en">▶ Play with sound</button><button type="button" class="btn ghost vplay" data-lang="es">▶ Ver en español</button></div>
-</section>
-<div id="player" hidden><video playsinline controls preload="none"></video><button type="button" class="vclose" aria-label="Close video">✕</button></div>
+<div class="vp">
+<div class="vp-screen"><video playsinline preload="metadata" poster="/assets/video/maya-poster.jpg"></video>
+<button type="button" class="vp-big" aria-label="Play the video"><svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="i-again" viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg></button></div>
+<div class="vp-bar">
+<button type="button" class="vp-pp" aria-label="Play"><svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+<div class="vp-road" role="slider" tabindex="0" aria-label="Video progress" aria-valuemin="0" aria-valuemax="29" aria-valuenow="0" aria-valuetext="0:00">
+<div class="vp-asphalt"><div class="vp-trail"></div></div>
+<svg class="vp-house" viewBox="0 0 48 46" aria-hidden="true"><path d="M4 22L24 4l20 18" fill="#C2261C"/><rect x="8" y="20" width="32" height="24" fill="#FFF4DC"/><rect class="vp-win" x="12" y="25" width="9" height="8" rx="1" fill="#9CC0F7"/><rect x="26" y="28" width="10" height="16" fill="#86652B"/><rect class="vp-door" x="26" y="28" width="10" height="16" fill="#5E4520"/><circle cx="34" cy="37" r="1" fill="#E0B640"/></svg>
+<div class="vp-car" aria-hidden="true"><svg viewBox="0 0 170 70"><g class="vp-head"><circle cx="80" cy="24" r="10" fill="#8D5A3B"/><circle cx="73" cy="17" r="6" fill="#24150D"/><circle cx="82" cy="13" r="7" fill="#24150D"/><circle cx="90" cy="18" r="6" fill="#24150D"/></g><path d="M8 54h120a10 10 0 0 0 10-10v-8l-20-6-16-20H52L32 30H10v14a10 10 0 0 0 8 10z" fill="#1F5FBF"/><path d="M56 14h44l12 16H44z" fill="#BFDDF5" opacity=".55"/><circle cx="40" cy="54" r="12" fill="#0F1A2A"/><circle cx="110" cy="54" r="12" fill="#0F1A2A"/><circle cx="40" cy="54" r="5" fill="#C3CCD8"/><circle cx="110" cy="54" r="5" fill="#C3CCD8"/></svg></div>
+<div class="vp-walker" aria-hidden="true"><svg viewBox="0 0 20 40"><circle cx="10" cy="5" r="5" fill="#24150D"/><circle cx="6" cy="7" r="3.5" fill="#24150D"/><circle cx="14" cy="7" r="3.5" fill="#24150D"/><circle cx="10" cy="9" r="4.5" fill="#8D5A3B"/><path d="M4 15q6 -3 12 0v12H4z" fill="#E0A82E"/><g class="vp-legs"><rect class="l1" x="6" y="26" width="3.5" height="12" rx="1.5" fill="#3B4A66"/><rect class="l2" x="10.5" y="26" width="3.5" height="12" rx="1.5" fill="#3B4A66"/></g></svg></div>
+</div>
+<span class="vp-time">0:00</span>
+<button type="button" class="vp-mute" aria-label="Mute"><svg class="i-on" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8a5 5 0 0 1 0 8M18.5 5.5a8.5 8.5 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-off" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+<button type="button" class="vp-lang">Español</button>
+</div></div></section>
 <section id="app" class="wrap"><div class="show">
 <div><div class="kick">The Carvessa app · Coming to iPhone and Android</div>
 <h2>Your car coach in your pocket.</h2>
@@ -71,26 +82,50 @@
 <p class="wrap credits">Prices and payments are estimates from the same math as the app; check with the dealer. Car photos from Wikimedia Commons (background removed) — Nissan Versa: Deathpallie325, <a href="https://commons.wikimedia.org/wiki/File:2024_Nissan_Versa_front_view.jpg" rel="noopener">CC BY 4.0</a> · Mitsubishi Mirage: Captainmorlypogi1959, <a href="https://commons.wikimedia.org/wiki/File:Mitsubishi_Mirage_1.2_GLX_2024_(1).jpg" rel="noopener">CC BY-SA 4.0</a> · Hyundai Elantra: Mr.choppers, <a href="https://commons.wikimedia.org/wiki/File:2021_Hyundai_Elantra_Limited_in_Quartz_White,_front_right.jpg" rel="noopener">CC BY-SA 3.0</a> · Kia K4: Elise240SX, <a href="https://commons.wikimedia.org/wiki/File:2025_Kia_K4_LX_in_Azure_Blue,_front_right,_2024-10-12.jpg" rel="noopener">CC BY-SA 4.0</a> · Toyota Corolla Hybrid: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2021_Toyota_Corolla_LE,_front_right,_07-13-2024.jpg" rel="noopener">CC BY-SA 4.0</a> · Honda Civic: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2022_Honda_Civic_LX_Sedan,_front_right,_11-02-2022.jpg" rel="noopener">CC BY-SA 4.0</a> · Chevy Trax: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2024_Chevrolet_Trax_1RS,_front_right,_05-18-2023.jpg" rel="noopener">CC BY-SA 4.0</a> · Hyundai Kona: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2024_Hyundai_Kona_SEL,_front_right,_05-18-2024.jpg" rel="noopener">CC BY-SA 4.0</a> · Buick Encore GX: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2024_Buick_Encore_GX_Avenir_AWD,_front_left,_10-29-2023.jpg" rel="noopener">CC BY-SA 4.0</a> · Toyota RAV4: TTTNIS, <a href="https://commons.wikimedia.org/wiki/File:2026_Toyota_RAV4_PHEV_GR_Sport_Prototype.jpg" rel="noopener">CC0</a> · Honda CR-V: Alexander-93, <a href="https://commons.wikimedia.org/wiki/File:Honda_CR-V_(6th_generation)_hybrid_1X7A1957.jpg" rel="noopener">CC BY-SA 4.0</a> · Toyota Camry: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2025_Toyota_Camry_LE,_front_left,_05-24-2025.jpg" rel="noopener">CC BY-SA 4.0</a> · Honda Accord: Chanokchon, <a href="https://commons.wikimedia.org/wiki/File:2023_Honda_Accord_e-HEV_RS.jpg" rel="noopener">CC BY-SA 4.0</a> · Subaru Outback: MercurySable99, <a href="https://commons.wikimedia.org/wiki/File:2023_Subaru_Outback_Premium,_front_right,_09-09-2023.jpg" rel="noopener">CC BY-SA 4.0</a> · Tesla Model 3: Chanokchon, <a href="https://commons.wikimedia.org/wiki/File:2024_Tesla_Model_3_Highland_Performance_AWD.jpg" rel="noopener">CC BY-SA 4.0</a> · Tesla Model Y: OWS Photography, <a href="https://commons.wikimedia.org/wiki/File:Tesla_Model_Y_Juniper_Washington_DC_Metro_Area,_USA.jpg" rel="noopener">CC BY 4.0</a> · Ford Maverick: RL GNZLZ, <a href="https://commons.wikimedia.org/wiki/File:Ford_Maverick_Hybrid_Lariat_2023.jpg" rel="noopener">CC BY-SA 4.0</a> · Toyota Tacoma: Alexander-93, <a href="https://commons.wikimedia.org/wiki/File:Toyota_Tacoma_TRD_Off_Road_(N400)_IMG_9727_(cropped).jpg" rel="noopener">CC BY-SA 4.0</a> · Ford Bronco: Mr.choppers, <a href="https://commons.wikimedia.org/wiki/File:2021_Ford_Bronco_Outer_Banks_4-dr_in_Area_51,_front_right.jpg" rel="noopener">CC BY-SA 3.0</a> · Jeep Wrangler: Kidfly182, <a href="https://commons.wikimedia.org/wiki/File:Jeep_Wrangler_Sahara.jpg" rel="noopener">CC BY 4.0</a> · Toyota Highlander: Alexander Migl, <a href="https://commons.wikimedia.org/wiki/File:Toyota_Highlander_Hybrid_(XU70)_1X7A6356.jpg" rel="noopener">CC BY-SA 4.0</a> · Kia Telluride: HJUdall, <a href="https://commons.wikimedia.org/wiki/File:24_Kia_Telluride_EX_X-Line.jpg" rel="noopener">CC0</a> · Honda Odyssey: Deathpallie325, <a href="https://commons.wikimedia.org/wiki/File:2025_Honda_Odyssey_front_view.jpg" rel="noopener">CC BY 4.0</a> · Toyota Sienna: Zotyefan, <a href="https://commons.wikimedia.org/wiki/File:Toyota_Sienna_in_Shanghai_20220129a.jpg" rel="noopener">CC BY-SA 4.0</a> · Ford F-150: Deathpallie325, <a href="https://commons.wikimedia.org/wiki/File:2024_Ford_F-150_Lariat_front_view.jpg" rel="noopener">CC BY 4.0</a> · Chevy Silverado 1500: HJUdall, <a href="https://commons.wikimedia.org/wiki/File:18_Chevrolet_Silverado_1500_LT.jpg" rel="noopener">CC0</a> · Ram 1500: Deathpallie325, <a href="https://commons.wikimedia.org/wiki/File:2025_Ram_1500_front_view.jpg" rel="noopener">CC BY-SA 4.0</a>.</p>
 <script>
 (function(){
-  var box=document.getElementById('player'),v=box.querySelector('video');
-  function close(){v.pause();v.innerHTML='';v.load();box.hidden=true;document.body.style.overflow='';if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});}
-  function play(lang){
-    var wide=innerWidth>=innerHeight;
-    var f='/assets/video/maya-'+(wide?'wide':'tall')+'-'+lang;
-    v.innerHTML='<source src="'+f+'.mp4" type="video/mp4"><source src="'+f+'.webm" type="video/webm">';v.load();
-    box.hidden=false;document.body.style.overflow='hidden';
-    var p=v.play();if(p&&p.catch)p.catch(function(){});
-    if(box.requestFullscreen)box.requestFullscreen().catch(function(){});
-    else if(v.webkitEnterFullscreen)try{v.webkitEnterFullscreen()}catch(e){}
-  }
-  document.querySelectorAll('.vid,.vplay').forEach(function(b){b.addEventListener('click',function(){play(b.getAttribute('data-lang'))})});
-  box.querySelector('.vclose').addEventListener('click',close);
-  v.addEventListener('ended',close);
-  v.addEventListener('webkitendfullscreen',close);
-  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&!box.hidden)close()});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!box.hidden)close()});
+  var HOUSE=48, CAR=54, GAP=6, tallQ=matchMedia('(max-width:600px)');
+  document.querySelectorAll('.vp').forEach(function(vp){
+    var v=vp.querySelector('video'), road=vp.querySelector('.vp-road'), car=vp.querySelector('.vp-car'), trail=vp.querySelector('.vp-trail'),
+        time=vp.querySelector('.vp-time'), pp=vp.querySelector('.vp-pp'), mute=vp.querySelector('.vp-mute'), langB=vp.querySelector('.vp-lang'),
+        lang='en', tall=null, raf=0, drag=false, arriveT=0;
+    function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+('0'+s%60).slice(-2);}
+    function dur(){return isFinite(v.duration)&&v.duration>0?v.duration:29;}
+    function load(keep){
+      tall=tallQ.matches; var f='/assets/video/maya-'+(tall?'tall':'wide')+'-'+lang, t=keep?v.currentTime:0, was=keep&&!v.paused;
+      vp.classList.toggle('tall',tall); v.poster='/assets/video/maya-poster'+(tall?'-tall':'')+'.jpg';
+      v.innerHTML='<source src="'+f+'.mp4" type="video/mp4"><source src="'+f+'.webm" type="video/webm">'; v.load();
+      if(t){v.addEventListener('loadedmetadata',function once(){v.removeEventListener('loadedmetadata',once);v.currentTime=t;if(was)play();});}
+    }
+    function track(){return Math.max(0,road.clientWidth-HOUSE-CAR-GAP);}
+    function draw(){
+      var p=Math.min(1,v.currentTime/dur()), x=p*track();
+      car.style.transform='translateX('+x+'px)'; trail.style.width=(x+CAR/2)+'px';
+      time.textContent=fmt(v.currentTime); road.setAttribute('aria-valuenow',Math.round(v.currentTime)); road.setAttribute('aria-valuetext',fmt(v.currentTime)+' of '+fmt(dur()));
+    }
+    function loop(){draw(); if(!v.paused)raf=requestAnimationFrame(loop);}
+    function unArrive(){clearTimeout(arriveT);road.classList.remove('arrive');vp.classList.remove('done');}
+    function play(){unArrive(); if(v.ended)v.currentTime=0; var p=v.play(); if(p&&p.catch)p.catch(function(){});}
+    function toggle(){v.paused?play():v.pause();}
+    v.addEventListener('play',function(){vp.classList.add('playing');pp.setAttribute('aria-label','Pause');cancelAnimationFrame(raf);loop();});
+    v.addEventListener('pause',function(){vp.classList.remove('playing');pp.setAttribute('aria-label','Play');draw();});
+    v.addEventListener('loadedmetadata',draw);
+    v.addEventListener('ended',function(){draw();road.classList.add('arrive');arriveT=setTimeout(function(){vp.classList.add('done');},2400);});
+    vp.querySelector('.vp-big').addEventListener('click',play); pp.addEventListener('click',toggle); v.addEventListener('click',toggle);
+    mute.addEventListener('click',function(){v.muted=!v.muted;vp.classList.toggle('muted',v.muted);mute.setAttribute('aria-label',v.muted?'Turn sound on':'Mute');});
+    langB.addEventListener('click',function(){lang=lang==='en'?'es':'en';langB.textContent=lang==='en'?'Español':'English';load(true);});
+    function seek(e){var r=road.getBoundingClientRect(), x=e.clientX-r.left-CAR/2; v.currentTime=Math.max(0,Math.min(1,x/track()))*dur(); unArrive(); draw();}
+    road.addEventListener('pointerdown',function(e){drag=true;road.setPointerCapture(e.pointerId);seek(e);});
+    road.addEventListener('pointermove',function(e){if(drag)seek(e);});
+    road.addEventListener('pointerup',function(){drag=false;});
+    road.addEventListener('keydown',function(e){var k=e.key;
+      if(k==='ArrowRight'||k==='ArrowLeft'){v.currentTime=Math.max(0,Math.min(dur(),v.currentTime+(k==='ArrowRight'?2:-2)));unArrive();draw();e.preventDefault();}
+      else if(k==='Home'){v.currentTime=0;unArrive();draw();e.preventDefault();}
+      else if(k===' '||k==='Enter'){toggle();e.preventDefault();}});
+    tallQ.addEventListener('change',function(){if(tallQ.matches!==tall)load(true);});
+    addEventListener('resize',draw);
+    load(false); draw();
+  });
 })();
 </script>
-
 </main>
 <script>
 (function(){
@@ -154,7 +189,7 @@
 </script>
 <footer class="foot wrap">
 <div>© 2026 Carvessa · <a href="mailto:carvessa.app@gmail.com">carvessa.app@gmail.com</a></div>
-<div class="links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="mailto:carvessa.app@gmail.com">Contact</a></div>
+<div class="links"><a href="/partners/">For businesses</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="mailto:carvessa.app@gmail.com">Contact</a></div>
 </footer>
 </body>
 </html>
