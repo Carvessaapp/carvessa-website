@@ -251,3 +251,7 @@ html.opening #opening {
   .nav.open nav a:hover, .nav.open nav a:focus-visible { background: #F4F6FA; color: var(--blue); }
 }
 @media (max-width: 380px) { .navr { gap: 8px; } .navr .btn.small { padding: 0 12px; font-size: 14px; height: 40px; } .gx { display: none; } .gs { display: inline; } .menu { width: 40px; height: 40px; } .nav { gap: 10px; } }
+
+/* Logo letters drawn by CSS so search results read "Carvessa" (Nov 1, 2026). */
+[data-t]::before { content: attr(data-t); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
