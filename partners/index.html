@@ -64,7 +64,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&h.classList
 </div></section>
 <section class="wrap"><h2>Who we are</h2><p class="lead">A small, local team from Atlanta. We built Carvessa so buying and keeping a car feels simple and fair, for drivers and for the businesses that serve them.</p></section>
 <section id="partner" class="wrap"><div class="notify pform">
-<div><h2>Want to be one of our first partners?</h2><p>Tell us about your business. We’ll call you within 2 business days. Or email <a href="mailto:carvessa.app@gmail.com">carvessa.app@gmail.com</a>.</p><p class="fine">¿Prefiere español? Escríbanos y le llamamos en español.</p></div>
+<div><h2>Want to be one of our first partners?</h2><p>Tell us about your business. We’ll call you within 2 business days. Or email <a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.</p><p class="fine">¿Prefiere español? Escríbanos y le llamamos en español.</p></div>
 <form id="pform" novalidate>
 <div class="kchips" role="radiogroup" aria-label="Kind of business"><label class="kchip"><input type="radio" name="kind" value="Dealer" checked><span>Dealer</span></label><label class="kchip"><input type="radio" name="kind" value="Repair / tire shop"><span>Repair / tire shop</span></label><label class="kchip"><input type="radio" name="kind" value="Lender"><span>Lender</span></label><label class="kchip"><input type="radio" name="kind" value="Insurance"><span>Insurance</span></label><label class="kchip"><input type="radio" name="kind" value="Other"><span>Other</span></label></div>
 <label class="sr" for="pb">Business name</label><input id="pb" name="business" placeholder="Business name" required maxlength="120" autocomplete="organization">
@@ -137,14 +137,14 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&h.classList
     fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/feedback',{method:'POST',headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'},
       body:JSON.stringify({mood:'ok',message:text.slice(0,2000),screen:'website:/partners',platform:'web'})})
     .then(function(r){if(!r.ok)throw 0; f.reset(); msg.textContent='Thank you! We’ll call you within 2 business days.';})
-    .catch(function(){msg.innerHTML='Couldn’t send. Please email us at <a href="mailto:carvessa.app@gmail.com">carvessa.app@gmail.com</a>.';})
+    .catch(function(){msg.innerHTML='Couldn’t send. Please email us at <a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.';})
     .then(function(){btn.disabled=false;});
   });
 })();
 </script>
 <footer class="foot wrap">
-<div>© 2026 Carvessa · <a href="mailto:carvessa.app@gmail.com">carvessa.app@gmail.com</a></div>
-<div class="links"><a href="/partners/">For businesses</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="mailto:carvessa.app@gmail.com">Contact</a></div>
+<div>© 2026 Carvessa · <a href="mailto:hello@carvessa.app">hello@carvessa.app</a></div>
+<div class="links"><a href="/partners/">For businesses</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="mailto:hello@carvessa.app">Contact</a></div>
 </footer>
 </body>
 </html>
