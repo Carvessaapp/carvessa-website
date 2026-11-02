@@ -184,7 +184,7 @@ footer span{display:block;color:var(--muted);line-height:1.9}
 .join button{background:var(--page);color:var(--ink);border:0;border-radius:14px;padding:13px 20px;font-weight:800}
 .join .ok{width:100%;color:#fff}
 .social{display:flex;gap:8px;margin-top:12px}.social i{font-style:normal;width:34px;height:34px;border-radius:10px;background:var(--soft);display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--muted)}
-.legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;border-top:1px solid var(--line);padding-block:16px 30px;font-size:12.5px;color:var(--muted)}
+.legalbar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;border-top:1px solid var(--line);padding-block:16px 30px;font-size:12.5px;color:var(--muted)}
 
 /* entry motion */
 .rise{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}

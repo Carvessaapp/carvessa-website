@@ -1,0 +1,52 @@
+:root{--page:#F6F8FC;--ink:#10151B;--muted:#5B6575;--line:#E6E9EF;--soft:#F6F7FA;--link:#2167CF;--logo:#9A7535;
+--navbtn:#10151B;--navbtnInk:#FFFFFF;--buyA:#2167CF;--buyB:#123A78;--h2font:'Manrope',system-ui,sans-serif}
+header .wrap,footer.wrap,.legalbar.wrap{max-width:1440px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header a,footer a{text-decoration:none;color:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid var(--link);outline-offset:2px;border-radius:8px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--page);transition:background .4s}
+nav{display:flex;align-items:center;gap:6px;height:72px;position:relative}
+.logo{font-family:Michroma,sans-serif;font-size:19px;letter-spacing:.06em;display:flex;align-items:baseline;margin-right:18px;color:var(--ink)}
+.logo svg{width:.82em;height:.75em;margin:0 .07em 0 .1em;fill:var(--logo)}
+.logo em{font-style:normal;color:var(--logo)}
+.mi{position:relative}
+.mi>button{background:none;border:0;color:var(--ink);font-weight:700;font-size:14.5px;padding:10px 12px;border-radius:10px;display:flex;gap:4px;align-items:center}
+.mi>button:hover,.mi.open>button{background:var(--soft)}
+.mi>button span{font-size:10px;transition:transform .2s}
+.mi.open>button span{transform:rotate(180deg)}
+.mega{position:absolute;left:0;top:calc(100% + 8px);background:var(--page);border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 50px rgba(10,20,40,.18);padding:20px;display:none;gap:22px;min-width:640px;z-index:30}
+.mi.open .mega{display:grid;animation:drop .22s ease-out}
+@keyframes drop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.mega h4{margin:0 0 8px;font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.mega a{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:10px;font-weight:700;font-size:14px}
+.mega a:hover{background:var(--soft)}
+.mega a small{display:block;font-weight:600;color:var(--muted);font-size:12px}
+.mega .thumb{width:54px;height:32px;object-fit:contain}
+.mega .li{width:30px;height:30px;border-radius:9px;background:var(--soft);display:grid;place-items:center;flex:none;color:var(--link)}
+.mega .li.dash{background:#0E1116}
+.mega .promo{background:linear-gradient(160deg,var(--buyA),var(--buyB));border-radius:16px;padding:16px;color:#fff}
+.mega .promo b{display:block;font-size:17px;margin:4px 0}
+.mega .promo img{width:100%;margin-top:6px}
+.navsp{flex:1}
+.getapp{background:var(--navbtn);color:var(--navbtnInk);border:0;border-radius:12px;padding:12px 18px;font-weight:800;font-size:14.5px}
+.burger{display:none;background:none;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:800;color:var(--ink)}
+.mini{position:absolute;left:40px;right:40px;bottom:30px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+footer{border-top:1px solid var(--line);padding-block:30px;display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:20px;font-size:13.5px}
+footer b{display:block;margin-bottom:8px}
+footer span{display:block;color:var(--muted);line-height:1.9}
+.navl{font-weight:700;font-size:14.5px;padding:10px 12px;border-radius:10px}
+.navl:hover{background:var(--soft)}
+.legalbar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;border-top:1px solid var(--line);padding-block:16px 30px;font-size:12.5px;color:var(--muted)}
+.mini>*{min-width:0}
+footer{margin-top:40px}
+@media (max-width:980px){
+  .mi,.navl{display:none}.burger{display:block}
+  .getapp{padding:10px 14px;font-size:13.5px;white-space:nowrap}
+  .logo{font-size:16px;margin-right:auto}
+  nav.mobile{flex-wrap:wrap;height:auto;padding-block:14px}
+  nav.mobile .mi,nav.mobile .navl{display:block;width:100%;order:5}
+  nav.mobile .mega{position:static;min-width:0!important;box-shadow:none;margin-top:6px}
+  nav.mobile .mi.open .mega{display:grid;grid-template-columns:1fr!important}
+  nav.mobile .mega .promo{display:none}
+  footer{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion: reduce){.mi.open .mega{animation:none}}
