@@ -332,5 +332,6 @@ footer .soc:hover{color:var(--link)}
 .xp{display:flex;align-items:center;justify-content:center;gap:14px;font-size:24px}.xp div{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--link)}.xp span{font-size:11px;color:var(--muted);font-weight:800}.xp b{color:var(--link)}
 .xrv{background:#fff;border-radius:14px;padding:10px 12px;line-height:1.45;color:#2A3442}.xrv .st{color:#E0A100;font-size:15px;letter-spacing:1px}.xrv span{display:block;margin-top:4px;color:var(--muted);font-size:12px}
 .why{margin:0;font-size:13.5px;color:#2A3442!important;background:#F3FBF6;border-radius:12px;padding:10px 12px}.why b{color:#1E8E4F}
-@media (max-width:980px){.acct{grid-template-columns:1fr 1fr}}
-@media (max-width:560px){.acct{grid-template-columns:1fr}}
+@media (max-width:980px){.acct{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ac{min-width:0}.xchips{flex-wrap:wrap}.xr b{text-align:right}
+@media (max-width:560px){.acct{grid-template-columns:minmax(0,1fr)}.ac{padding:16px}}
