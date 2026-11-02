@@ -37,6 +37,8 @@ footer span{display:block;color:var(--muted);line-height:1.9}
 .navl:hover{background:var(--soft)}
 .legalbar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;border-top:1px solid var(--line);padding-block:16px 30px;font-size:12.5px;color:var(--muted)}
 .mini>*{min-width:0}
+footer .soc{display:inline-flex;align-items:center;gap:7px;margin-top:12px;font-weight:800;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+footer .soc:hover{color:var(--link)}
 footer{margin-top:40px}
 @media (max-width:980px){
   .mi,.navl{display:none}.burger{display:block}
