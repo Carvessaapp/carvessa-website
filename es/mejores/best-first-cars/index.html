@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F6F8FC">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "ItemList", "name": "Los mejores primeros carros", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "2022 Nissan Versa", "url": "https://carvessa.app/es/autos/nissan-versa/"}, {"@type": "ListItem", "position": 2, "name": "2022 Mitsubishi Mirage", "url": "https://carvessa.app/es/autos/mitsubishi-mirage/"}, {"@type": "ListItem", "position": 3, "name": "2022 Chevy Trax", "url": "https://carvessa.app/es/autos/chevy-trax/"}, {"@type": "ListItem", "position": 4, "name": "2022 Hyundai Elantra", "url": "https://carvessa.app/es/autos/hyundai-elantra/"}, {"@type": "ListItem", "position": 5, "name": "2022 Toyota Corolla Hybrid", "url": "https://carvessa.app/es/autos/toyota-corolla-hybrid/"}, {"@type": "ListItem", "position": 6, "name": "2022 Hyundai Kona", "url": "https://carvessa.app/es/autos/hyundai-kona/"}, {"@type": "ListItem", "position": 7, "name": "2022 Honda Civic", "url": "https://carvessa.app/es/autos/honda-civic/"}, {"@type": "ListItem", "position": 8, "name": "2022 Chevy Equinox", "url": "https://carvessa.app/es/autos/chevy-equinox/"}, {"@type": "ListItem", "position": 9, "name": "2026 Kia K4", "url": "https://carvessa.app/es/autos/kia-k4/"}, {"@type": "ListItem", "position": 10, "name": "2022 Toyota Camry", "url": "https://carvessa.app/es/autos/toyota-camry/"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Cuáles son los mejores primeros carros?", "acceptedAnswer": {"@type": "Answer", "text": "2022 Nissan Versa, 2022 Mitsubishi Mirage, 2022 Chevy Trax, 2022 Hyundai Elantra, 2022 Toyota Corolla Hybrid, 2022 Hyundai Kona. Baratos para comprar, asegurar y arreglar. Sedanes sencillos, hatchbacks y SUVs pequeñas, del más barato al más caro."}}]}]}</script>
-<link rel="stylesheet" href="/assets/home2.css?v=18313a6f">
+<link rel="stylesheet" href="/assets/home2.css?v=41e3cee6">
 <link rel="stylesheet" href="/assets/best.css?v=31181a55">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/best/best-first-cars/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/mejores/best-first-cars/">
 </head>
@@ -71,12 +71,12 @@
     <div><b>Legal</b><span><a href="/privacy/">Privacidad</a><br><a href="/terms/">Términos</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA</span><span>Precios y pagos son estimados, no ofertas. Datos de autos de NHTSA y EPA.</span></div></div>
 <script>(function(){
-  var items=[].slice.call(document.querySelectorAll('.mi'));
+  var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
   items.forEach(function(m){var b=m.firstElementChild;
     b.addEventListener('click',function(ev){var was=m.classList.contains('open');closeMenus();if(!was){m.classList.add('open');b.setAttribute('aria-expanded','true');}ev.stopPropagation();});
-    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
-    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches)closeMenus();});});
+    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
+    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);shut=setTimeout(closeMenus,350);}});});
   document.addEventListener('click',function(ev){if(!ev.target.closest('.mega'))closeMenus();});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeMenus();});
   var bu=document.getElementById('burger'),n=document.getElementById('nav');

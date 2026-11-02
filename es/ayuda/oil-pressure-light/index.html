@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F6F8FC">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Carvessa", "item": "https://carvessa.app/"}, {"@type": "ListItem", "position": 2, "name": "Ayuda", "item": "https://carvessa.app/es/ayuda/"}, {"@type": "ListItem", "position": 3, "name": "Luz de presión de aceite", "item": "https://carvessa.app/es/ayuda/oil-pressure-light/"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Qué significa la luz de presión de aceite?", "acceptedAnswer": {"@type": "Answer", "text": "Al motor no le llega suficiente aceite. Manejar así puede arruinarlo rápido."}}, {"@type": "Question", "name": "¿Es seguro manejar con la luz de presión de aceite prendida?", "acceptedAnswer": {"@type": "Answer", "text": "No. Oríllate en cuanto sea seguro, apaga el motor y sigue los pasos de abajo. Luz roja del aceite: estaciónate en cuanto sea seguro y apaga el motor. Manejar sin presión de aceite puede arruinar el motor en minutos."}}, {"@type": "Question", "name": "¿Qué hago si se prende la luz de presión de aceite?", "acceptedAnswer": {"@type": "Answer", "text": "Oríllate con cuidado y apaga el motor. Revisa el nivel de aceite con el motor frío. No manejes hasta que lo arreglen; pide una grúa si el aceite está lleno."}}]}]}</script>
-<link rel="stylesheet" href="/assets/home2.css?v=18313a6f">
+<link rel="stylesheet" href="/assets/home2.css?v=41e3cee6">
 <link rel="stylesheet" href="/assets/help.css?v=3fddc347">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/help/oil-pressure-light/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/ayuda/oil-pressure-light/">
 </head>
@@ -61,12 +61,12 @@
     <div><b>Legal</b><span><a href="/privacy/">Privacidad</a><br><a href="/terms/">Términos</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA</span><span>Precios y pagos son estimados, no ofertas. Datos de autos de NHTSA y EPA.</span></div></div>
 <script>(function(){
-  var items=[].slice.call(document.querySelectorAll('.mi'));
+  var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
   items.forEach(function(m){var b=m.firstElementChild;
     b.addEventListener('click',function(ev){var was=m.classList.contains('open');closeMenus();if(!was){m.classList.add('open');b.setAttribute('aria-expanded','true');}ev.stopPropagation();});
-    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
-    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches)closeMenus();});});
+    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
+    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);shut=setTimeout(closeMenus,350);}});});
   document.addEventListener('click',function(ev){if(!ev.target.closest('.mega'))closeMenus();});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeMenus();});
   var bu=document.getElementById('burger'),n=document.getElementById('nav');

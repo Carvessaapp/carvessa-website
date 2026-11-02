@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F6F8FC">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Carvessa", "item": "https://carvessa.app/"}, {"@type": "ListItem", "position": 2, "name": "Cars", "item": "https://carvessa.app/cars/"}, {"@type": "ListItem", "position": 3, "name": "Toyota Highlander", "item": "https://carvessa.app/cars/toyota-highlander/"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much is a used Toyota Highlander?", "acceptedAnswer": {"@type": "Answer", "text": "Carvessa estimates a used Toyota Highlander at about $44,500 for a 2025, $39,500 for a 2024, $36,000 for a 2023, $33,000 for a 2022. Prices change with miles, trim and where you live, so these are estimates."}}, {"@type": "Question", "name": "Which Toyota Highlander years are the best to buy?", "acceptedAnswer": {"@type": "Answer", "text": "2023–2026: Turbo 4-cylinder replaced the V6 on gas models. For more third-row room, look at the Grand Highlander. 2020–2022: Great used pick with a smooth V6 or Hybrid. 2015–2019: Older body. Cheaper, still very reliable."}}]}]}</script>
-<link rel="stylesheet" href="/assets/home2.css?v=18313a6f">
+<link rel="stylesheet" href="/assets/home2.css?v=41e3cee6">
 <link rel="stylesheet" href="/assets/cars.css?v=887fc55f">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/cars/toyota-highlander/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/autos/toyota-highlander/">
 </head>
@@ -82,12 +82,12 @@
     <div><b>Legal</b><span><a href="/privacy/">Privacy</a><br><a href="/terms/">Terms</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA</span><span>Prices and payments are estimates, not offers. Car data from NHTSA and EPA.</span></div></div>
 <script>(function(){
-  var items=[].slice.call(document.querySelectorAll('.mi'));
+  var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
   items.forEach(function(m){var b=m.firstElementChild;
     b.addEventListener('click',function(ev){var was=m.classList.contains('open');closeMenus();if(!was){m.classList.add('open');b.setAttribute('aria-expanded','true');}ev.stopPropagation();});
-    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
-    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches)closeMenus();});});
+    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
+    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);shut=setTimeout(closeMenus,350);}});});
   document.addEventListener('click',function(ev){if(!ev.target.closest('.mega'))closeMenus();});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeMenus();});
   var bu=document.getElementById('burger'),n=document.getElementById('nav');

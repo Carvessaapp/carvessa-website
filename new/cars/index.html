@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F6F8FC">
 
-<link rel="stylesheet" href="/assets/home2.css?v=18313a6f">
+<link rel="stylesheet" href="/assets/home2.css?v=41e3cee6">
 <link rel="stylesheet" href="/assets/cars.css?v=887fc55f">
 </head>
 <body><header><div class="wrap"><nav id="nav" aria-label="Main">
@@ -50,12 +50,12 @@
     <div><b>Legal</b><span><a href="/new/privacy/">Privacy</a><br><a href="/new/terms/">Terms</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA</span><span>Prices and payments are estimates, not offers. Car data from NHTSA and EPA.</span></div></div>
 <script>(function(){
-  var items=[].slice.call(document.querySelectorAll('.mi'));
+  var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
   items.forEach(function(m){var b=m.firstElementChild;
     b.addEventListener('click',function(ev){var was=m.classList.contains('open');closeMenus();if(!was){m.classList.add('open');b.setAttribute('aria-expanded','true');}ev.stopPropagation();});
-    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
-    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches)closeMenus();});});
+    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
+    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);shut=setTimeout(closeMenus,350);}});});
   document.addEventListener('click',function(ev){if(!ev.target.closest('.mega'))closeMenus();});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeMenus();});
   var bu=document.getElementById('burger'),n=document.getElementById('nav');

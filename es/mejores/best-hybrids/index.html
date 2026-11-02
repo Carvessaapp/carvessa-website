@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F6F8FC">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "ItemList", "name": "Los mejores carros híbridos", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "2022 Toyota Corolla Hybrid", "url": "https://carvessa.app/es/autos/toyota-corolla-hybrid/"}, {"@type": "ListItem", "position": 2, "name": "2022 Toyota Sienna", "url": "https://carvessa.app/es/autos/toyota-sienna/"}, {"@type": "ListItem", "position": 3, "name": "2022 Honda Accord", "url": "https://carvessa.app/es/autos/honda-accord/"}, {"@type": "ListItem", "position": 4, "name": "2022 Toyota RAV4", "url": "https://carvessa.app/es/autos/toyota-rav4/"}, {"@type": "ListItem", "position": 5, "name": "2022 Honda CR-V", "url": "https://carvessa.app/es/autos/honda-cr-v/"}, {"@type": "ListItem", "position": 6, "name": "2022 Toyota Camry", "url": "https://carvessa.app/es/autos/toyota-camry/"}, {"@type": "ListItem", "position": 7, "name": "2022 Ford Maverick", "url": "https://carvessa.app/es/autos/ford-maverick/"}, {"@type": "ListItem", "position": 8, "name": "2022 Toyota Highlander", "url": "https://carvessa.app/es/autos/toyota-highlander/"}, {"@type": "ListItem", "position": 9, "name": "2022 Lexus RX", "url": "https://carvessa.app/es/autos/lexus-rx/"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Cuáles son los mejores carros híbridos?", "acceptedAnswer": {"@type": "Answer", "text": "2022 Toyota Corolla Hybrid, 2022 Toyota Sienna, 2022 Honda Accord, 2022 Toyota RAV4, 2022 Honda CR-V, 2022 Toyota Camry. Todos los híbridos de nuestra guía, en un año usado típico, del que menos gasolina gasta al que más."}}]}]}</script>
-<link rel="stylesheet" href="/assets/home2.css?v=18313a6f">
+<link rel="stylesheet" href="/assets/home2.css?v=41e3cee6">
 <link rel="stylesheet" href="/assets/best.css?v=31181a55">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/best/best-hybrids/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/mejores/best-hybrids/">
 </head>
@@ -69,12 +69,12 @@
     <div><b>Legal</b><span><a href="/privacy/">Privacidad</a><br><a href="/terms/">Términos</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA</span><span>Precios y pagos son estimados, no ofertas. Datos de autos de NHTSA y EPA.</span></div></div>
 <script>(function(){
-  var items=[].slice.call(document.querySelectorAll('.mi'));
+  var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
   items.forEach(function(m){var b=m.firstElementChild;
     b.addEventListener('click',function(ev){var was=m.classList.contains('open');closeMenus();if(!was){m.classList.add('open');b.setAttribute('aria-expanded','true');}ev.stopPropagation();});
-    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
-    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches)closeMenus();});});
+    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
+    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);shut=setTimeout(closeMenus,350);}});});
   document.addEventListener('click',function(ev){if(!ev.target.closest('.mega'))closeMenus();});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeMenus();});
   var bu=document.getElementById('burger'),n=document.getElementById('nav');

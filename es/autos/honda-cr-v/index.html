@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F6F8FC">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Carvessa", "item": "https://carvessa.app/"}, {"@type": "ListItem", "position": 2, "name": "Autos", "item": "https://carvessa.app/es/autos/"}, {"@type": "ListItem", "position": 3, "name": "Honda CR-V", "item": "https://carvessa.app/es/autos/honda-cr-v/"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Cuánto cuesta un Honda CR-V usado?", "acceptedAnswer": {"@type": "Answer", "text": "Carvessa estima un Honda CR-V usado en unos $31,500 para un 2025, $31,500 para un 2024, $30,500 para un 2023, $27,500 para un 2022. Los precios cambian con las millas, la versión y dónde vives, así que son estimados."}}, {"@type": "Question", "name": "¿Qué años del Honda CR-V conviene comprar?", "acceptedAnswer": {"@type": "Answer", "text": "2023–2026: Carrocería más nueva, más amplia, más seguridad de serie. 2020–2022: Buen precio, Hybrid disponible, seguridad de serie. 2017–2019: Buena y más barata. Algunos dueños de 2017–2018 reportaron problemas de aceite con el motor turbo pequeño en clima frío; Honda ofreció un arreglo. Pregunta si se hizo. 2015–2016: Carrocería anterior. Más barata y sencilla por dentro."}}]}]}</script>
-<link rel="stylesheet" href="/assets/home2.css?v=18313a6f">
+<link rel="stylesheet" href="/assets/home2.css?v=41e3cee6">
 <link rel="stylesheet" href="/assets/cars.css?v=887fc55f">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/cars/honda-cr-v/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/autos/honda-cr-v/">
 </head>
@@ -82,12 +82,12 @@
     <div><b>Legal</b><span><a href="/privacy/">Privacidad</a><br><a href="/terms/">Términos</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA</span><span>Precios y pagos son estimados, no ofertas. Datos de autos de NHTSA y EPA.</span></div></div>
 <script>(function(){
-  var items=[].slice.call(document.querySelectorAll('.mi'));
+  var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
   items.forEach(function(m){var b=m.firstElementChild;
     b.addEventListener('click',function(ev){var was=m.classList.contains('open');closeMenus();if(!was){m.classList.add('open');b.setAttribute('aria-expanded','true');}ev.stopPropagation();});
-    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
-    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches)closeMenus();});});
+    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
+    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);shut=setTimeout(closeMenus,350);}});});
   document.addEventListener('click',function(ev){if(!ev.target.closest('.mega'))closeMenus();});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeMenus();});
   var bu=document.getElementById('burger'),n=document.getElementById('nav');

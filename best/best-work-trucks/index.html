@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F6F8FC">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "ItemList", "name": "Best trucks for work and side hustles", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "2022 Ford Maverick", "url": "https://carvessa.app/cars/ford-maverick/"}, {"@type": "ListItem", "position": 2, "name": "2022 Toyota Tacoma", "url": "https://carvessa.app/cars/toyota-tacoma/"}, {"@type": "ListItem", "position": 3, "name": "2022 Ford F-150", "url": "https://carvessa.app/cars/ford-f-150/"}, {"@type": "ListItem", "position": 4, "name": "2022 Chevy Silverado 1500", "url": "https://carvessa.app/cars/chevy-silverado-1500/"}, {"@type": "ListItem", "position": 5, "name": "2022 Ram 1500", "url": "https://carvessa.app/cars/ram-1500/"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What are the best trucks for work and side hustles?", "acceptedAnswer": {"@type": "Answer", "text": "2022 Ford Maverick, 2022 Toyota Tacoma, 2022 Ford F-150, 2022 Chevy Silverado 1500, 2022 Ram 1500. Trucks that haul and tow, from the small Maverick to full-size pickups."}}]}]}</script>
-<link rel="stylesheet" href="/assets/home2.css?v=18313a6f">
+<link rel="stylesheet" href="/assets/home2.css?v=41e3cee6">
 <link rel="stylesheet" href="/assets/best.css?v=31181a55">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/best/best-work-trucks/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/mejores/best-work-trucks/">
 </head>
@@ -61,12 +61,12 @@
     <div><b>Legal</b><span><a href="/privacy/">Privacy</a><br><a href="/terms/">Terms</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA</span><span>Prices and payments are estimates, not offers. Car data from NHTSA and EPA.</span></div></div>
 <script>(function(){
-  var items=[].slice.call(document.querySelectorAll('.mi'));
+  var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
   items.forEach(function(m){var b=m.firstElementChild;
     b.addEventListener('click',function(ev){var was=m.classList.contains('open');closeMenus();if(!was){m.classList.add('open');b.setAttribute('aria-expanded','true');}ev.stopPropagation();});
-    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
-    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches)closeMenus();});});
+    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
+    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);shut=setTimeout(closeMenus,350);}});});
   document.addEventListener('click',function(ev){if(!ev.target.closest('.mega'))closeMenus();});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeMenus();});
   var bu=document.getElementById('burger'),n=document.getElementById('nav');

@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F6F8FC">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Carvessa", "item": "https://carvessa.app/"}, {"@type": "ListItem", "position": 2, "name": "Cars", "item": "https://carvessa.app/cars/"}, {"@type": "ListItem", "position": 3, "name": "Mercedes-Benz GLE", "item": "https://carvessa.app/cars/mercedes-benz-gle/"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much is a used Mercedes-Benz GLE?", "acceptedAnswer": {"@type": "Answer", "text": "Carvessa estimates a used Mercedes-Benz GLE at about $58,500 for a 2025, $52,500 for a 2024, $47,500 for a 2023, $43,500 for a 2022. Prices change with miles, trim and where you live, so these are estimates."}}, {"@type": "Question", "name": "Which Mercedes-Benz GLE years are the best to buy?", "acceptedAnswer": {"@type": "Answer", "text": "2020–2026: Newer body and tech. Third row available. Budget for repairs after the warranty. 2016–2019: Older GLE, cheaper used, but repairs can cost a lot. Get an inspection."}}]}]}</script>
-<link rel="stylesheet" href="/assets/home2.css?v=18313a6f">
+<link rel="stylesheet" href="/assets/home2.css?v=41e3cee6">
 <link rel="stylesheet" href="/assets/cars.css?v=887fc55f">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/cars/mercedes-benz-gle/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/autos/mercedes-benz-gle/">
 </head>
@@ -82,12 +82,12 @@
     <div><b>Legal</b><span><a href="/privacy/">Privacy</a><br><a href="/terms/">Terms</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA</span><span>Prices and payments are estimates, not offers. Car data from NHTSA and EPA.</span></div></div>
 <script>(function(){
-  var items=[].slice.call(document.querySelectorAll('.mi'));
+  var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
   items.forEach(function(m){var b=m.firstElementChild;
     b.addEventListener('click',function(ev){var was=m.classList.contains('open');closeMenus();if(!was){m.classList.add('open');b.setAttribute('aria-expanded','true');}ev.stopPropagation();});
-    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
-    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches)closeMenus();});});
+    m.addEventListener('mouseenter',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);closeMenus();m.classList.add('open');b.setAttribute('aria-expanded','true');}});
+    m.addEventListener('mouseleave',function(){if(matchMedia('(hover: hover)').matches){clearTimeout(shut);shut=setTimeout(closeMenus,350);}});});
   document.addEventListener('click',function(ev){if(!ev.target.closest('.mega'))closeMenus();});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeMenus();});
   var bu=document.getElementById('burger'),n=document.getElementById('nav');
