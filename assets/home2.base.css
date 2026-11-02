@@ -233,3 +233,4 @@ footer span{display:block;color:var(--muted);line-height:1.9}
 
 footer .soc{display:inline-flex;align-items:center;gap:7px;margin-top:12px;font-weight:800;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
 footer .soc:hover{color:var(--link)}
+@media (max-width:370px){nav .logo{font-size:13px}nav{gap:3px}.getapp{padding:8px 9px;font-size:12px}.burger{padding:6px 8px}}

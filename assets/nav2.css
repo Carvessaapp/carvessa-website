@@ -51,4 +51,5 @@ footer{margin-top:40px}
   nav.mobile .mega .promo{display:none}
   footer{grid-template-columns:1fr 1fr}
 }
+@media (max-width:370px){nav .logo{font-size:13px}nav{gap:3px}.getapp{padding:8px 9px;font-size:12px}.burger{padding:6px 8px}}
 @media (prefers-reduced-motion: reduce){.mi.open .mega{animation:none}}

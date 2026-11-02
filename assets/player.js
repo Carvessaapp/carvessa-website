@@ -4,6 +4,8 @@ const VIDEOS=[
   {id:'es',title:'En español',short:'Español',sub:'Compradores · Español',src:'/assets/video/maya-wide-es.mp4',poster:'/assets/video/maya-poster.jpg',art:['#8FD9B0','#1C7C4A']},
   {id:'biz',title:'For businesses',short:'Business',sub:'Coming soon',soon:true,art:['#9CC0F7','#1F5FBF']},
 ];
+// Spanish pages: Spanish titles, and the Spanish video plays first.
+if(document.documentElement.lang==='es'){ Object.assign(VIDEOS[0],{title:'Carvessa en 30 segundos',short:'Inglés',sub:'Compradores · Inglés'}); Object.assign(VIDEOS[2],{title:'Para negocios',short:'Negocios',sub:'Muy pronto'}); }
 const fmt=s=>{s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const svg=(p,w=22)=>`<svg width="${w}" height="${w}" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
@@ -108,5 +110,5 @@ document.querySelectorAll('[data-ico]').forEach(e=>e.outerHTML=ICON[e.dataset.ic
     paint:f=>{ mapUpdate(mapBox,f); ring(root.querySelector('[data-ring="vol"]'),v.muted?0:P.vol/10,(v.muted?0:P.vol*10)+'%'); ring(root.querySelector('[data-ring="rate"]'),(P.ri+1)/RATES.length,rateText(RATES[P.ri]));
       const n=VIDEOS[P.nextIdx()]; root.querySelector('[data-next-title]').textContent=n.title; root.querySelector('[data-next-art]').style.backgroundImage=`url(${n.poster})`; }});
   ambient(v,(r,g,b)=>{ const m=Math.max(r,g,b)||1, k=Math.min(1.7,210/m); root.style.setProperty('--glow',`rgb(${Math.min(255,r*k)|0},${Math.min(255,g*k)|0},${Math.min(255,b*k)|0})`); });
-  clock(root); P.load(0);
+  clock(root); P.load(document.documentElement.lang==='es'?1:0);
 })();
