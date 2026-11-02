@@ -16,6 +16,7 @@
 <meta name="theme-color" content="#F6F8FC">
 <link rel="stylesheet" href="/assets/site.css?v=05e20319">
 <link rel="stylesheet" href="/assets/nav2.css?v=5c7988d7">
+<link rel="stylesheet" href="/assets/player.css?v=73688307">
 </head>
 <body>
 <header><div class="wrap"><nav id="nav" aria-label="Main">
@@ -43,23 +44,34 @@
 <div class="cta"><a class="btn" href="#partner">Become a partner →</a><a class="btn ghost" href="#video">See how it works</a></div>
 <div class="facts"><div class="fact"><b>Free</b><span>for drivers, always</span></div><div class="fact"><b>English + Español</b><span>the whole app</span></div><div class="fact"><b>iPhone + Android</b><span>coming soon</span></div><div class="fact"><b>Every state</b><span>made in Atlanta</span></div><div class="fact"><b>First month</b><span>free for Atlanta partners</span></div></div>
 </section>
-<section id="video" class="wrap">
-<div class="rowhead"><h2>See how it works · 30 seconds</h2></div>
-<div class="vp">
-<div class="vp-screen"><video playsinline preload="metadata" poster="/assets/video/maya-poster.jpg"></video>
-<button type="button" class="vp-big" aria-label="Play the video"><svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="i-again" viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg></button></div>
-<div class="vp-bar">
-<button type="button" class="vp-pp" aria-label="Play"><svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
-<div class="vp-road" role="slider" tabindex="0" aria-label="Video progress" aria-valuemin="0" aria-valuemax="29" aria-valuenow="0" aria-valuetext="0:00">
-<div class="vp-asphalt"><div class="vp-trail"></div></div>
-<svg class="vp-house" viewBox="0 0 48 46" aria-hidden="true"><path d="M4 22L24 4l20 18" fill="#C2261C"/><rect x="8" y="20" width="32" height="24" fill="#FFF4DC"/><rect class="vp-win" x="12" y="25" width="9" height="8" rx="1" fill="#9CC0F7"/><rect x="26" y="28" width="10" height="16" fill="#86652B"/><rect class="vp-door" x="26" y="28" width="10" height="16" fill="#5E4520"/><circle cx="34" cy="37" r="1" fill="#E0B640"/></svg>
-<div class="vp-car" aria-hidden="true"><svg viewBox="0 0 170 70"><g class="vp-head"><circle cx="80" cy="24" r="10" fill="#8D5A3B"/><circle cx="73" cy="17" r="6" fill="#24150D"/><circle cx="82" cy="13" r="7" fill="#24150D"/><circle cx="90" cy="18" r="6" fill="#24150D"/></g><path d="M8 54h120a10 10 0 0 0 10-10v-8l-20-6-16-20H52L32 30H10v14a10 10 0 0 0 8 10z" fill="#1F5FBF"/><path d="M56 14h44l12 16H44z" fill="#BFDDF5" opacity=".55"/><circle cx="40" cy="54" r="12" fill="#0F1A2A"/><circle cx="110" cy="54" r="12" fill="#0F1A2A"/><circle cx="40" cy="54" r="5" fill="#C3CCD8"/><circle cx="110" cy="54" r="5" fill="#C3CCD8"/></svg></div>
-<div class="vp-walker" aria-hidden="true"><svg viewBox="0 0 20 40"><circle cx="10" cy="5" r="5" fill="#24150D"/><circle cx="6" cy="7" r="3.5" fill="#24150D"/><circle cx="14" cy="7" r="3.5" fill="#24150D"/><circle cx="10" cy="9" r="4.5" fill="#8D5A3B"/><path d="M4 15q6 -3 12 0v12H4z" fill="#E0A82E"/><g class="vp-legs"><rect class="l1" x="6" y="26" width="3.5" height="12" rx="1.5" fill="#3B4A66"/><rect class="l2" x="10.5" y="26" width="3.5" height="12" rx="1.5" fill="#3B4A66"/></g></svg></div>
+<section id="video" class="wrap"><div class="rowhead"><h2>See how it works · 30 seconds</h2></div><div class="v3 off-state" data-player>
+  <i class="bg"></i>
+  <div class="halo" aria-hidden="true"></div>
+  <div class="cockpit">
+    <button class="start reveal" data-start aria-label="Engine start: turn the screen on and play" style="--d:.3s"><span>ENGINE</span><b>START</b><span>STOP</span><i></i></button>
+    <div data-vbox>
+      <div class="off"><span>CARVESSA</span></div>
+      <div class="hint reveal" style="--d:.6s">Press START to play ▸</div>
+      <div class="bootv" aria-hidden="true"><div><svg viewBox="0 0 100 92"><defs><linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3DDB4"/><stop offset="1" stop-color="#A9844F"/></linearGradient></defs><polygon points="0,0 27,0 52,70 40,92" fill="url(#vg)"/><polygon points="100,0 73,0 48,70 60,92" fill="url(#vg)"/></svg><div>CARVESSA</div></div></div>
+      <div class="ui">
+        <div class="top"><span data-clock></span><span class="brand">CAR<b>V</b>ESSA</span><span class="r"><span>72°</span><span class="sig"></span></span></div>
+        <div class="vid"><video playsinline preload="metadata"></video>
+          <div class="ov"><button data-act="toggle" data-icon="toggle"></button><div class="seek" data-act="seek" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" tabindex="0"><i></i></div><span class="t-num"><span data-cur>0:00</span> / <span data-dur>0:00</span></span><button data-act="mute" aria-label="Sound on or off"></button><button data-full aria-label="Full screen"><span data-ico="full"></span></button></div>
+        </div>
+        <div class="side">
+          <div class="c route"><small>ROUTE</small><div data-map style="position:absolute;inset:0"></div><b data-left>0:00 left</b></div>
+          <button class="c next" data-nextcard aria-label="Play the next video"><small>NEXT UP</small><div class="art" data-next-art></div><b data-next-title></b><span class="go"><span data-ico="play"></span></span></button>
+        </div>
+        <div class="modes" data-chap></div>
+        <div class="dials">
+          <div class="dial"><button data-act="knob" data-k="vol" data-d="-1" aria-label="Volume down">‹</button><div><div class="ring" data-ring="vol"></div><small>VOLUME</small></div><button data-act="knob" data-k="vol" data-d="1" aria-label="Volume up">›</button></div>
+          <div class="dial"><button data-act="knob" data-k="rate" data-d="-1" aria-label="Slower">‹</button><div><div class="ring" data-ring="rate"></div><small>SPEED</small></div><button data-act="knob" data-k="rate" data-d="1" aria-label="Faster">›</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<span class="vp-time">0:00</span>
-<button type="button" class="vp-mute" aria-label="Mute"><svg class="i-on" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8a5 5 0 0 1 0 8M18.5 5.5a8.5 8.5 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-off" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-<button type="button" class="vp-lang">Español</button>
-</div></div></section>
+</section>
 <section class="wrap"><h2>Who we work with</h2><p class="lead">Every paid spot is labeled “Sponsored” or “Partner”. Our fair-price check is the same for everyone.</p><div class="whos"><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16h14M4 16l2-6h12l2 6v3H4zM7 19v1M17 19v1"/><circle cx="8" cy="16" r="1"/><circle cx="16" cy="16" r="1"/></svg></div><h3>Car dealers</h3><p class="sm">Used and new, sales and service.</p><ul><li>Shoppers who already know their monthly budget</li><li>Honest prices get a “Looks fair” tag</li><li>Service: recall and warning-light visits</li><li>First month free, then a small fee per ready buyer (planned)</li></ul></div><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.4-.4-2.6z"/></svg></div><h3>Repair &amp; tire shops</h3><p class="sm">When a light comes on, drivers find you.</p><ul><li>Your shop at the top of “Find a shop near me”, labeled</li><li>Your offer, in your words</li><li>Never inside safety steps</li><li>First month free, then a small fee per customer (planned)</li></ul></div><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></div><h3>Credit unions &amp; lenders</h3><p class="sm">Fair car loans. Credit unions first.</p><ul><li>Shoppers who already know their monthly payment</li><li>Your rates shown honestly, with a “Partner” label</li><li>We never take loan applications ourselves</li><li>Referral per funded loan (planned)</li></ul></div><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div><h3>Insurance</h3><p class="sm">The full cost before they buy.</p><ul><li>Quotes where people check what a car costs to own</li><li>Clear “Partner” label</li><li>Only when the driver asks</li><li>Referral per quote (planned)</li></ul></div></div></section>
 <section class="wrap"><h2>How it works</h2><div class="steps3">
 <div class="card step"><span class="n">1</span><h3>Drivers plan in Carvessa</h3><p>Budget, monthly payment, kind of car, or a warning light that just came on.</p></div>
@@ -156,6 +168,7 @@
     <div><b>Carvessa</b><span><a href="/new/#about">About us</a><br><a href="/new/partners/">For businesses</a><br><a href="/new/#faq">FAQ</a><br><a href="mailto:hello@carvessa.app">Contact</a></span></div>
     <div><b>Legal</b><span><a href="/new/privacy/">Privacy</a><br><a href="/new/terms/">Terms</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA</span><span>Prices and payments are estimates, not offers. Car data from NHTSA and EPA.</span></div></div>
+<script src="/assets/player.js?v=73688307"></script>
 <script>(function(){
   var items=[].slice.call(document.querySelectorAll('.mi'));
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}

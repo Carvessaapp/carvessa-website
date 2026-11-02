@@ -1,0 +1,113 @@
+/* Car-screen player (picture 158 V3 Ignition), from design/look-v2/player-lab. */
+.v3 video{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+.v3 button{font:inherit;cursor:pointer;color:inherit}
+/* While the truck carries it, only the screen shows; the rest of the player fades in once it lands. */
+.bg{position:absolute;inset:0;z-index:-1;border-radius:inherit;transition:opacity .6s ease}
+.reveal{transition:opacity .55s ease var(--d,.15s),transform .55s ease var(--d,.15s)}
+.carry .bg{opacity:0;transition:none}
+.carry .reveal{opacity:0;transform:translateY(8px);transition:none}
+.carry [data-vbox]{box-shadow:0 0 0 7px #0B0D10,0 0 0 8px #2E333C,0 12px 24px -10px rgba(0,0,0,.6)!important}
+.carry{pointer-events:none}
+.t-num{font-variant-numeric:tabular-nums}
+.bigplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;border:0;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;color:#fff;transition:opacity .2s}
+.playing .bigplay{opacity:0;pointer-events:none}
+.soon{opacity:.45;cursor:not-allowed}
+@media (max-width:759px){.bigplay{width:58px;height:58px}}
+
+/* Shared buttons */
+.ib{width:44px;height:44px;border-radius:12px;border:0;background:transparent;color:#C9D2DE;display:grid;place-items:center}
+.ib.on{color:#6FA8FF;background:rgba(111,168,255,.13)}
+.knob{display:flex;align-items:center}
+.knob button{width:32px;height:40px;border:0;background:transparent;color:#6FA8FF;font-size:20px;font-weight:800}
+.knob span{min-width:62px;text-align:center}
+.knob small{display:block;font-size:9.5px;letter-spacing:1.4px;color:#93A0B5;font-weight:800}
+.knob b{font-size:19px;font-variant-numeric:tabular-nums}
+
+
+/* Version 3 · Ignition: the screen arrives switched off. Press ENGINE START: the gold V lights up, the screen boots, the
+   video plays. The glow around the screen follows the video's colors. */
+.v3{position:relative;isolation:isolate;padding:26px 26px 30px;border-radius:32px;color:#EEF2F8}
+.v3>.bg{background:radial-gradient(120% 80% at 50% 0%,#2E333B 0%,#15171B 55%,#0B0C0F 100%);box-shadow:0 34px 70px -30px rgba(0,0,0,.8)}
+.v3 .halo{position:absolute;left:12%;right:12%;top:18%;bottom:18%;border-radius:40px;background:var(--glow,#1F5FBF);filter:blur(60px);opacity:0;transition:opacity 1s,background .8s;z-index:-1}
+.v3.on.playing .halo{opacity:.5}
+.carry .halo{opacity:0!important}
+.v3 .cockpit{display:flex;align-items:flex-end;gap:22px}
+.v3 [data-vbox]{position:relative;flex:1;min-width:0;aspect-ratio:1.95/1;border-radius:26px;overflow:hidden;background:#030405;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 0 0 2px #000,0 0 0 3px #343943}
+.v3 [data-vbox]:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,0) 30%);z-index:9}
+.v3 .off{position:absolute;inset:0;display:grid;place-items:center;transition:opacity .5s;z-index:2}
+.v3 .off span{font-size:12px;letter-spacing:4px;font-weight:800;color:rgba(255,255,255,.22)}
+.v3.on .off,.v3.boot .off{opacity:0;pointer-events:none}
+.v3 .bootv{position:absolute;inset:0;display:grid;place-items:center;z-index:3;opacity:0;pointer-events:none}
+.v3.boot .bootv{animation:boot 1.6s ease forwards}
+.v3 .bootv svg{width:90px;height:83px;filter:drop-shadow(0 0 18px rgba(205,179,139,.8))}
+.v3 .bootv div{margin-top:12px;font-size:13px;letter-spacing:7px;font-weight:800;color:#CDB38B;text-align:center}
+@keyframes boot{0%{opacity:0;transform:scale(.8)}25%{opacity:1;transform:scale(1)}75%{opacity:1}100%{opacity:0;transform:scale(1.06)}}
+.v3 .ui{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1fr) 250px;grid-template-rows:34px minmax(0,1fr) 62px;gap:10px;padding:12px 14px;opacity:0;transition:opacity .6s;z-index:4}
+.v3.on .ui{opacity:1}
+.v3 .top{grid-column:1/3;display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:13px;color:#C9D2DE;padding:0 4px}
+.v3 .top .brand{font-family:Michroma,Manrope,sans-serif;letter-spacing:4px;font-size:11px;color:#fff}.v3 .top .brand b{color:#CDB38B;font-weight:400}
+.v3 .top .r{display:flex;gap:8px;align-items:center}
+.v3 .vid{position:relative;border-radius:16px;overflow:hidden;background:#000;min-height:0}
+.v3 .vid video{width:100%;height:100%}
+.v3 .ov{position:absolute;left:0;right:0;bottom:0;padding:24px 12px 10px;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.75));transition:opacity .3s}
+.v3.playing.idle .ov{opacity:0}
+.v3 .ov button{width:38px;height:38px;border-radius:12px;border:0;background:rgba(255,255,255,.14);display:grid;place-items:center;flex:0 0 auto}
+.v3 .seek{flex:1;height:6px;border-radius:4px;background:rgba(255,255,255,.18);position:relative;cursor:pointer}
+.v3 .seek:before{content:'';position:absolute;inset:-12px 0}
+.v3 .seek i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,#CDB38B,var(--glow,#7FB2FF));box-shadow:0 0 12px var(--glow,#7FB2FF)}
+.v3 .ov .t-num{font-size:12px;color:#C9D2DE;white-space:nowrap}
+.v3 .side{display:grid;grid-template-rows:1fr 1fr;gap:10px;min-height:0}
+.v3 .c{position:relative;border-radius:16px;overflow:hidden;background:#141922;border:0;padding:0;text-align:left;color:#fff;min-height:0}
+.v3 .c small{position:absolute;left:10px;top:9px;font-size:10px;letter-spacing:1.8px;font-weight:800;color:#C9D2DE;z-index:2;background:rgba(10,14,20,.7);padding:3px 7px;border-radius:999px}
+.v3 .c .map{position:absolute;inset:0;width:100%;height:100%}
+.v3 .c b{position:absolute;left:10px;bottom:9px;z-index:2;font-size:14px;background:rgba(10,14,20,.75);padding:4px 9px;border-radius:10px}
+.v3 .c.next .art{position:absolute;inset:0;background:#0B0E13 center/cover}
+.v3 .c.next .art:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.65))}
+.v3 .c.next .go{position:absolute;right:10px;bottom:9px;z-index:2;width:30px;height:30px;border-radius:50%;background:#fff;color:#0F1A2A;display:grid;place-items:center}
+.v3 .modes{display:flex;gap:6px;align-items:stretch;min-width:0;overflow-x:auto;scrollbar-width:none}
+.v3 .modes button{flex:1;border:1px solid rgba(255,255,255,.08);background:#141922;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:800;font-size:12.5px;color:#C9D2DE;white-space:nowrap;padding:0 10px}
+.v3 .modes button.on{background:linear-gradient(180deg,rgba(205,179,139,.25),rgba(205,179,139,.08));border-color:rgba(205,179,139,.6);color:#fff}
+.v3 .dials{display:flex;gap:8px;justify-content:space-between}
+.dial{flex:1;display:flex;align-items:center;justify-content:space-between;background:#141922;border-radius:14px;padding:0 4px;border:1px solid rgba(255,255,255,.08)}
+.dial button{width:28px;height:40px;border:0;background:transparent;color:#CDB38B;font-size:20px;font-weight:800}
+.dial .ring{position:relative;width:46px;height:46px}
+.dial .ring svg{position:absolute;inset:0}
+.dial .ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:11.5px;font-variant-numeric:tabular-nums}
+.dial small{display:block;font-size:8.5px;letter-spacing:1.4px;color:#93A0B5;font-weight:800;text-align:center;margin-top:-2px}
+.v3 .start{flex:0 0 auto;width:96px;height:96px;border-radius:50%;border:0;padding:0;background:radial-gradient(circle at 50% 35%,#3A3F48,#15181D 70%);box-shadow:0 0 0 5px #20242B,0 0 0 7px #4A505A,0 10px 24px -6px rgba(0,0,0,.8);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#C9D2DE;margin-bottom:6px}
+.v3 .start span{font-size:8.5px;letter-spacing:2px;font-weight:800}
+.v3 .start b{font-size:15px;letter-spacing:1px;color:#CDB38B;margin:3px 0}
+.v3 .start i{display:block;width:26px;height:3px;border-radius:2px;background:#5A4A2E;margin-top:4px;transition:background .3s,box-shadow .3s}
+.v3.off-state .start{animation:pulse 1.6s ease-in-out infinite}
+.v3.off-state .start i{background:#CDB38B;box-shadow:0 0 10px #CDB38B}
+.v3.on.playing .start i{background:#1F9D55;box-shadow:0 0 10px #1F9D55}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 5px #20242B,0 0 0 7px #4A505A,0 0 0 0 rgba(205,179,139,.0)}50%{box-shadow:0 0 0 5px #20242B,0 0 0 7px #CDB38B,0 0 26px 6px rgba(205,179,139,.55)}}
+.v3 .hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:12px;font-weight:800;color:#CDB38B;letter-spacing:1px;z-index:2;white-space:nowrap}
+.v3.on .hint,.v3.boot .hint{display:none}
+@media (prefers-reduced-motion:reduce){.v3.off-state .start{animation:none}.v3.boot .bootv{animation-duration:.01s}}
+@media (max-width:759px){
+ .v3{padding:12px 10px 18px;border-radius:24px;margin:0 -16px}
+ .v3 .cockpit{flex-direction:column-reverse;align-items:center;gap:14px}
+ .v3 [data-vbox]{flex:0 0 auto;width:100%;aspect-ratio:auto;height:536px;border-radius:22px}
+ .v3 .ui{grid-template-columns:1fr 1fr;grid-template-rows:28px auto 132px 52px auto;padding:10px}
+ .v3 .top{grid-column:1/3}
+ .v3 .vid{grid-column:1/3;aspect-ratio:16/9}
+ .v3 .side{grid-column:1/3;grid-template-rows:1fr;grid-template-columns:1fr 1fr}
+ .v3 .modes{grid-column:1/3}
+ .v3 .dials{grid-column:1/3;flex-wrap:wrap}
+ .dial{min-height:58px}
+ .v3 .start{width:76px;height:76px;margin:0}
+ .v3 .start b{font-size:12.5px}
+}
+
+/* Compact: beside the "Did you know?" card on the home page (same height as the card). */
+.v3.compact{padding:16px 16px 18px;border-radius:28px;height:100%;display:flex;flex-direction:column;margin:0}
+.v3.compact .cockpit{flex-direction:column-reverse;align-items:stretch;gap:12px;flex:1}
+.v3.compact [data-vbox]{aspect-ratio:auto;flex:0 0 auto;min-height:0;width:auto;height:auto}
+.v3.compact .ui{position:relative;inset:auto;grid-template-columns:1fr;grid-template-rows:30px auto 46px;padding:10px 12px}
+.v3.compact .top{grid-column:1}.v3.compact .vid{grid-column:1;aspect-ratio:16/9}.v3.compact .modes{grid-column:1}
+.v3.compact .side,.v3.compact .dials{display:none}
+.v3.compact .start{width:66px;height:66px;align-self:center;margin:0}
+.v3.compact .start b{font-size:11.5px;margin:2px 0}.v3.compact .start span{font-size:7.5px}
+@media (max-width:759px){.v3.compact{margin:0}}
+.pl-credit{font-size:11px;color:var(--muted);margin-top:8px}
