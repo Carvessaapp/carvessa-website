@@ -31,6 +31,7 @@ nav{display:flex;align-items:center;gap:6px;height:72px;position:relative}
 .logo{font-family:Michroma,sans-serif;font-size:19px;letter-spacing:.06em;display:flex;align-items:baseline;margin-right:18px;color:var(--ink)}
 .logo svg{width:.82em;height:.75em;margin:0 .07em 0 .1em;fill:var(--logo)}
 .logo em{font-style:normal;color:var(--logo)}
+.logo .tm{font-family:Manrope,system-ui,sans-serif;font-size:.42em;font-weight:700;letter-spacing:0;color:var(--logo);align-self:flex-start;margin:.1em 0 0 .12em;line-height:1}
 .mi{position:relative}
 .mi>button{background:none;border:0;color:var(--ink);font-weight:700;font-size:14.5px;padding:10px 12px;border-radius:10px;display:flex;gap:4px;align-items:center}
 .mi>button:hover,.mi.open>button{background:var(--soft)}
