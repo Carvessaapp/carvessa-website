@@ -96,7 +96,7 @@
 <label class="sr" for="pb">Business name</label><input id="pb" name="business" placeholder="Business name" required maxlength="120" autocomplete="organization">
 <label class="sr" for="pn">Your name</label><input id="pn" name="name" placeholder="Your name" required maxlength="80" autocomplete="name">
 <label class="sr" for="pp">Phone</label><input id="pp" name="phone" type="tel" placeholder="Phone" required maxlength="30" autocomplete="tel">
-<label class="sr" for="pe">Email (optional)</label><input id="pe" name="email" type="email" placeholder="Email (optional)" maxlength="254" autocomplete="email">
+<label class="sr" for="pe">Business email</label><input id="pe" name="email" type="email" placeholder="Business email" required maxlength="254" autocomplete="email">
 <label class="sr" for="pt">Anything we should know? (optional)</label><textarea id="pt" name="note" rows="3" maxlength="800" placeholder="Anything we should know? (optional)"></textarea>
 <input class="hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
 <button type="submit">Send →</button>
@@ -156,9 +156,10 @@
   f.addEventListener('submit',function(ev){
     ev.preventDefault(); if(f.company.value) return;
     var b=f.business.value.trim(), n=f.name.value.trim(), ph=f.phone.value.trim();
-    if(!b||!n||ph.replace(/\D/g,'').length<7){msg.textContent='Please add your business name, your name and a phone number.';return;}
+    var em=f.email.value.trim();
+    if(!b||!n||ph.replace(/\D/g,'').length<7||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){msg.textContent='Please add your business name, your name, a phone number and your business email.';return;}
     var kind=(f.querySelector('input[name=kind]:checked')||{value:'Other'}).value;
-    var text='[Partner lead] kind='+kind+' | business='+b+' | name='+n+' | phone='+ph+' | email='+f.email.value.trim()+' | note='+f.note.value.trim().replace(/\s+/g,' ');
+    var text='[Partner lead] kind='+kind+' | business='+b+' | name='+n+' | phone='+ph+' | email='+em+' | note='+f.note.value.trim().replace(/\s+/g,' ');
     var btn=f.querySelector('button'); btn.disabled=true; msg.textContent='Sending…';
     fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/feedback',{method:'POST',headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'},
       body:JSON.stringify({mood:'ok',message:text.slice(0,2000),screen:'website:/partners',platform:'web'})})
