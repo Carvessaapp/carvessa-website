@@ -19,7 +19,7 @@
 .pin{background:#fff;color:var(--ink);border-radius:20px;padding:16px;margin-top:14px}
 .pbig{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .pbig b{font-size:34px;letter-spacing:-1px;font-variant-numeric:tabular-nums}
-.pbig span{font-weight:800;color:#1E8E4F;font-variant-numeric:tabular-nums}
+.pbig span{font-weight:800;color:#167443;font-variant-numeric:tabular-nums}
 .plab{font-size:12.5px;color:var(--muted)}
 .fb{margin-top:40px;position:relative}
 .fb .tr{display:flex;gap:3px;height:12px}.fb .tr i{display:block}
@@ -42,12 +42,12 @@
 .box p{margin:0 0 8px;color:#2A3442;font-size:15px}
 .box ul{margin:0;padding-left:18px}.box li{font-size:14.5px;margin:6px 0;color:#2A3442}
 .whys{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.whys div{background:#F3FBF6;border-radius:14px;padding:12px}.whys b{display:block;color:#1E8E4F;font-size:14.5px}.whys span{font-size:13.5px;color:#2A3442}
+.whys div{background:#F3FBF6;border-radius:14px;padding:12px}.whys b{display:block;color:#167443;font-size:14.5px}.whys span{font-size:13.5px;color:#2A3442}
 .gs{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.gs span{border-radius:99px;padding:6px 11px;font-weight:800;font-size:13px}
-.gs .g{background:#E3F4EA;color:#1E8E4F}.gs .s{background:#FBE6E4;color:#B3412F}
+.gs .g{background:#E3F4EA;color:#167443}.gs .s{background:#FBE6E4;color:#B3412F}
 .trim{display:flex;justify-content:space-between;gap:10px;border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;margin-top:8px;font-size:14px}
-.trim.best{border-color:#1E8E4F;background:#F3FBF6}.trim em{font-style:normal;font-size:12px;font-weight:800;color:#1E8E4F;white-space:nowrap}
-.yrs div{border-left:4px solid #1E8E4F;padding:4px 0 4px 12px;margin:8px 0;font-size:14.5px}.yrs div.note{border-color:#A15F00}.yrs b{display:block}
+.trim.best{border-color:#167443;background:#F3FBF6}.trim em{font-style:normal;font-size:12px;font-weight:800;color:#167443;white-space:nowrap}
+.yrs div{border-left:4px solid #167443;padding:4px 0 4px 12px;margin:8px 0;font-size:14.5px}.yrs div.note{border-color:#A15F00}.yrs b{display:block}
 .help{margin-top:18px;border-radius:24px;background:linear-gradient(120deg,#E8704F,#B9452B);color:#fff;padding:20px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
 .help b{font-size:19px}.help span{opacity:.9;font-size:14px;display:block}
 .help a{background:#fff;color:#8E331F;border-radius:12px;padding:10px 16px;font-weight:800;text-decoration:none}

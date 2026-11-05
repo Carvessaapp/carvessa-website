@@ -1,8 +1,8 @@
 /* carvessa.app · Clean white look (Oct 18, 2026): picture 100 = mix of 99 B (budget first) and 99 C (app showcase). */
-@font-face { font-family: Manrope; font-weight: 500; font-display: swap; src: url(fonts/Manrope_500Medium.ttf); }
-@font-face { font-family: Manrope; font-weight: 700; font-display: swap; src: url(fonts/Manrope_700Bold.ttf); }
-@font-face { font-family: Manrope; font-weight: 800; font-display: swap; src: url(fonts/Manrope_800ExtraBold.ttf); }
-@font-face { font-family: Michroma; font-display: swap; src: url(fonts/Michroma_400Regular.ttf); }
+@font-face { font-family: Manrope; font-weight: 500; font-display: swap; src: url(fonts/manrope-latin-500-normal.woff2) format("woff2"), url(fonts/Manrope_500Medium.ttf) format("truetype"); }
+@font-face { font-family: Manrope; font-weight: 700; font-display: swap; src: url(fonts/manrope-latin-700-normal.woff2) format("woff2"), url(fonts/Manrope_700Bold.ttf) format("truetype"); }
+@font-face { font-family: Manrope; font-weight: 800; font-display: swap; src: url(fonts/manrope-latin-800-normal.woff2) format("woff2"), url(fonts/Manrope_800ExtraBold.ttf) format("truetype"); }
+@font-face { font-family: Michroma; font-display: swap; src: url(fonts/michroma-latin-400-normal.woff2) format("woff2"), url(fonts/Michroma_400Regular.ttf) format("truetype"); }
 
 :root { --ink: #0F1A2A; --page: #F4F6FA; --card: #FFFFFF; --blue: #1F5FBF; --fill: #E3ECFA; --muted: #556274; --soft: #7A8597;
   --green: #1C6B40; --greenbg: #E3F1E8; --red: #B3412F; --gold: #86652B; --shadow: 0 10px 28px -18px rgba(15,26,42,.35); }

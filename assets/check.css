@@ -24,10 +24,10 @@
 .ckcar .pic img{height:84px;width:auto;max-width:95%;object-fit:contain}
 .ckcar h2{font-size:24px!important;margin:0!important}
 .vtag{display:inline-block;border-radius:99px;padding:5px 12px;font-weight:800;font-size:13px;margin-top:6px}
-.vtag.ok{background:#E3F4EA;color:#1E8E4F}.vtag.bad{background:#FBE6E4;color:#B3412F}.vtag.low{background:#FFF1D6;color:#8A5200}
+.vtag.ok{background:#E3F4EA;color:#167443}.vtag.bad{background:#FBE6E4;color:#B3412F}.vtag.low{background:#FFF1D6;color:#8A5200}
 .verd{border-radius:18px;padding:16px;margin-top:4px}
 .verd.fair{background:#E9F7EF}.verd.high{background:#FCEBE8}.verd.low{background:#FFF4DF}
-.verd b{font-size:20px;display:block}.verd.fair b{color:#1E8E4F}.verd.high b{color:#B3412F}.verd.low b{color:#8A5200}
+.verd b{font-size:20px;display:block}.verd.fair b{color:#167443}.verd.high b{color:#B3412F}.verd.low b{color:#8A5200}
 .verd p{margin:4px 0 0!important}
 .ckbar{position:relative;margin:44px 4px 4px}
 .ckbar .tr{display:flex;height:12px;border-radius:99px;overflow:hidden}.ckbar .tr i{display:block}

@@ -1,7 +1,7 @@
 
 .bhead h1{font-size:clamp(28px,3.8vw,44px);letter-spacing:-1.1px;margin:18px 0 8px;line-height:1.08;text-wrap:balance}
 .bhead p{color:var(--muted);font-size:17px;max-width:66ch;margin:0}
-.bhow{display:inline-flex;gap:8px;align-items:center;margin-top:14px;font-weight:800;font-size:13px;color:#1E8E4F;background:#E3F4EA;border-radius:99px;padding:7px 12px}
+.bhow{display:inline-flex;gap:8px;align-items:center;margin-top:14px;font-weight:800;font-size:13px;color:#167443;background:#E3F4EA;border-radius:99px;padding:7px 12px}
 .blist{display:grid;gap:14px;margin-top:22px}
 .bcard{display:grid;grid-template-columns:54px 220px minmax(0,1fr) auto;gap:18px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:24px;padding:14px 20px 14px 14px;text-decoration:none;color:var(--ink);transition:transform .2s,box-shadow .2s}
 .bcard:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(16,30,60,.08)}
@@ -11,9 +11,9 @@
 .bname{font-size:20px;font-weight:800;letter-spacing:-.3px}
 .btags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .btags span{background:var(--soft);border-radius:8px;padding:4px 9px;font-size:12.5px;font-weight:700}
-.btags span.g{background:#E3F4EA;color:#1E8E4F}
+.btags span.g{background:#E3F4EA;color:#167443}
 .bprice{text-align:right}.bprice b{display:block;font-size:22px;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
-.bprice span{display:block;font-size:13px;font-weight:800;color:#1E8E4F}.bprice small{display:block;font-size:12px;color:var(--muted)}
+.bprice span{display:block;font-size:13px;font-weight:800;color:#167443}.bprice small{display:block;font-size:12px;color:var(--muted)}
 .bprice em{font-style:normal;display:inline-block;margin-top:6px;font-weight:800;font-size:13px;color:var(--link)}
 .bother{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
 .bother a{display:block;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;text-decoration:none;color:var(--ink);font-weight:800}
