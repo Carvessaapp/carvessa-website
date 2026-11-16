@@ -3,7 +3,13 @@
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WHGCXCPZ9L"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WHGCXCPZ9L',{allow_google_signals:false,allow_ad_personalization_signals:false});</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WHGCXCPZ9L',{allow_google_signals:false,allow_ad_personalization_signals:false});
+// Count what matters (Nov 16, 2026): taps that move people toward a car or a partnership. No personal info is sent.
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a)return;var h=a.getAttribute('href')||'';
+if(/^\/(es\/te-quedan|fit)\//.test(h))gtag('event','see_cars_that_fit',{from:location.pathname});
+else if(/^\/(es\/negocios|partners)\/?(#|$)/.test(h))gtag('event','open_business_page',{from:location.pathname});
+else if(/^\/(es\/autos|cars)\/[^\/]+\/$/.test(h))gtag('event','open_car_guide',{from:location.pathname,guide:h});
+else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:location.pathname});},true);</script>
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -316,7 +322,7 @@
     b.disabled=true; m.textContent='Saving…'; m.className='';
     fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/waitlist', {method:'POST', headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({email:email, source:'website'})})
       .then(function(r){
-        if (r.status===201) { m.textContent='You’re on the list! We’ll email you on launch day.'; m.className='good'; f.email.value=''; }
+        if (r.status===201) { if(window.gtag)gtag('event','sign_up',{method:'waitlist',page:location.pathname}); m.textContent='You’re on the list! We’ll email you on launch day.'; m.className='good'; f.email.value=''; }
         else if (r.status===409) { m.textContent='You’re already on the list. Thank you!'; m.className='good'; }
         else { m.textContent='That didn’t work. Check your email and try again.'; m.className='bad'; }
       }).catch(function(){ m.textContent='Can’t reach Carvessa right now. Please try again.'; m.className='bad'; })

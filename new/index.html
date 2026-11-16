@@ -309,7 +309,7 @@
     b.disabled=true; m.textContent='Saving…'; m.className='';
     fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/waitlist', {method:'POST', headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({email:email, source:'website'})})
       .then(function(r){
-        if (r.status===201) { m.textContent='You’re on the list! We’ll email you on launch day.'; m.className='good'; f.email.value=''; }
+        if (r.status===201) { if(window.gtag)gtag('event','sign_up',{method:'waitlist',page:location.pathname}); m.textContent='You’re on the list! We’ll email you on launch day.'; m.className='good'; f.email.value=''; }
         else if (r.status===409) { m.textContent='You’re already on the list. Thank you!'; m.className='good'; }
         else { m.textContent='That didn’t work. Check your email and try again.'; m.className='bad'; }
       }).catch(function(){ m.textContent='Can’t reach Carvessa right now. Please try again.'; m.className='bad'; })
