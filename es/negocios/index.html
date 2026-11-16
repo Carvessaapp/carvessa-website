@@ -23,7 +23,7 @@
 <link rel="preload" href="/assets/fonts/manrope-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css?v=8538187e">
 <link rel="stylesheet" href="/assets/nav2.css?v=dfa556e5">
-<link rel="stylesheet" href="/assets/player.css?v=9b798d30">
+
 <link rel="alternate" hreflang="en" href="https://carvessa.app/partners/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/negocios/">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Carvessa", "item": "https://carvessa.app/es/"}, {"@type": "ListItem", "position": 2, "name": "Para negocios", "item": "https://carvessa.app/es/negocios/"}]}, {"@type": "WebPage", "@id": "https://carvessa.app/es/negocios/", "url": "https://carvessa.app/es/negocios/", "name": "Para negocios", "inLanguage": "es", "isPartOf": {"@type": "WebSite", "name": "Carvessa", "url": "https://carvessa.app/"}, "description": "Concesionarios, talleres y llanteras, cooperativas de crédito y aseguradoras en Atlanta: conoce conductores que ya saben cuánto pueden pagar."}]}</script>
 </head>
@@ -45,129 +45,225 @@
   <a class="getapp" href="/es/#join">Acceso anticipado</a>
   <button type="button" class="burger" id="burger" aria-expanded="false">Menú</button>
 </nav></div></header>
-<main>
-<section class="wrap phero">
-<div class="kick">Para concesionarios, talleres, prestamistas y aseguradoras · Atlanta</div>
-<h1>Conoce conductores que ya saben cuánto pueden pagar.</h1>
-<p class="lead">Carvessa es una app gratis que ayuda a los conductores a encontrar un carro que de verdad puedan pagar, revisar que el precio sea justo y recibir ayuda cuando se prende una luz de advertencia, en español e inglés. Luego los enviamos a buenos negocios locales.</p>
-<div class="cta"><a class="btn" href="#partner">Hazte socio →</a><a class="btn ghost" href="#video">Mira cómo funciona</a></div>
-<div class="facts"><div class="fact"><b>Gratis</b><span>para conductores, siempre</span></div><div class="fact"><b>Español + English</b><span>toda la app</span></div><div class="fact"><b>iPhone + Android</b><span>muy pronto</span></div><div class="fact"><b>Todos los estados</b><span>hecho en Atlanta</span></div><div class="fact"><b>Primer mes</b><span>gratis para socios de Atlanta</span></div></div>
+<main class="pt">
+<style>
+.pt{--b:#1F5FBF;--bs:#E3ECFA;--g:#1F6E4E;--gs:#E3F2EA;--gd:#86652B;--gds:#F3E7D0;--ln:#E3E8F0;--mu:#5B6575;--cd:#fff}
+.pt .w{max-width:1120px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-left,0px))}
+.pt .k{font-size:12px;letter-spacing:2.2px;font-weight:800;color:var(--gd)}
+.pt h1{font-size:clamp(34px,4.6vw,56px);line-height:1.03;letter-spacing:-1.6px;margin:10px 0 12px;text-wrap:balance;max-width:20ch}
+.pt .lead{font-size:18px;line-height:1.55;color:var(--mu);margin:0 0 18px;max-width:58ch}
+.pt .offer{display:inline-flex;gap:8px;align-items:center;background:var(--gds);color:var(--gd);border-radius:99px;padding:7px 13px;font-weight:800;font-size:13.5px;margin-bottom:14px}
+.pt .btns{display:flex;flex-wrap:wrap;gap:10px;margin:2px 0 18px}
+.pt .cta{display:inline-flex;align-items:center;gap:8px;background:var(--b);color:#fff;text-decoration:none;font-weight:800;border-radius:99px;padding:13px 20px;font-size:15px;border:0;cursor:pointer;font-family:inherit}
+.pt .cta.alt{background:var(--cd);color:inherit;border:1.5px solid var(--ln)}
+.pt .proof{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 0 22px;border-bottom:1px solid var(--ln);margin-bottom:26px}
+.pt .proof span{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:14px}.pt .proof svg,.pt .gets svg,.pt .rpt li svg{color:var(--g);flex:none}
+.pt .story{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:48px;align-items:start;scroll-margin-top:90px}
+.pt .ptabs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pt .ptab{font:inherit;text-align:left;background:var(--cd);color:inherit;border:1.5px solid var(--ln);border-radius:18px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:center;position:relative;overflow:hidden}
+.pt .ptab .ic,.pt .pc .ic{width:38px;height:38px;border-radius:12px;background:var(--bs);color:var(--b);display:flex;align-items:center;justify-content:center;flex:none}
+.pt .ptab b{display:block;font-size:15px}.pt .ptab small{display:block;color:var(--mu);font-size:12.5px;margin-top:1px}
+.pt .ptab[aria-selected="true"]{border-color:var(--b);box-shadow:0 6px 18px rgba(31,95,191,.14)}
+.pt .ptab .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--b);width:0}
+.pt .gets{margin-top:16px;background:var(--cd);border:1px solid var(--ln);border-radius:20px;padding:16px 18px}
+.pt .gets h3{margin:0 0 8px;font-size:15px}.pt .gets ul{margin:0;padding:0;list-style:none;display:grid;gap:7px}.pt .gets li{display:flex;gap:9px;font-size:14.5px;line-height:1.45}.pt .gets li svg{margin-top:3px}
+.pt .ctl{display:none;gap:8px;align-items:center;margin-top:12px;color:var(--mu);font-size:13px}
+.pt .ctl button,.pt .copy{font:inherit;font-weight:800;font-size:13px;background:var(--cd);color:inherit;border:1px solid var(--ln);border-radius:99px;padding:8px 13px;cursor:pointer}
+.pt .steplist{display:grid;gap:14px;margin-top:18px}
+.pt .sc{background:var(--cd);border:1.5px solid var(--ln);border-radius:20px;padding:18px 20px;min-height:32vh;display:flex;flex-direction:column;justify-content:center;transition:border-color .3s,box-shadow .3s,opacity .3s;opacity:.55}
+.pt .sc.on{opacity:1;border-color:var(--b);box-shadow:0 8px 24px rgba(31,95,191,.12)}
+.pt .sc .n{width:30px;height:30px;border-radius:50%;background:var(--bs);color:var(--b);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.pt .sc h3{margin:10px 0 4px;font-size:20px;letter-spacing:-.3px}.pt .sc p{margin:0;color:var(--mu);font-size:15.5px;line-height:1.55;max-width:52ch}
+.pt .pl{display:inline-block;margin-top:8px;font-size:11.5px;font-weight:800;color:var(--gd);background:var(--gds);border-radius:99px;padding:3px 9px;align-self:flex-start}
+.pt .endcta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0 0}.pt .copied{font-size:13px;color:var(--g);font-weight:800}
+.pt .pw{position:sticky;top:90px;justify-self:center}.pt .glow{position:absolute;inset:40px 0;background:radial-gradient(closest-side,rgba(31,95,191,.25),transparent);filter:blur(20px)}
+.pt .phone{position:relative;width:330px;height:680px;border-radius:48px;background:#0E1116;padding:12px;box-shadow:0 30px 60px rgba(15,27,51,.28)}
+.pt .screen{position:relative;width:100%;height:100%;border-radius:38px;background:#F4F6FA;overflow:hidden;color:#10151B;cursor:pointer}
+.pt .notch{position:absolute;top:10px;left:50%;width:96px;height:26px;margin-left:-48px;border-radius:99px;background:#0E1116;z-index:9}
+.pt .sbar{position:absolute;top:0;left:0;right:0;height:46px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font-size:12.5px;font-weight:800;z-index:8}
+.pt .step{position:absolute;inset:46px 0 0;padding:10px 16px 16px;opacity:0;transform:translateX(30px);transition:opacity .45s,transform .55s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.pt .step.on{opacity:1;transform:none}.pt .step.past{opacity:0;transform:translateX(-30px)}
+.pt .cap{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(16,21,27,.88);color:#fff;border-radius:16px;padding:10px 12px;font-size:12.5px;line-height:1.4;z-index:7}.pt .cap b{color:#FFD691}
+.pt .dots{position:absolute;top:52px;left:0;right:0;display:flex;justify-content:center;gap:5px;z-index:8}.pt .dots i{width:6px;height:6px;border-radius:9px;background:#C9D2E0;transition:width .3s}.pt .dots i.on{width:18px;background:#1F5FBF}
+.pt .tapdot{position:absolute;width:34px;height:34px;border-radius:50%;background:rgba(31,95,191,.25);border:2px solid rgba(31,95,191,.6);z-index:6;opacity:0;pointer-events:none}.pt .tapdot.go{animation:pttap 1s ease-out}
+@keyframes pttap{0%{opacity:0;transform:scale(.5)}30%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+.pt .top{display:flex;align-items:center;gap:8px;margin:14px 0 10px}.pt .top .bk{width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,.08)}.pt .top b{font-size:16px}
+.pt .t2{font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.15;margin:16px 0 4px}.pt .sm{font-size:12px;color:#5B6575;line-height:1.4}
+.pt .c{background:#fff;border-radius:18px;padding:12px;box-shadow:0 2px 10px rgba(15,27,51,.06);margin-top:10px}
+.pt .row{display:flex;align-items:center;gap:10px}.pt .sb{justify-content:space-between}
+.pt .pill{display:inline-block;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:800}.pt .pb{background:#E3ECFA;color:#1F5FBF}.pt .pg{background:#E3F2EA;color:#1F6E4E}.pt .pgo{background:#F3E7D0;color:#6E5020}
+.pt .chipr{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.pt .chipr span{background:#fff;border:1.5px solid #E1E6EE;border-radius:99px;padding:7px 11px;font-size:12.5px;font-weight:800}.pt .chipr span.on{background:#E3ECFA;border-color:#1F5FBF;color:#1F5FBF}
+.pt .pbtn{text-align:center;background:#1F5FBF;color:#fff;border-radius:99px;padding:11px;font-weight:800;font-size:13.5px;margin-top:12px}.pt .pbtn2{text-align:center;background:#E3ECFA;color:#1F5FBF;border-radius:99px;padding:10px;font-weight:800;font-size:13px;margin-top:8px}
+.pt .bub{max-width:82%;border-radius:16px;padding:9px 11px;font-size:12.5px;line-height:1.4;margin-top:8px;background:#fff;box-shadow:0 2px 8px rgba(15,27,51,.06)}.pt .bub.me{margin-left:auto;background:#E3ECFA;color:#123A78}
+.pt .band{border-radius:18px;background:linear-gradient(180deg,#E3ECFA,#F4F6FA);height:118px;display:flex;align-items:flex-end;justify-content:center;margin-top:6px}.pt .band img{width:78%;margin-bottom:6px;filter:drop-shadow(0 12px 10px rgba(0,0,0,.18))}
+.pt .big{font-size:24px;font-weight:800;letter-spacing:-.6px}
+.pt .line{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed #E3E8F0}.pt .line:last-child{border:0;font-weight:800}.pt .line.dk{border-color:#2A3242}
+.pt .thumb{width:58px;height:40px;border-radius:10px;background:#EEF2F8;display:flex;align-items:center;justify-content:center;flex:none}.pt .thumb img{width:90%}
+.pt .shop{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #EEF1F6}.pt .shop:last-child{border:0}.pt .shop .mk{width:34px;height:34px;border-radius:10px;background:#EEF1F6;display:flex;align-items:center;justify-content:center;flex:none;color:#5B6575;font-size:18px}
+.pt .spon{border:1.5px solid #E6D3A9;background:#FFFBF2;border-radius:16px;padding:10px 12px;margin-top:10px}
+.pt .push{background:rgba(255,255,255,.96);border-radius:18px;padding:10px 12px;box-shadow:0 10px 30px rgba(15,27,51,.18);display:flex;gap:10px;align-items:flex-start;margin-top:8px;color:#10151B}
+.pt .push .ap{width:34px;height:34px;border-radius:9px;background:#0E1116;color:#CDB38B;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;font-size:15px}
+.pt .lock{position:absolute;inset:0;background:linear-gradient(160deg,#1F3B6B,#0E1A33);padding:70px 14px 14px;color:#fff}.pt .lock .time{text-align:center;font-size:54px;font-weight:700;letter-spacing:-2px}.pt .lock .date{text-align:center;font-size:13px;opacity:.8;margin-bottom:22px}
+.pt .biz{background:#10151B;color:#fff;border-radius:18px;padding:12px;margin-top:10px}.pt .biz .pill{background:#FFD691;color:#10151B}
+.pt .field{background:#fff;border:1.5px solid #E1E6EE;border-radius:12px;padding:8px 10px;margin-top:8px;font-size:12.5px}.pt .field small{display:block;font-size:10.5px;color:#5B6575}
+.pt .okc{color:#1F6E4E;font-weight:800}
+.pt .sec{margin-top:60px;scroll-margin-top:90px}.pt .sec h2{font-size:clamp(26px,3vw,36px);letter-spacing:-.9px;margin:0 0 6px;text-wrap:balance}.pt .sub2{color:var(--mu);margin:0 0 18px;line-height:1.55;max-width:65ch;font-size:16px}
+.pt .why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.pt .why div{background:var(--cd);border:1.5px solid var(--ln);border-radius:20px;padding:18px}
+.pt .why b{display:block;font-size:34px;letter-spacing:-1px;color:var(--b)}.pt .why p{margin:6px 0 8px;line-height:1.5;font-size:15px}.pt .why a{font-size:12.5px;color:var(--mu)}.pt .why .us{background:var(--bs);border-color:var(--bs)}.pt .why .us b{font-size:20px;color:inherit;letter-spacing:-.3px}
+.pt .price{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.pt .pc{background:var(--cd);border:1.5px solid var(--ln);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.pt .pc h3{margin:4px 0 0;font-size:16px}.pt .amt2{font-size:22px;font-weight:800;letter-spacing:-.5px}.pt .amt2 small{font-size:13px;color:var(--mu);font-weight:700}
+.pt .pc ul{margin:0;padding:0;list-style:none;display:grid;gap:5px;font-size:13.5px;color:var(--mu)}.pt .pc li::before{content:"✓ ";color:var(--g);font-weight:800}.pt .pc .pl{margin-top:auto}
+.pt .allfree{margin-top:12px;background:var(--gs);color:var(--g);border-radius:16px;padding:12px 16px;font-weight:700;font-size:14.5px;line-height:1.5}
+.pt .calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}.pt .box{background:var(--cd);border:1.5px solid var(--ln);border-radius:20px;padding:20px}
+.pt .calc label{display:flex;justify-content:space-between;font-weight:800;font-size:14px;margin-top:16px}.pt .calc label:first-child{margin-top:0}.pt .calc label b{color:var(--b);font-variant-numeric:tabular-nums}
+.pt .calc input[type=range]{width:100%;accent-color:#1F5FBF;margin-top:8px}
+.pt .res{display:grid;gap:10px}.pt .res .r{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-bottom:1px dashed var(--ln);padding-bottom:8px}.pt .res .r span{color:var(--mu);font-size:14px}.pt .res .r b{font-size:22px;letter-spacing:-.5px;font-variant-numeric:tabular-nums;white-space:nowrap}.pt .res .us b{color:var(--g)}
+.pt .fine2{font-size:12.5px;color:var(--mu);line-height:1.5;margin:6px 0 0}
+.pt .rpt{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:center}.pt .rpt ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}.pt .rpt li{display:flex;gap:10px;font-size:15px;line-height:1.5}.pt .rpt li svg{margin-top:3px}
+.pt .rep{background:var(--cd);border:1.5px solid var(--ln);border-radius:22px;padding:20px;box-shadow:0 10px 30px rgba(15,27,51,.08)}.pt .rep .rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.pt .rep .rh span{font-size:12px;color:var(--mu)}
+.pt .kp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pt .kp div{background:#F4F6FA;border-radius:14px;padding:12px}.pt .kp small{display:block;font-size:12px;color:var(--mu)}.pt .kp b{font-size:26px}
+.pt .bars{display:flex;gap:6px;align-items:flex-end;height:60px;margin-top:14px}.pt .bars i{flex:1;border-radius:6px 6px 0 0;background:var(--bs)}
+.pt .faq{display:grid;gap:10px}.pt .faq details{background:var(--cd);border:1.5px solid var(--ln);border-radius:16px;padding:14px 18px}
+.pt .faq summary{font-weight:800;font-size:15.5px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px}.pt .faq summary::-webkit-details-marker{display:none}.pt .faq summary::after{content:"+";color:var(--b);font-size:20px;line-height:1}.pt .faq details[open] summary::after{content:"–"}
+.pt .faq p{margin:10px 0 0;color:var(--mu);line-height:1.55;font-size:15px;max-width:70ch}
+.pt .join{margin:60px auto 40px;background:var(--bs);border-radius:28px;padding:30px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:30px;scroll-margin-top:90px}
+.pt .join h2{font-size:30px;letter-spacing:-.8px;margin:6px 0 8px;line-height:1.1}.pt .join p{color:var(--mu);line-height:1.55;margin:0 0 10px}
+.pt .docs{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.pt .docs a{display:inline-flex;gap:6px;align-items:center;background:var(--cd);border:1.5px solid var(--ln);border-radius:99px;padding:9px 13px;font-weight:800;font-size:13.5px;color:inherit;text-decoration:none}
+.pt .kchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.pt .kchip input{position:absolute;opacity:0;pointer-events:none}.pt .kchip span{display:inline-block;font-weight:800;font-size:13px;border-radius:99px;padding:8px 13px;border:1.5px solid var(--ln);background:var(--cd);cursor:pointer}
+.pt .kchip input:checked+span{border-color:var(--b);color:var(--b)}.pt .kchip input:focus-visible+span{outline:3px solid #FFC861}.pt .kchip.flash span{animation:ptfl 1.2s ease-out}@keyframes ptfl{0%{box-shadow:0 0 0 0 rgba(31,95,191,.5)}100%{box-shadow:0 0 0 14px rgba(31,95,191,0)}}
+.pt #pform input:not([type=radio]),.pt #pform textarea{width:100%;font:inherit;font-size:15px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--ln);background:var(--cd);color:inherit;margin-bottom:10px;box-sizing:border-box}
+.pt #pform .hp{position:absolute;left:-9999px;width:1px;height:1px}.pt #pform button[type=submit]{width:100%;justify-content:center}.pt #pmsg{font-weight:800;color:var(--g);min-height:1em}
+.pt .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pt button:focus-visible,.pt a:focus-visible,.pt summary:focus-visible{outline:3px solid #FFC861;outline-offset:2px}
+@media (max-width:960px){.pt .price{grid-template-columns:repeat(2,minmax(0,1fr))}.pt .why{grid-template-columns:1fr}}
+@media (max-width:860px){.pt .story{grid-template-columns:1fr;gap:20px}.pt .pw{position:relative;top:auto;order:-1}.pt .steplist{display:none}.pt .ctl{display:flex}.pt .calc,.pt .rpt,.pt .join{grid-template-columns:1fr}.pt .join{padding:22px}}
+@media (max-width:480px){.pt .ptabs,.pt .price{grid-template-columns:1fr}.pt .phone{zoom:.9}}
+@media (max-width:370px){.pt .phone{zoom:.8}}
+@media (prefers-reduced-motion:reduce){.pt *{animation:none!important;transition:none!important}}
+</style>
+<section class="w" style="padding-top:28px">
+  <div class="k">PARA NEGOCIOS · ATLANTA</div>
+  <h1>Conozca conductores justo cuando le necesitan.</h1>
+  <p class="lead">Carvessa ayuda a la gente a planear un carro que puedan pagar y a resolver lo que falla, en español e inglés. Vea paso a paso cómo un conductor encuentra su negocio.</p>
+  <div><span class="offer">★ Socios fundadores en Atlanta: primer mes gratis, sin contrato</span></div>
+  <div class="btns"><a class="cta" href="#partner" id="heroCta">Hágase socio →</a><a class="cta alt" href="#story" id="howBtn">Vea cómo funciona</a></div>
+  <div class="proof"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Gratis para conductores, siempre</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>English y Español</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Primero en Atlanta</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Datos de seguridad de NHTSA</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Cada espacio pagado está marcado</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>La misma revisión de precio justo para todos</span></div>
 </section>
-<section id="video" class="wrap"><div class="rowhead"><h2>Mira cómo funciona · 30 segundos</h2></div><div class="v3 off-state" data-player>
-  <i class="bg"></i>
-  <div class="halo" aria-hidden="true"></div>
-  <div class="cockpit">
-    <button class="start reveal" data-start aria-label="Encender: prende la pantalla y reproduce" style="--d:.3s"><span>ENGINE</span><b>START</b><span>STOP</span><i></i></button>
-    <div data-vbox>
-      <div class="off"><span>CARVESSA</span></div>
-      <div class="hint reveal" style="--d:.6s">Presiona START para ver ▸</div>
-      <div class="bootv" aria-hidden="true"><div><svg viewBox="0 0 100 92"><defs><linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3DDB4"/><stop offset="1" stop-color="#A9844F"/></linearGradient></defs><polygon points="0,0 27,0 52,70 40,92" fill="url(#vg)"/><polygon points="100,0 73,0 48,70 60,92" fill="url(#vg)"/></svg><div>CARVESSA</div></div></div>
-      <div class="ui">
-        <div class="top"><span data-clock></span><span class="brand">CAR<b>V</b>ESSA</span><span class="r"><span>72°</span><span class="sig"></span></span></div>
-        <div class="vid"><video playsinline preload="none"></video>
-          <div class="ov"><button data-act="toggle" data-icon="toggle"></button><div class="seek" data-act="seek" role="slider" aria-label="Buscar" aria-valuemin="0" aria-valuemax="100" tabindex="0"><i></i></div><span class="t-num"><span data-cur>0:00</span> / <span data-dur>0:00</span></span><button data-act="mute" aria-label="Sonido sí o no"></button><button data-full aria-label="Pantalla completa"><span data-ico="full"></span></button></div>
-        </div>
-        <div class="side">
-          <div class="c route"><small>RUTA</small><div data-map style="position:absolute;inset:0"></div><b data-left>0:00 left</b></div>
-          <button class="c next" data-nextcard aria-label="Ver el siguiente video"><small>SIGUE</small><div class="art" data-next-art></div><b data-next-title></b><span class="go"><span data-ico="play"></span></span></button>
-        </div>
-        <div class="modes" data-chap></div>
-        <div class="dials">
-          <div class="dial"><button data-act="knob" data-k="vol" data-d="-1" aria-label="Bajar volumen">‹</button><div><div class="ring" data-ring="vol"></div><small>VOLUMEN</small></div><button data-act="knob" data-k="vol" data-d="1" aria-label="Subir volumen">›</button></div>
-          <div class="dial"><button data-act="knob" data-k="rate" data-d="-1" aria-label="Más lento">‹</button><div><div class="ring" data-ring="rate"></div><small>VELOCIDAD</small></div><button data-act="knob" data-k="rate" data-d="1" aria-label="Más rápido">›</button></div>
-        </div>
-      </div>
-    </div>
+<section class="w story" id="story">
+  <div>
+    <div class="ptabs" role="tablist" aria-label="Tipo de negocio" id="ptabs"><button class="ptab" type="button" role="tab" data-i="0"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 16h14M6 16l1.5-5h9L18 16M5 16v3h2v-2M19 16v3h-2v-2M7.5 11 9 7h6l1.5 4"/></svg></span><span><b>Concesionarios</b><small>Usados y nuevos, ventas y servicio</small></span><span class="bar"></span></button><button class="ptab" type="button" role="tab" data-i="1"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span><span><b>Cooperativas y prestamistas</b><small>Préstamos justos, primero las cooperativas</small></span><span class="bar"></span></button><button class="ptab" type="button" role="tab" data-i="2"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span><b>Seguros</b><small>El costo completo antes de comprar</small></span><span class="bar"></span></button><button class="ptab" type="button" role="tab" data-i="3"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 1-2-2Z"/></svg></span><span><b>Talleres y llanteras</b><small>Cuando se prende una luz, le encuentran</small></span><span class="bar"></span></button></div>
+    <div class="gets" id="pgets" aria-live="polite"></div>
+    <div class="ctl"><button type="button" id="ppause">❚❚ Pausa</button><span id="pstep"></span></div>
+    <div class="steplist" id="psteps"></div>
+    <div class="endcta"><a class="cta" href="#partner" id="storyCta">Hágase socio →</a><button class="copy" type="button" id="pcopy">Copiar enlace de esta historia</button><span class="copied" id="pcopied" aria-live="polite"></span></div>
   </div>
-</div>
+  <div class="pw"><div class="glow" aria-hidden="true"></div>
+    <div class="phone"><div class="screen" id="pscreen" role="img" aria-label="Ejemplo de la app Carvessa"><div class="notch"></div><div class="sbar"><span>9:41</span><span>●●● ▮</span></div><div class="dots" id="pdots"></div><div class="tapdot" id="ptap"></div><div id="pscr"></div><div class="cap" id="pcap"></div></div></div>
+    <p class="fine2" style="text-align:center;max-width:330px">Pantallas de ejemplo. Los nombres de negocios son inventados.</p>
+  </div>
 </section>
-<section class="wrap"><h2>Con quién trabajamos</h2><p class="lead">Cada espacio pagado dice “Patrocinado” o “Socio”. Nuestra revisión de precio justo es igual para todos.</p><div class="whos"><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16h14M4 16l2-6h12l2 6v3H4zM7 19v1M17 19v1"/><circle cx="8" cy="16" r="1"/><circle cx="16" cy="16" r="1"/></svg></div><h3>Concesionarios</h3><p class="sm">Usados y nuevos, ventas y servicio.</p><ul><li>Compradores que ya saben su presupuesto mensual</li><li>Los precios honestos llevan la etiqueta “Precio justo”</li><li>Servicio: visitas por llamados a revisión y luces de advertencia</li><li>Primer mes gratis, luego un pequeño cargo por comprador listo (planeado)</li></ul></div><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.4-.4-2.6z"/></svg></div><h3>Talleres y llanteras</h3><p class="sm">Cuando se prende una luz, los conductores te encuentran.</p><ul><li>Tu taller arriba en “Buscar un taller cerca”, marcado</li><li>Tu oferta, con tus palabras</li><li>Nunca dentro de los pasos de seguridad</li><li>Primer mes gratis, luego un pequeño cargo por cliente (planeado)</li></ul></div><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></div><h3>Cooperativas de crédito y prestamistas</h3><p class="sm">Préstamos justos para carros. Primero las cooperativas de crédito.</p><ul><li>Compradores que ya saben su pago mensual</li><li>Tus tasas mostradas con honestidad, con la etiqueta “Socio”</li><li>Nosotros nunca tomamos solicitudes de préstamo</li><li>Pago por cada préstamo otorgado (planeado)</li></ul></div><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div><h3>Seguros</h3><p class="sm">El costo completo antes de comprar.</p><ul><li>Cotizaciones donde la gente revisa cuánto cuesta tener un carro</li><li>Etiqueta “Socio” clara</li><li>Solo cuando el conductor lo pide</li><li>Pago por cada cotización (planeado)</li></ul></div></div></section>
-<section class="wrap"><h2>Cómo funciona</h2><div class="steps3">
-<div class="card step"><span class="n">1</span><h3>Los conductores planean en Carvessa</h3><p>Presupuesto, pago mensual, tipo de carro, o una luz de advertencia que se acaba de prender.</p></div>
-<div class="card step"><span class="n">2</span><h3>Mostramos buenas opciones locales</h3><p>Etiquetas de precio justo, precios finales, talleres cerca, y tu oferta, marcada con claridad.</p></div>
-<div class="card step"><span class="n">3</span><h3>Ellos te contactan</h3><p>Solo cuando ellos deciden. Recibes un reporte corto cada semana.</p></div>
-</div></section>
-<section class="wrap"><h2>Nuestra promesa</h2><div class="promise">
-<div class="card"><h3>A los conductores</h3><p>Gratis, siempre. La ayuda de seguridad nunca es un anuncio. Nunca vendemos su información, y solo la compartimos cuando ellos deciden contactarte.</p></div>
-<div class="card"><h3>A los socios</h3><p>Sin contrato para empezar, sin cargo mensual en la prueba, un reporte corto cada semana y una mirada honesta a lo que funcionó.</p></div>
-</div></section>
-<section class="wrap"><h2>Quiénes somos</h2><p class="lead">Un equipo pequeño y local de Atlanta. Hicimos Carvessa para que comprar y mantener un carro sea sencillo y justo, para los conductores y para los negocios que los atienden.</p></section>
-<section id="partner" class="wrap"><div class="notify pform">
-<div><h2>¿Quiere ser uno de nuestros primeros socios?</h2><p>Cuéntenos de su negocio. Le llamamos en español dentro de 2 días hábiles. O escríbanos a <a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.</p><p class="fine">Prefer English? <a href="/es/negocios/" hreflang="en" lang="en">Read this page in English</a>.</p></div>
-<form id="pform" novalidate>
-<div class="kchips" role="radiogroup" aria-label="Tipo de negocio"><label class="kchip"><input type="radio" name="kind" value="Dealer" checked><span>Concesionario</span></label><label class="kchip"><input type="radio" name="kind" value="Repair / tire shop"><span>Taller / llantera</span></label><label class="kchip"><input type="radio" name="kind" value="Lender"><span>Prestamista</span></label><label class="kchip"><input type="radio" name="kind" value="Insurance"><span>Seguros</span></label><label class="kchip"><input type="radio" name="kind" value="Other"><span>Otro</span></label></div>
-<label class="sr" for="pb">Nombre del negocio</label><input id="pb" name="business" placeholder="Nombre del negocio" required maxlength="120" autocomplete="organization">
-<label class="sr" for="pn">Su nombre</label><input id="pn" name="name" placeholder="Su nombre" required maxlength="80" autocomplete="name">
-<label class="sr" for="pp">Teléfono</label><input id="pp" name="phone" type="tel" placeholder="Teléfono" required maxlength="30" autocomplete="tel">
-<label class="sr" for="pe">Correo del negocio</label><input id="pe" name="email" type="email" placeholder="Correo del negocio" required maxlength="254" autocomplete="email">
-<label class="sr" for="pt">¿Algo más que debamos saber? (opcional)</label><textarea id="pt" name="note" rows="3" maxlength="800" placeholder="¿Algo más que debamos saber? (opcional)"></textarea>
-<input class="hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
-<button type="submit">Enviar →</button>
-<p id="pmsg" role="status" aria-live="polite"></p>
-<p class="fine">Solo usamos esto para llamarle sobre Carvessa. <a href="/privacy/">Privacidad (en inglés)</a></p>
-</form></div></section>
+<section class="w sec" id="why"><h2>Por qué los compradores lo quieren</h2><p class="sub2">Los cargos sorpresa son la mayor preocupación. Carvessa muestra el precio justo y el total final primero, así los compradores llegan listos.</p>
+ <div class="why">
+  <div><b>71%</b><p>de los compradores de carros usados se encontraron precios engañosos y pagaron unos $640 de más en promedio.</p><a href="https://www.aol.com/articles/used-car-dealership-tactic-costing-151322912.html" rel="noopener">Fuente: estudio de CoPilot, 2025</a></div>
+  <div><b>53%</b><p>de los compradores de carros todavía hicieron todos los pasos en el concesionario.</p><a href="https://www.coxautoinc.com/insights/cox-automotive-car-buyer-journey-study-finds-efficiency-digital-tools-and-ai-drive-record-satisfaction/" rel="noopener">Fuente: Cox Automotive, Car Buyer Journey 2025</a></div>
+  <div class="us"><b>Lo que hace Carvessa</b><p>Los compradores llegan sabiendo su presupuesto mensual, el precio justo y el total con impuestos y cargos de Georgia. Los concesionarios con precios honestos llevan la etiqueta “Precio justo”.</p></div>
+ </div></section>
+<section class="w sec" id="pricing"><h2>Precios sencillos</h2><p class="sub2">Sin cargo mensual, sin contrato y sin costo de inicio en la prueba. Solo paga cuando Carvessa le envía a alguien. Los montos son planeados y se acuerdan con usted antes de pagar.</p>
+ <div class="price"><div class="pc"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 16h14M6 16l1.5-5h9L18 16M5 16v3h2v-2M19 16v3h-2v-2M7.5 11 9 7h6l1.5 4"/></svg></span><h3>Concesionarios</h3><div class="amt2">$15–$25 <small>por comprador listo</small></div><ul><li>El comprador sabe su presupuesto y carro</li><li>Solo cuando decide contactarle</li><li>Visitas de servicio por llamados a revisión y luces</li></ul><span class="pl">Planeado · primer mes gratis</span></div><div class="pc"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 1-2-2Z"/></svg></span><h3>Talleres y llanteras</h3><div class="amt2">Pequeño cargo <small>por cliente nuevo</small></div><ul><li>Su taller arriba en “Buscar un taller cerca”</li><li>Marcado “Patrocinado”, nunca en pasos de seguridad</li><li>Precio acordado juntos en la prueba</li></ul><span class="pl">Planeado · primer mes gratis</span></div><div class="pc"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span><h3>Cooperativas y prestamistas</h3><div class="amt2">Comisión <small>por préstamo otorgado</small></div><ul><li>Solo cuando se otorga un préstamo</li><li>Tasas con la etiqueta “Socio”</li><li>Las solicitudes quedan en su sitio</li></ul><span class="pl">Planeado · primer mes gratis</span></div><div class="pc"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><h3>Seguros</h3><div class="amt2">Comisión <small>por cotización</small></div><ul><li>Solo cuando el conductor pide comparar</li><li>Etiqueta “Socio” clara</li><li>Recordatorios antes de renovar (planeado)</li></ul><span class="pl">Planeado · primer mes gratis</span></div></div>
+ <div class="allfree">Todo socio fundador en Atlanta: primer mes gratis. Puede parar cuando quiera con un correo. Pagar nunca cambia nuestra revisión de precio justo ni la ayuda de seguridad que ven los conductores.</div></section>
+<section class="w sec" id="calc"><h2>¿Cuánto le cuesta hoy un cliente?</h2><p class="sub2">Ponga sus propios números. No los adivinamos por usted.</p>
+ <div class="calc"><div class="box">
+   <label for="cLeads">Contactos que compra al mes <b id="vLeads"></b></label><input type="range" id="cLeads" min="5" max="300" step="5" value="60">
+   <label for="cCost">Lo que paga por contacto <b id="vCost"></b></label><input type="range" id="cCost" min="5" max="150" step="5" value="40">
+   <label for="cRate">Contactos que terminan en venta <b id="vRate"></b></label><input type="range" id="cRate" min="1" max="30" step="1" value="10">
+  </div><div class="box res" aria-live="polite">
+   <div class="r"><span>Gasta al mes</span><b id="oSpend"></b></div>
+   <div class="r"><span>Ventas de esos contactos</span><b id="oSales"></b></div>
+   <div class="r"><span>Costo por venta hoy</span><b id="oPer"></b></div>
+   <div class="r us"><span>Si Carvessa le enviara esa cantidad de compradores listos (planeado $15–$25 cada uno)</span><b id="oUs"></b></div>
+   <p class="fine2">Precio planeado de la prueba para concesionarios, primer mes gratis. Carvessa envía compradores que ya saben su presupuesto y el carro que quieren; sus resultados pueden variar. Talleres, prestamistas y aseguradoras: acordamos su precio juntos.</p>
+  </div></div></section>
+<section class="w sec rpt" id="report"><div><h2>Un reporte corto cada semana</h2><p class="sub2" style="margin-bottom:14px">Vea lo que Carvessa hizo por usted, con números claros. Sin tener que entrar a nada.</p>
+  <ul><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg><span>Cuántos conductores vieron su negocio y tocaron llamar o cómo llegar</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg><span>Cada solicitud, con lo que pidió el conductor</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg><span>Lo que pagó y qué probar la próxima semana</span></li></ul></div>
+ <div class="rep"><div class="rh"><b>Example Tire &amp; Auto · esta semana</b><span>Lun–Dom</span></div>
+  <div class="kp"><div><small>Conductores que le vieron</small><b>—</b></div><div><small>Llamadas y rutas</small><b>—</b></div><div><small>Solicitudes recibidas</small><b>—</b></div><div><small>Usted pagó</small><b>—</b></div></div>
+  <div class="bars" aria-hidden="true"><i style="height:30%"></i><i style="height:45%"></i><i style="height:38%"></i><i style="height:60%"></i><i style="height:52%"></i><i style="height:75%"></i><i style="height:40%"></i></div>
+  <span class="pl">Diseño de ejemplo · los números reales empiezan con la prueba</span></div></section>
+<section class="w sec" id="faq"><h2>Preguntas de los negocios</h2><p class="sub2">Respuestas claras. Pregúntenos lo que quiera en la llamada.</p><div class="faq"><details><summary>¿Hay contrato?</summary><p>No. La prueba no tiene contrato ni cargo mensual. Puede parar cuando quiera con un correo.</p></details><details><summary>¿Los conductores pagan por usar Carvessa?</summary><p>No. Carvessa es gratis para los conductores, y la ayuda de seguridad nunca es un anuncio.</p></details><details><summary>¿Puedo pagar para tener una mejor etiqueta de precio?</summary><p>No. Nuestra revisión de precio justo y la etiqueta “Precio justo” son iguales para todos. Pagar nunca las cambia.</p></details><details><summary>¿Cómo marcan los espacios pagados?</summary><p>Cada espacio pagado dice “Patrocinado” o “Socio”. Los talleres más cercanos y otras opciones siempre aparecen también.</p></details><details><summary>¿Y si nadie llega por Carvessa?</summary><p>Entonces no paga. Solo paga cuando le enviamos un comprador listo, un cliente o un préstamo otorgado, a un precio acordado antes con usted.</p></details><details><summary>¿Qué comparten de los conductores?</summary><p>Solo lo que el conductor decide enviar cuando le contacta. Nunca vendemos su información.</p></details><details><summary>¿Hablan español?</summary><p>Sí. La app funciona en español e inglés, y le podemos llamar en español.</p></details><details><summary>¿Cómo empiezo?</summary><p>Envíe el formulario de abajo. Le llamamos dentro de 2 días hábiles, armamos su oferta juntos y su primer mes es gratis.</p></details></div></section>
+<section class="w"><div class="join" id="partner">
+ <div><div class="k">SOCIOS FUNDADORES</div><h2>¿Quiere ser uno de nuestros primeros socios?</h2>
+  <p>Primer mes gratis, sin contrato y sin cargo mensual en la prueba. Cuéntenos de su negocio y le llamamos dentro de 2 días hábiles. O escríbanos a <a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.</p>
+  <p>Le llamamos en español.</p>
+  <p>Un equipo pequeño y local de Atlanta.</p>
+  <div class="docs"><a href="/assets/docs/carvessa-dealer-sheet.pdf">↓ Hoja para concesionarios (PDF, en inglés)</a><a href="/assets/docs/carvessa-shop-sheet.pdf">↓ Hoja para talleres (PDF, en inglés)</a></div></div>
+ <form id="pform" novalidate>
+  <div class="kchips" role="radiogroup" aria-label="Tipo de negocio"><label class="kchip"><input type="radio" name="kind" value="Dealer" checked><span>Concesionario</span></label><label class="kchip"><input type="radio" name="kind" value="Repair / tire shop"><span>Taller / llantera</span></label><label class="kchip"><input type="radio" name="kind" value="Lender"><span>Prestamista</span></label><label class="kchip"><input type="radio" name="kind" value="Insurance"><span>Seguros</span></label><label class="kchip"><input type="radio" name="kind" value="Other"><span>Otro</span></label></div>
+  <label class="sr" for="pb">Nombre del negocio</label><input id="pb" name="business" placeholder="Nombre del negocio" required maxlength="120" autocomplete="organization">
+  <label class="sr" for="pn">Su nombre</label><input id="pn" name="name" placeholder="Su nombre" required maxlength="80" autocomplete="name">
+  <label class="sr" for="pp">Teléfono</label><input id="pp" name="phone" type="tel" placeholder="Teléfono" required maxlength="30" autocomplete="tel">
+  <label class="sr" for="pe">Correo del negocio</label><input id="pe" name="email" type="email" placeholder="Correo del negocio" required maxlength="254" autocomplete="email">
+  <label class="sr" for="pt">¿Algo más que debamos saber? (opcional)</label><textarea id="pt" name="note" rows="3" maxlength="800" placeholder="¿Algo más que debamos saber? (opcional)"></textarea>
+  <input class="hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+  <button class="cta" type="submit">Enviar →</button>
+  <p id="pmsg" role="status" aria-live="polite"></p>
+  <p class="fine2">Solo usamos esto para llamarle sobre Carvessa. <a href="/privacy/">Privacidad (en inglés)</a></p>
+ </form></div></section>
 </main>
 <script>
 (function(){
-  var HOUSE=48, CAR=54, GAP=6, tallQ=matchMedia('(max-width:600px)');
-  document.querySelectorAll('.vp').forEach(function(vp){
-    var v=vp.querySelector('video'), road=vp.querySelector('.vp-road'), car=vp.querySelector('.vp-car'), trail=vp.querySelector('.vp-trail'),
-        time=vp.querySelector('.vp-time'), pp=vp.querySelector('.vp-pp'), mute=vp.querySelector('.vp-mute'), langB=vp.querySelector('.vp-lang'),
-        lang='en', tall=null, raf=0, drag=false, arriveT=0;
-    function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+('0'+s%60).slice(-2);}
-    function dur(){return isFinite(v.duration)&&v.duration>0?v.duration:29;}
-    function load(keep){
-      tall=tallQ.matches; var f='/assets/video/maya-'+(tall?'tall':'wide')+'-'+lang, t=keep?v.currentTime:0, was=keep&&!v.paused;
-      vp.classList.toggle('tall',tall); v.poster='/assets/video/maya-poster'+(tall?'-tall':'')+'.jpg';
-      v.innerHTML='<source src="'+f+'.mp4" type="video/mp4"><source src="'+f+'.webm" type="video/webm">'; v.load();
-      if(t){v.addEventListener('loadedmetadata',function once(){v.removeEventListener('loadedmetadata',once);v.currentTime=t;if(was)play();});}
-    }
-    function track(){return Math.max(0,road.clientWidth-HOUSE-CAR-GAP);}
-    function draw(){
-      var p=Math.min(1,v.currentTime/dur()), x=p*track();
-      car.style.transform='translateX('+x+'px)'; trail.style.width=(x+CAR/2)+'px';
-      time.textContent=fmt(v.currentTime); road.setAttribute('aria-valuenow',Math.round(v.currentTime)); road.setAttribute('aria-valuetext',fmt(v.currentTime)+' of '+fmt(dur()));
-    }
-    function loop(){draw(); if(!v.paused)raf=requestAnimationFrame(loop);}
-    function unArrive(){clearTimeout(arriveT);road.classList.remove('arrive');vp.classList.remove('done');}
-    function play(){unArrive(); if(v.ended)v.currentTime=0; var p=v.play(); if(p&&p.catch)p.catch(function(){});}
-    function toggle(){v.paused?play():v.pause();}
-    v.addEventListener('play',function(){vp.classList.add('playing');pp.setAttribute('aria-label','Pause');cancelAnimationFrame(raf);loop();});
-    v.addEventListener('pause',function(){vp.classList.remove('playing');pp.setAttribute('aria-label','Play');draw();});
-    v.addEventListener('loadedmetadata',draw);
-    v.addEventListener('ended',function(){draw();road.classList.add('arrive');arriveT=setTimeout(function(){vp.classList.add('done');},2400);});
-    vp.querySelector('.vp-big').addEventListener('click',play); pp.addEventListener('click',toggle); v.addEventListener('click',toggle);
-    mute.addEventListener('click',function(){v.muted=!v.muted;vp.classList.toggle('muted',v.muted);mute.setAttribute('aria-label',v.muted?'Turn sound on':'Mute');});
-    langB.addEventListener('click',function(){lang=lang==='en'?'es':'en';langB.textContent=lang==='en'?'Español':'English';load(true);});
-    function seek(e){var r=road.getBoundingClientRect(), x=e.clientX-r.left-CAR/2; v.currentTime=Math.max(0,Math.min(1,x/track()))*dur(); unArrive(); draw();}
-    road.addEventListener('pointerdown',function(e){drag=true;road.setPointerCapture(e.pointerId);seek(e);});
-    road.addEventListener('pointermove',function(e){if(drag)seek(e);});
-    road.addEventListener('pointerup',function(){drag=false;});
-    road.addEventListener('keydown',function(e){var k=e.key;
-      if(k==='ArrowRight'||k==='ArrowLeft'){v.currentTime=Math.max(0,Math.min(dur(),v.currentTime+(k==='ArrowRight'?2:-2)));unArrive();draw();e.preventDefault();}
-      else if(k==='Home'){v.currentTime=0;unArrive();draw();e.preventDefault();}
-      else if(k===' '||k==='Enter'){toggle();e.preventDefault();}});
-    tallQ.addEventListener('change',function(){if(tallQ.matches!==tall)load(true);});
-    addEventListener('resize',draw);
-    load(false); draw();
-  });
-})();
-</script>
-<script>
-(function(){
-  var f=document.getElementById('pform'), msg=document.getElementById('pmsg');
+  var S=[{"key": "dealers", "name": "Concesionarios", "cta": "Sea concesionario fundador", "kind": "Dealer", "gets": ["Un comprador que ya sabe su presupuesto mensual y el carro que quiere", "Su carro sale con una etiqueta honesta de “Precio justo” junto al precio", "El comprador toca “Preguntar al concesionario” y usted recibe su solicitud (planeado)"], "steps": [{"cap": "<b>1 · Plan.</b> María le dice al asistente cuánto puede pagar al mes.", "html": "<div class=\"t2\">¿Qué pago mensual te funciona?</div><div class=\"sm\">Lo usamos para mostrarte carros que de verdad puedes pagar.</div>\n<div class=\"chipr\"><span>$300</span><span class=\"on\">$400</span><span>$500</span><span>$600+</span></div>\n<div class=\"c\"><div class=\"sm\">Tu plan</div><div class=\"row sb\" style=\"margin-top:4px\"><b>Buen crédito · $1,750 de entrada</b><span class=\"pill pb\">72 meses</span></div></div>\n<div class=\"c\"><div class=\"sm\">Tipo de carro</div><div class=\"chipr\" style=\"margin-top:6px\"><span class=\"on\">Sedán</span><span>SUV</span><span>Camioneta</span></div></div><div class=\"pbtn\">Ver mis carros</div>", "tap": [120, 300]}, {"cap": "<b>2 · Carros que le quedan.</b> Ve carros que le quedan, con nuestro estimado de precio justo.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Tu mejor opción</b></div><div class=\"band\"><img src=\"/assets/cutouts/civic.webp\" alt=\"\"></div>\n<div class=\"row sb\" style=\"margin-top:10px\"><b style=\"font-size:16px\">2022 Honda Civic</b><span class=\"pill pg\">92% compatible</span></div>\n<div class=\"row\" style=\"gap:6px;margin-top:6px;flex-wrap:wrap\"><span class=\"pill pg\">✓ Te queda</span><span class=\"pill pb\">Precio justo $18K–$23K</span></div>\n<div class=\"c row sb\"><div><div class=\"sm\">Unos</div><div class=\"big\">≈ $391<span style=\"font-size:13px\">/mes</span></div></div><div style=\"text-align:right\"><div class=\"sm\">Total final, GA</div><b>≈ $22,834</b></div></div>\n<div class=\"pbtn\">Ver 6 en venta cerca</div>", "tap": [160, 330]}, {"cap": "<b>3 · Su carro.</b> Su carro aparece cerca de ella, con una etiqueta de precio honesta.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>En venta cerca de ti</b></div>\n<div class=\"c\"><div class=\"row\"><div class=\"thumb\"><img src=\"/assets/cutouts/civic.webp\" alt=\"\"></div><div style=\"flex:1;min-width:0\"><b style=\"font-size:13.5px\">2022 Civic LX · 31,200 mi</b><div class=\"sm\">Example Motors · a 12 min</div></div></div>\n<div class=\"row sb\" style=\"margin-top:8px\"><b style=\"font-size:18px\">$19,900</b><span class=\"pill pg\">Precio justo</span></div></div>\n<div class=\"c\"><div class=\"row\"><div class=\"thumb\"><img src=\"/assets/cutouts/civic.webp\" alt=\"\"></div><div style=\"flex:1;min-width:0\"><b style=\"font-size:13.5px\">2022 Civic Sport · 44,900 mi</b><div class=\"sm\">Otro concesionario · 25 min</div></div></div>\n<div class=\"row sb\" style=\"margin-top:8px\"><b style=\"font-size:18px\">$22,750</b><span class=\"pill pgo\">Un poco alto</span></div></div>\n<div class=\"pbtn\">Preguntar a Example Motors</div><div class=\"pbtn2\">Cómo llegar</div>", "tap": [160, 452]}, {"cap": "<b>4 · Comprador listo.</b> Usted recibe su solicitud: presupuesto, carro y cómo contactarla. (planeado)", "html": "<div class=\"top\"><b>Solicitud enviada ✓</b></div><div class=\"sm\">Example Motors te va a llamar. Solo compartimos lo que elegiste.</div>\n<div class=\"biz\"><span class=\"pill\">NUEVO COMPRADOR LISTO</span><div style=\"font-weight:800;font-size:15px;margin-top:8px\">María · quiere un Civic 2022</div>\n<div style=\"font-size:12.5px;opacity:.85;line-height:1.6;margin-top:4px\">Presupuesto unos $400/mes · $1,750 de entrada<br>Buen crédito · compra este mes<br>Vive a 12 min · prefiere una llamada</div></div>\n<div class=\"sm\" style=\"margin-top:10px\">Lo que ve el concesionario. Sin anuncios en medio, sin subastas por el comprador.</div>", "tap": [0, 0]}]}, {"key": "lenders", "name": "Cooperativas y prestamistas", "cta": "Sea prestamista fundador", "kind": "Lender", "gets": ["Personas que ya eligieron un carro y saben qué pago pueden manejar", "Sus tasas mostradas con claridad, con la etiqueta “Socio”", "Siguen en su sitio web; nosotros nunca tomamos solicitudes de préstamo (planeado)"], "steps": [{"cap": "<b>1 · El carro.</b> James encontró un Corolla Hybrid 2022 que le queda.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>2022 Toyota Corolla Hybrid</b></div><div class=\"band\"><img src=\"/assets/cutouts/corolla.webp\" alt=\"\"></div>\n<div class=\"c\"><div class=\"line\"><span>Precio, usado (est.)</span><b>$18,500</b></div><div class=\"line\"><span>Impuesto y cargos de Georgia</span><span>≈ $2,194</span></div><div class=\"line\"><span>Entrada</span><span>− $1,750</span></div><div class=\"line\"><span>Préstamo</span><span>≈ $18,944</span></div></div>\n<div class=\"pbtn\">¿Cómo lo pago?</div>", "tap": [160, 500]}, {"cap": "<b>2 · Comparar.</b> Opciones de préstamo lado a lado. Primero las cooperativas.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Formas de pagar</b></div><div class=\"sm\">Tasas de ejemplo. Tu tasa real depende de tu crédito.</div>\n<div class=\"spon\"><div class=\"row sb\"><b>Example Credit Union</b><span class=\"pill pgo\">Socio</span></div><div class=\"row sb\" style=\"margin-top:6px\"><span class=\"sm\">Préstamo para usado desde</span><b style=\"font-size:18px\">5.9% APR</b></div><div class=\"sm\">≈ $313/mes por 72 meses (ejemplo)</div></div>\n<div class=\"c\"><div class=\"row sb\"><b>Préstamo típico de banco</b><span class=\"sm\">prom.</span></div><div class=\"row sb\" style=\"margin-top:6px\"><span class=\"sm\">Préstamo para usado, unos</span><b>7.7% APR</b></div></div>\n<div class=\"c\"><div class=\"row sb\"><b>Financiamiento del concesionario</b><span class=\"sm\">varía</span></div><div class=\"sm\" style=\"margin-top:4px\">Pide la tasa (APR) por escrito.</div></div>", "tap": [160, 250]}, {"cap": "<b>3 · Su sitio.</b> Él va a su sitio web para solicitar. Nosotros nunca recibimos solicitudes.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Example Credit Union</b></div>\n<div class=\"c\"><div class=\"sm\">Vas a salir de Carvessa</div><div style=\"font-weight:800;font-size:15px;margin-top:4px\">Solicita en el sitio de Example Credit Union</div><div class=\"sm\" style=\"margin-top:6px\">Carvessa puede ganar dinero si obtienes un préstamo. Nuestra revisión de precio justo es igual de todas formas.</div></div>\n<div class=\"c row\"><span class=\"okc\">✓</span><div class=\"sm\">Tu plan de pago va contigo, para que no lo escribas otra vez.</div></div>\n<div class=\"pbtn\">Seguir para solicitar ↗</div><div class=\"pbtn2\">Ahora no</div>", "tap": [160, 420]}, {"cap": "<b>4 · Otorgado.</b> Usted paga una comisión solo cuando se otorga un préstamo. (planeado)", "html": "<div class=\"top\"><b>Reporte para socios</b></div><div class=\"sm\">Lo que la cooperativa ve cada semana (diseño de ejemplo).</div>\n<div class=\"biz\"><span class=\"pill\">ESTA SEMANA · EJEMPLO</span><div class=\"line dk\" style=\"margin-top:8px\"><span>Visitas a su sitio</span><b>—</b></div><div class=\"line dk\"><span>Solicitudes empezadas</span><b>—</b></div><div class=\"line dk\" style=\"border:0\"><span>Préstamos otorgados</span><b>—</b></div></div>\n<div class=\"sm\" style=\"margin-top:10px\">Los números reales aparecen cuando empiece la prueba. Nunca los inventamos.</div>", "tap": [0, 0]}]}, {"key": "insurance", "name": "Seguros", "cta": "Sea aseguradora fundadora", "kind": "Insurance", "gets": ["Conductores que guardan su fecha de renovación en su cuenta gratis (planeado)", "Un recordatorio antes de renovar con su botón de cotización, marcado “Socio”", "Solo cuando el conductor pide comparar"], "steps": [{"cap": "<b>1 · Mi garaje.</b> Ana agrega la fecha de renovación de su seguro. (planeado)", "html": "<div class=\"top\"><b>Mi garaje</b></div><div class=\"band\"><img src=\"/assets/cutouts/kona.webp\" alt=\"\"></div>\n<div class=\"c\"><div style=\"font-weight:800\">Agrega tu seguro</div><div class=\"sm\">Te avisamos antes de que se renueve.</div>\n<div class=\"field\"><small>Compañía</small>Tu aseguradora actual</div><div class=\"field\"><small>Se renueva el</small>12 de diciembre</div><div class=\"field\"><small>Pagas unos</small>$142 al mes</div></div><div class=\"pbtn\">Guardar</div>", "tap": [160, 452]}, {"cap": "<b>2 · Recordatorio.</b> Dos semanas antes de renovar, un aviso amable.", "html": "<div class=\"lock\"><div class=\"time\">9:41</div><div class=\"date\">Sábado, 28 de noviembre</div>\n<div class=\"push\"><div class=\"ap\">V</div><div><div style=\"font-weight:800;font-size:13px\">Carvessa</div><div style=\"font-size:12.5px;line-height:1.4\">Tu seguro de carro se renueva en 14 días. ¿Quieres comparar cotizaciones antes?</div></div></div>\n<div class=\"push\" style=\"opacity:.6\"><div class=\"ap\" style=\"background:#3A3F48;color:#fff\">✓</div><div style=\"font-size:12px\">Cambio de aceite en unas 800 millas</div></div></div>", "tap": [160, 232]}, {"cap": "<b>3 · Comparar.</b> Su botón de cotización aparece, marcado claramente como “Socio”.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Compara seguros de carro</b></div><div class=\"sm\">Para tu Hyundai Kona 2022 · ZIP 30310</div>\n<div class=\"spon\"><div class=\"row sb\"><b>Example Insurance</b><span class=\"pill pgo\">Socio</span></div><div class=\"sm\" style=\"margin-top:4px\">Cotiza en unos 2 minutos</div><div class=\"pbtn\" style=\"margin-top:8px\">Ver mi cotización ↗</div></div>\n<div class=\"c\"><div class=\"sm\">Pagas ahora</div><b style=\"font-size:18px\">$142/mes</b></div>\n<div class=\"sm\" style=\"margin-top:10px\">Carvessa puede ganar dinero de sus socios. Nunca vendemos tu información.</div>", "tap": [160, 330]}, {"cap": "<b>4 · Cliente nuevo.</b> Comisión por cotización; solo le contactan conductores que lo pidieron. (planeado)", "html": "<div class=\"top\"><b>Cotización pedida ✓</b></div><div class=\"sm\">Example Insurance te enviará la cotización por correo.</div>\n<div class=\"biz\"><span class=\"pill\">NUEVA SOLICITUD DE COTIZACIÓN</span><div style=\"font-weight:800;font-size:15px;margin-top:8px\">2022 Hyundai Kona · Atlanta</div><div style=\"font-size:12.5px;opacity:.85;line-height:1.6;margin-top:4px\">Renueva el 12 de dic · comparando ahora<br>Pidió que le contacten por correo</div></div>\n<div class=\"c row\"><span class=\"okc\">✓</span><div class=\"sm\">Ana recibe un recordatorio el próximo año también, así usted sigue presente.</div></div>", "tap": [0, 0]}]}, {"key": "shops", "name": "Talleres y llanteras", "cta": "Sea taller fundador", "kind": "Repair / tire shop", "gets": ["Conductores que acaban de saber qué tiene su carro y necesitan un taller ya", "Su taller arriba en “Buscar un taller cerca”, marcado “Patrocinado” (planeado)", "Nunca dentro de los pasos de seguridad; los talleres más cercanos siempre aparecen también"], "steps": [{"cap": "<b>1 · Problema.</b> A Kevin se le prendió la luz de las llantas. Abre Carvessa.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Presión baja de llantas</b></div>\n<div class=\"c row\"><div class=\"thumb\" style=\"background:#FFF4DE\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#B9770E\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M7 5c-2 2-3 4.5-3 7s1 5 3 7M17 5c2 2 3 4.5 3 7s-1 5-3 7\"/><path d=\"M12 7v6M12 16v.5\"/></svg></div><div><b>Luz de presión de llantas</b><div class=\"sm\">Casi nunca es una emergencia. Revísala pronto.</div></div></div>\n<div class=\"bub me\">La luz está prendida y la llanta de atrás se ve un poco baja</div>\n<div class=\"bub\">¿Ves algo en la llanta, como un clavo o un tornillo?</div>\n<div class=\"chipr\"><span class=\"on\">Sí, un tornillo</span><span>No</span><span>No sé</span></div>", "tap": [200, 470]}, {"cap": "<b>2 · Respuesta.</b> La app explica qué es lo más probable y un costo aproximado.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Presión baja de llantas</b></div>\n<div class=\"bub me\">Sí, un tornillo en el centro de la llanta</div>\n<div class=\"bub\"><b>Déjalo puesto por ahora.</b> Un tornillo en el centro casi siempre se puede parchar.<br><br>Parche: unos $20–$50 (estimado). Ponle aire y maneja despacio a una llantera.</div>\n<div class=\"c\"><div class=\"sm\">Podemos equivocarnos. Un mecánico te lo puede confirmar.</div></div><div class=\"pbtn\">Buscar una llantera cerca</div>", "tap": [160, 500]}, {"cap": "<b>3 · Su taller.</b> Un taller patrocinado arriba, los más cercanos debajo.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Llanteras cerca de ti</b></div>\n<div class=\"spon\"><div class=\"row sb\"><b>Example Tire &amp; Auto</b><span class=\"pill pgo\">Patrocinado</span></div><div class=\"sm\" style=\"margin-top:3px\">1.2 mi · Abierto hasta las 7 PM · Hablamos español</div><div class=\"row\" style=\"gap:6px;margin-top:6px;flex-wrap:wrap\"><span class=\"pill pg\">Revisión de llantas gratis</span><span class=\"pill pb\">Parche desde $25</span></div><div class=\"pbtn\" style=\"margin-top:8px\">Llamar · Cómo llegar</div></div>\n<div class=\"sm\" style=\"margin:12px 0 2px;font-weight:800\">Más cerca de ti</div>\n<div class=\"shop\"><span class=\"mk\">⌖</span><div style=\"flex:1\"><b style=\"font-size:13px\">Neighborhood Tire Shop</b><div class=\"sm\">0.8 mi</div></div></div>\n<div class=\"shop\"><span class=\"mk\">⌖</span><div style=\"flex:1\"><b style=\"font-size:13px\">Corner Auto Repair</b><div class=\"sm\">1.6 mi</div></div></div>\n<div class=\"shop\"><span class=\"mk\">⌖</span><div style=\"flex:1\"><b style=\"font-size:13px\">City Tire Center</b><div class=\"sm\">2.1 mi</div></div></div>", "tap": [160, 240]}, {"cap": "<b>4 · Llega al taller.</b> Llega con una nota para el mecánico. Pequeño cargo por cliente. (planeado)", "html": "<div class=\"top\"><b>Nota para el mecánico</b></div>\n<div class=\"c\" style=\"font-size:12.5px;line-height:1.55\"><b>2019 Toyota RAV4 · 48,000 mi</b><br>Luz de presión prendida. Llanta trasera derecha baja. Tornillo en el centro. Le puse aire y manejé despacio.</div>\n<div class=\"biz\"><span class=\"pill\">CLIENTE NUEVO · DE CARVESSA</span><div style=\"font-weight:800;font-size:15px;margin-top:8px\">Kevin · parche de llanta</div><div style=\"font-size:12.5px;opacity:.85;line-height:1.6;margin-top:4px\">Llega hoy · a 1.2 mi</div></div>", "tap": [0, 0]}]}],W={"get": "Lo que reciben: {n}", "step": "{n} · paso {a} de {b}", "pause": "❚❚ Pausa", "play": "▶ Ver", "copied": "Copiado: ", "page": "https://carvessa.app/es/negocios/", "plan": "Planeado · llega con la prueba", "need": "Escriba el nombre del negocio, su nombre, un teléfono y el correo del negocio, por favor.", "sending": "Enviando…", "thanks": "¡Gracias! Le llamamos dentro de 2 días hábiles.", "fail": "No se pudo enviar. Escríbanos a "};
+  var $=function(id){return document.getElementById(id);};
+  var RM=matchMedia('(prefers-reduced-motion: reduce)').matches,WIDE=matchMedia('(min-width: 861px)');
+  var si=0,st=0,timer=null,paused=RM,DUR=4200,io=null,tabs=[].slice.call(document.querySelectorAll('.ptab'));
+  var CHK='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>';
+  function parts(c){var m=c.match(/<b>\d+ · (.*?)\.<\/b>\s*(.*)$/),t=m?m[2]:c;return{title:m?m[1]:'',text:t.replace(/\s*\((planned|planeado)\)/,''),pl:/\((planned|planeado)\)/.test(t)};}
+  function pick(i,fromTab){si=i;var s=S[i];try{history.replaceState(null,'','#'+s.key);}catch(e){}
+    tabs.forEach(function(b,k){b.setAttribute('aria-selected',String(k===i));});
+    $('pgets').innerHTML='<h3>'+W.get.replace('{n}',s.name.toLowerCase())+'</h3><ul>'+s.gets.map(function(g){return '<li>'+CHK+'<span>'+g+'</span></li>';}).join('')+'</ul>';
+    $('storyCta').textContent=s.cta+' →';$('heroCta').textContent=s.cta+' →';
+    $('pscr').innerHTML=s.steps.map(function(x){return '<div class="step">'+x.html+'</div>';}).join('');
+    $('pdots').innerHTML=s.steps.map(function(){return '<i></i>';}).join('');
+    $('psteps').innerHTML=s.steps.map(function(x,k){var p=parts(x.cap);return '<div class="sc" data-k="'+k+'"><span class="n">'+(k+1)+'</span><h3>'+p.title+'</h3><p>'+p.text+'</p>'+(p.pl?'<span class="pl">'+W.plan+'</span>':'')+'</div>';}).join('');
+    watch();show(0);
+    if(fromTab&&WIDE.matches){var top=$('story').getBoundingClientRect().top+scrollY-80;if(Math.abs(scrollY-top)>40)scrollTo({top:top,behavior:RM?'auto':'smooth'});}}
+  function show(j){st=j;var s=S[si],auto=!WIDE.matches&&!paused;
+    [].forEach.call($('pscr').children,function(el,k){el.className='step'+(k===j?' on':k<j?' past':'');});
+    [].forEach.call($('pdots').children,function(d,k){d.className=k===j?'on':'';});
+    [].forEach.call($('psteps').children,function(el,k){el.classList.toggle('on',k===j);});
+    $('pcap').innerHTML=s.steps[j].cap;$('pstep').textContent=W.step.replace('{n}',s.name).replace('{a}',j+1).replace('{b}',s.steps.length);
+    tabs.forEach(function(b,k){var bar=b.querySelector('.bar');bar.style.transition='none';bar.style.width=k===si?(j/s.steps.length*100)+'%':'0';});
+    var bar=tabs[si].querySelector('.bar');requestAnimationFrame(function(){bar.style.transition=auto?'width '+DUR+'ms linear':'width .3s';bar.style.width=((j+1)/s.steps.length*100)+'%';});
+    var t=s.steps[j].tap,td=$('ptap');if(t[0]&&!RM)setTimeout(function(){td.style.left=(t[0]-17)+'px';td.style.top=(t[1]-17)+'px';td.classList.remove('go');void td.offsetWidth;td.classList.add('go');},auto?DUR-1400:500);
+    clearTimeout(timer);if(auto)timer=setTimeout(function(){if(st+1<s.steps.length)show(st+1);else pick((si+1)%S.length);},DUR);}
+  function watch(){if(io)io.disconnect();if(!WIDE.matches||!window.IntersectionObserver)return;io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)show(+e.target.getAttribute('data-k'));});},{rootMargin:'-45% 0px -45% 0px'});[].forEach.call($('psteps').children,function(el){io.observe(el);});}
+  if(WIDE.addEventListener)WIDE.addEventListener('change',function(){watch();show(st);});
+  tabs.forEach(function(b){b.addEventListener('click',function(){pick(+b.getAttribute('data-i'),true);});});
+  $('ppause').textContent=paused?W.play:W.pause;
+  $('ppause').addEventListener('click',function(){paused=!paused;this.textContent=paused?W.play:W.pause;show(st);});
+  $('pscreen').addEventListener('click',function(){if(!WIDE.matches){paused=true;$('ppause').textContent=W.play;}show((st+1)%S[si].steps.length);});
+  function toForm(e){e.preventDefault();var k=S[si].kind,r=document.querySelector('#pform input[name=kind][value="'+k+'"]');if(r)r.checked=true;
+    $('partner').scrollIntoView({behavior:RM?'auto':'smooth'});setTimeout(function(){var l=r&&r.parentNode;if(l){l.classList.add('flash');setTimeout(function(){l.classList.remove('flash');},1300);}$('pb').focus({preventScroll:true});},RM?0:500);}
+  $('heroCta').addEventListener('click',toForm);$('storyCta').addEventListener('click',toForm);
+  $('howBtn').addEventListener('click',function(e){e.preventDefault();$('story').scrollIntoView({behavior:RM?'auto':'smooth'});});
+  $('pcopy').addEventListener('click',function(){var u=W.page+'#'+S[si].key;var ok=function(){$('pcopied').textContent=W.copied+u;};if(navigator.clipboard)navigator.clipboard.writeText(u).then(ok,ok);else ok();});
+  var fm=function(n){return '$'+Math.round(n).toLocaleString('en-US');};
+  function calc(){var L=+$('cLeads').value,C=+$('cCost').value,R=+$('cRate').value/100,sp=L*C,sa=L*R,n=Math.max(1,Math.round(sa));
+    $('vLeads').textContent=L;$('vCost').textContent=fm(C);$('vRate').textContent=Math.round(R*100)+'%';
+    $('oSpend').textContent=fm(sp);$('oSales').textContent=sa<1?sa.toFixed(1):Math.round(sa);$('oPer').textContent=sa>0?fm(sp/sa):'—';$('oUs').textContent=fm(n*15)+'–'+fm(n*25);}
+  ['cLeads','cCost','cRate'].forEach(function(id){$(id).addEventListener('input',calc);});calc();
+  var start=0;S.forEach(function(s,i){if(location.hash==='#'+s.key)start=i;});pick(start,false);
+  var f=$('pform'),msg=$('pmsg');
   f.addEventListener('submit',function(ev){
     ev.preventDefault(); if(f.company.value) return;
-    var b=f.business.value.trim(), n=f.name.value.trim(), ph=f.phone.value.trim();
-    var em=f.email.value.trim();
-    if(!b||!n||ph.replace(/\D/g,'').length<7||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){msg.textContent='Escriba el nombre del negocio, su nombre, un teléfono y el correo del negocio, por favor.';return;}
+    var b=f.business.value.trim(), n=f.name.value.trim(), ph=f.phone.value.trim(), em=f.email.value.trim();
+    if(!b||!n||ph.replace(/\D/g,'').length<7||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){msg.textContent=W.need;return;}
     var kind=(f.querySelector('input[name=kind]:checked')||{value:'Other'}).value;
     var text='[Partner lead] lang=es | kind='+kind+' | business='+b+' | name='+n+' | phone='+ph+' | email='+em+' | note='+f.note.value.trim().replace(/\s+/g,' ');
-    var btn=f.querySelector('button'); btn.disabled=true; msg.textContent='Enviando…';
+    var btn=f.querySelector('button[type=submit]'); btn.disabled=true; msg.textContent=W.sending;
     fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/feedback',{method:'POST',headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'},
       body:JSON.stringify({mood:'ok',message:text.slice(0,2000),screen:'website:/es/negocios',platform:'web'})})
-    .then(function(r){if(!r.ok)throw 0; f.reset(); msg.textContent='¡Gracias! Le llamamos dentro de 2 días hábiles.';})
-    .catch(function(){msg.innerHTML='No se pudo enviar. Escríbanos a <a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.';})
+    .then(function(r){if(!r.ok)throw 0; f.reset(); msg.textContent=W.thanks; if(window.gtag)gtag('event','partner_form_sent',{kind:kind,lang:'es'});})
+    .catch(function(){msg.innerHTML=W.fail+'<a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.';})
     .then(function(){btn.disabled=false;});
   });
 })();
@@ -178,7 +274,7 @@
     <div><b>Carvessa</b><span><a href="/es/#about">Quiénes somos</a><br><a href="/es/negocios/">Para negocios</a><br><a href="/es/#faq">Preguntas</a><br><a href="mailto:hello@carvessa.app">Contacto</a></span></div>
     <div><b>Legal</b><span><a href="/privacy/">Privacidad</a><br><a href="/terms/">Términos</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA · Carvessa™ y el logo de la V son marcas de Carvessa.</span><span>Precios y pagos son estimados, no ofertas. Datos de autos de NHTSA y EPA.</span></div></div>
-<script src="/assets/player.js?v=9b798d30"></script>
+
 <script>(function(){
   var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}

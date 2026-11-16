@@ -17,7 +17,7 @@
 <meta name="theme-color" content="#F6F8FC">
 <link rel="stylesheet" href="/assets/site.css?v=8538187e">
 <link rel="stylesheet" href="/assets/nav2.css?v=dfa556e5">
-<link rel="stylesheet" href="/assets/player.css?v=9b798d30">
+
 </head>
 <body>
 <header><div class="wrap"><nav id="nav" aria-label="Main">
@@ -37,129 +37,225 @@
   <a class="getapp" href="/new/#join">Get early access</a>
   <button type="button" class="burger" id="burger" aria-expanded="false">Menu</button>
 </nav></div></header>
-<main>
-<section class="wrap phero">
-<div class="kick">For dealers, shops, lenders and insurers · Atlanta</div>
-<h1>Meet drivers who already know what they can afford.</h1>
-<p class="lead">Carvessa is a free app that helps drivers find a car they can really afford, check that the price is fair, and get help when a warning light comes on, in English and Spanish. Then we send them to good local businesses.</p>
-<div class="cta"><a class="btn" href="#partner">Become a partner →</a><a class="btn ghost" href="#video">See how it works</a></div>
-<div class="facts"><div class="fact"><b>Free</b><span>for drivers, always</span></div><div class="fact"><b>English + Español</b><span>the whole app</span></div><div class="fact"><b>iPhone + Android</b><span>coming soon</span></div><div class="fact"><b>Every state</b><span>made in Atlanta</span></div><div class="fact"><b>First month</b><span>free for Atlanta partners</span></div></div>
+<main class="pt">
+<style>
+.pt{--b:#1F5FBF;--bs:#E3ECFA;--g:#1F6E4E;--gs:#E3F2EA;--gd:#86652B;--gds:#F3E7D0;--ln:#E3E8F0;--mu:#5B6575;--cd:#fff}
+.pt .w{max-width:1120px;margin:0 auto;padding:0 max(20px,env(safe-area-inset-left,0px))}
+.pt .k{font-size:12px;letter-spacing:2.2px;font-weight:800;color:var(--gd)}
+.pt h1{font-size:clamp(34px,4.6vw,56px);line-height:1.03;letter-spacing:-1.6px;margin:10px 0 12px;text-wrap:balance;max-width:20ch}
+.pt .lead{font-size:18px;line-height:1.55;color:var(--mu);margin:0 0 18px;max-width:58ch}
+.pt .offer{display:inline-flex;gap:8px;align-items:center;background:var(--gds);color:var(--gd);border-radius:99px;padding:7px 13px;font-weight:800;font-size:13.5px;margin-bottom:14px}
+.pt .btns{display:flex;flex-wrap:wrap;gap:10px;margin:2px 0 18px}
+.pt .cta{display:inline-flex;align-items:center;gap:8px;background:var(--b);color:#fff;text-decoration:none;font-weight:800;border-radius:99px;padding:13px 20px;font-size:15px;border:0;cursor:pointer;font-family:inherit}
+.pt .cta.alt{background:var(--cd);color:inherit;border:1.5px solid var(--ln)}
+.pt .proof{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 0 22px;border-bottom:1px solid var(--ln);margin-bottom:26px}
+.pt .proof span{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:14px}.pt .proof svg,.pt .gets svg,.pt .rpt li svg{color:var(--g);flex:none}
+.pt .story{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:48px;align-items:start;scroll-margin-top:90px}
+.pt .ptabs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pt .ptab{font:inherit;text-align:left;background:var(--cd);color:inherit;border:1.5px solid var(--ln);border-radius:18px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:center;position:relative;overflow:hidden}
+.pt .ptab .ic,.pt .pc .ic{width:38px;height:38px;border-radius:12px;background:var(--bs);color:var(--b);display:flex;align-items:center;justify-content:center;flex:none}
+.pt .ptab b{display:block;font-size:15px}.pt .ptab small{display:block;color:var(--mu);font-size:12.5px;margin-top:1px}
+.pt .ptab[aria-selected="true"]{border-color:var(--b);box-shadow:0 6px 18px rgba(31,95,191,.14)}
+.pt .ptab .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--b);width:0}
+.pt .gets{margin-top:16px;background:var(--cd);border:1px solid var(--ln);border-radius:20px;padding:16px 18px}
+.pt .gets h3{margin:0 0 8px;font-size:15px}.pt .gets ul{margin:0;padding:0;list-style:none;display:grid;gap:7px}.pt .gets li{display:flex;gap:9px;font-size:14.5px;line-height:1.45}.pt .gets li svg{margin-top:3px}
+.pt .ctl{display:none;gap:8px;align-items:center;margin-top:12px;color:var(--mu);font-size:13px}
+.pt .ctl button,.pt .copy{font:inherit;font-weight:800;font-size:13px;background:var(--cd);color:inherit;border:1px solid var(--ln);border-radius:99px;padding:8px 13px;cursor:pointer}
+.pt .steplist{display:grid;gap:14px;margin-top:18px}
+.pt .sc{background:var(--cd);border:1.5px solid var(--ln);border-radius:20px;padding:18px 20px;min-height:32vh;display:flex;flex-direction:column;justify-content:center;transition:border-color .3s,box-shadow .3s,opacity .3s;opacity:.55}
+.pt .sc.on{opacity:1;border-color:var(--b);box-shadow:0 8px 24px rgba(31,95,191,.12)}
+.pt .sc .n{width:30px;height:30px;border-radius:50%;background:var(--bs);color:var(--b);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.pt .sc h3{margin:10px 0 4px;font-size:20px;letter-spacing:-.3px}.pt .sc p{margin:0;color:var(--mu);font-size:15.5px;line-height:1.55;max-width:52ch}
+.pt .pl{display:inline-block;margin-top:8px;font-size:11.5px;font-weight:800;color:var(--gd);background:var(--gds);border-radius:99px;padding:3px 9px;align-self:flex-start}
+.pt .endcta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0 0}.pt .copied{font-size:13px;color:var(--g);font-weight:800}
+.pt .pw{position:sticky;top:90px;justify-self:center}.pt .glow{position:absolute;inset:40px 0;background:radial-gradient(closest-side,rgba(31,95,191,.25),transparent);filter:blur(20px)}
+.pt .phone{position:relative;width:330px;height:680px;border-radius:48px;background:#0E1116;padding:12px;box-shadow:0 30px 60px rgba(15,27,51,.28)}
+.pt .screen{position:relative;width:100%;height:100%;border-radius:38px;background:#F4F6FA;overflow:hidden;color:#10151B;cursor:pointer}
+.pt .notch{position:absolute;top:10px;left:50%;width:96px;height:26px;margin-left:-48px;border-radius:99px;background:#0E1116;z-index:9}
+.pt .sbar{position:absolute;top:0;left:0;right:0;height:46px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font-size:12.5px;font-weight:800;z-index:8}
+.pt .step{position:absolute;inset:46px 0 0;padding:10px 16px 16px;opacity:0;transform:translateX(30px);transition:opacity .45s,transform .55s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.pt .step.on{opacity:1;transform:none}.pt .step.past{opacity:0;transform:translateX(-30px)}
+.pt .cap{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(16,21,27,.88);color:#fff;border-radius:16px;padding:10px 12px;font-size:12.5px;line-height:1.4;z-index:7}.pt .cap b{color:#FFD691}
+.pt .dots{position:absolute;top:52px;left:0;right:0;display:flex;justify-content:center;gap:5px;z-index:8}.pt .dots i{width:6px;height:6px;border-radius:9px;background:#C9D2E0;transition:width .3s}.pt .dots i.on{width:18px;background:#1F5FBF}
+.pt .tapdot{position:absolute;width:34px;height:34px;border-radius:50%;background:rgba(31,95,191,.25);border:2px solid rgba(31,95,191,.6);z-index:6;opacity:0;pointer-events:none}.pt .tapdot.go{animation:pttap 1s ease-out}
+@keyframes pttap{0%{opacity:0;transform:scale(.5)}30%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+.pt .top{display:flex;align-items:center;gap:8px;margin:14px 0 10px}.pt .top .bk{width:30px;height:30px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,.08)}.pt .top b{font-size:16px}
+.pt .t2{font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.15;margin:16px 0 4px}.pt .sm{font-size:12px;color:#5B6575;line-height:1.4}
+.pt .c{background:#fff;border-radius:18px;padding:12px;box-shadow:0 2px 10px rgba(15,27,51,.06);margin-top:10px}
+.pt .row{display:flex;align-items:center;gap:10px}.pt .sb{justify-content:space-between}
+.pt .pill{display:inline-block;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:800}.pt .pb{background:#E3ECFA;color:#1F5FBF}.pt .pg{background:#E3F2EA;color:#1F6E4E}.pt .pgo{background:#F3E7D0;color:#6E5020}
+.pt .chipr{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.pt .chipr span{background:#fff;border:1.5px solid #E1E6EE;border-radius:99px;padding:7px 11px;font-size:12.5px;font-weight:800}.pt .chipr span.on{background:#E3ECFA;border-color:#1F5FBF;color:#1F5FBF}
+.pt .pbtn{text-align:center;background:#1F5FBF;color:#fff;border-radius:99px;padding:11px;font-weight:800;font-size:13.5px;margin-top:12px}.pt .pbtn2{text-align:center;background:#E3ECFA;color:#1F5FBF;border-radius:99px;padding:10px;font-weight:800;font-size:13px;margin-top:8px}
+.pt .bub{max-width:82%;border-radius:16px;padding:9px 11px;font-size:12.5px;line-height:1.4;margin-top:8px;background:#fff;box-shadow:0 2px 8px rgba(15,27,51,.06)}.pt .bub.me{margin-left:auto;background:#E3ECFA;color:#123A78}
+.pt .band{border-radius:18px;background:linear-gradient(180deg,#E3ECFA,#F4F6FA);height:118px;display:flex;align-items:flex-end;justify-content:center;margin-top:6px}.pt .band img{width:78%;margin-bottom:6px;filter:drop-shadow(0 12px 10px rgba(0,0,0,.18))}
+.pt .big{font-size:24px;font-weight:800;letter-spacing:-.6px}
+.pt .line{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed #E3E8F0}.pt .line:last-child{border:0;font-weight:800}.pt .line.dk{border-color:#2A3242}
+.pt .thumb{width:58px;height:40px;border-radius:10px;background:#EEF2F8;display:flex;align-items:center;justify-content:center;flex:none}.pt .thumb img{width:90%}
+.pt .shop{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #EEF1F6}.pt .shop:last-child{border:0}.pt .shop .mk{width:34px;height:34px;border-radius:10px;background:#EEF1F6;display:flex;align-items:center;justify-content:center;flex:none;color:#5B6575;font-size:18px}
+.pt .spon{border:1.5px solid #E6D3A9;background:#FFFBF2;border-radius:16px;padding:10px 12px;margin-top:10px}
+.pt .push{background:rgba(255,255,255,.96);border-radius:18px;padding:10px 12px;box-shadow:0 10px 30px rgba(15,27,51,.18);display:flex;gap:10px;align-items:flex-start;margin-top:8px;color:#10151B}
+.pt .push .ap{width:34px;height:34px;border-radius:9px;background:#0E1116;color:#CDB38B;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;font-size:15px}
+.pt .lock{position:absolute;inset:0;background:linear-gradient(160deg,#1F3B6B,#0E1A33);padding:70px 14px 14px;color:#fff}.pt .lock .time{text-align:center;font-size:54px;font-weight:700;letter-spacing:-2px}.pt .lock .date{text-align:center;font-size:13px;opacity:.8;margin-bottom:22px}
+.pt .biz{background:#10151B;color:#fff;border-radius:18px;padding:12px;margin-top:10px}.pt .biz .pill{background:#FFD691;color:#10151B}
+.pt .field{background:#fff;border:1.5px solid #E1E6EE;border-radius:12px;padding:8px 10px;margin-top:8px;font-size:12.5px}.pt .field small{display:block;font-size:10.5px;color:#5B6575}
+.pt .okc{color:#1F6E4E;font-weight:800}
+.pt .sec{margin-top:60px;scroll-margin-top:90px}.pt .sec h2{font-size:clamp(26px,3vw,36px);letter-spacing:-.9px;margin:0 0 6px;text-wrap:balance}.pt .sub2{color:var(--mu);margin:0 0 18px;line-height:1.55;max-width:65ch;font-size:16px}
+.pt .why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.pt .why div{background:var(--cd);border:1.5px solid var(--ln);border-radius:20px;padding:18px}
+.pt .why b{display:block;font-size:34px;letter-spacing:-1px;color:var(--b)}.pt .why p{margin:6px 0 8px;line-height:1.5;font-size:15px}.pt .why a{font-size:12.5px;color:var(--mu)}.pt .why .us{background:var(--bs);border-color:var(--bs)}.pt .why .us b{font-size:20px;color:inherit;letter-spacing:-.3px}
+.pt .price{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.pt .pc{background:var(--cd);border:1.5px solid var(--ln);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.pt .pc h3{margin:4px 0 0;font-size:16px}.pt .amt2{font-size:22px;font-weight:800;letter-spacing:-.5px}.pt .amt2 small{font-size:13px;color:var(--mu);font-weight:700}
+.pt .pc ul{margin:0;padding:0;list-style:none;display:grid;gap:5px;font-size:13.5px;color:var(--mu)}.pt .pc li::before{content:"✓ ";color:var(--g);font-weight:800}.pt .pc .pl{margin-top:auto}
+.pt .allfree{margin-top:12px;background:var(--gs);color:var(--g);border-radius:16px;padding:12px 16px;font-weight:700;font-size:14.5px;line-height:1.5}
+.pt .calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}.pt .box{background:var(--cd);border:1.5px solid var(--ln);border-radius:20px;padding:20px}
+.pt .calc label{display:flex;justify-content:space-between;font-weight:800;font-size:14px;margin-top:16px}.pt .calc label:first-child{margin-top:0}.pt .calc label b{color:var(--b);font-variant-numeric:tabular-nums}
+.pt .calc input[type=range]{width:100%;accent-color:#1F5FBF;margin-top:8px}
+.pt .res{display:grid;gap:10px}.pt .res .r{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-bottom:1px dashed var(--ln);padding-bottom:8px}.pt .res .r span{color:var(--mu);font-size:14px}.pt .res .r b{font-size:22px;letter-spacing:-.5px;font-variant-numeric:tabular-nums;white-space:nowrap}.pt .res .us b{color:var(--g)}
+.pt .fine2{font-size:12.5px;color:var(--mu);line-height:1.5;margin:6px 0 0}
+.pt .rpt{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:center}.pt .rpt ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}.pt .rpt li{display:flex;gap:10px;font-size:15px;line-height:1.5}.pt .rpt li svg{margin-top:3px}
+.pt .rep{background:var(--cd);border:1.5px solid var(--ln);border-radius:22px;padding:20px;box-shadow:0 10px 30px rgba(15,27,51,.08)}.pt .rep .rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.pt .rep .rh span{font-size:12px;color:var(--mu)}
+.pt .kp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pt .kp div{background:#F4F6FA;border-radius:14px;padding:12px}.pt .kp small{display:block;font-size:12px;color:var(--mu)}.pt .kp b{font-size:26px}
+.pt .bars{display:flex;gap:6px;align-items:flex-end;height:60px;margin-top:14px}.pt .bars i{flex:1;border-radius:6px 6px 0 0;background:var(--bs)}
+.pt .faq{display:grid;gap:10px}.pt .faq details{background:var(--cd);border:1.5px solid var(--ln);border-radius:16px;padding:14px 18px}
+.pt .faq summary{font-weight:800;font-size:15.5px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px}.pt .faq summary::-webkit-details-marker{display:none}.pt .faq summary::after{content:"+";color:var(--b);font-size:20px;line-height:1}.pt .faq details[open] summary::after{content:"–"}
+.pt .faq p{margin:10px 0 0;color:var(--mu);line-height:1.55;font-size:15px;max-width:70ch}
+.pt .join{margin:60px auto 40px;background:var(--bs);border-radius:28px;padding:30px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:30px;scroll-margin-top:90px}
+.pt .join h2{font-size:30px;letter-spacing:-.8px;margin:6px 0 8px;line-height:1.1}.pt .join p{color:var(--mu);line-height:1.55;margin:0 0 10px}
+.pt .docs{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.pt .docs a{display:inline-flex;gap:6px;align-items:center;background:var(--cd);border:1.5px solid var(--ln);border-radius:99px;padding:9px 13px;font-weight:800;font-size:13.5px;color:inherit;text-decoration:none}
+.pt .kchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.pt .kchip input{position:absolute;opacity:0;pointer-events:none}.pt .kchip span{display:inline-block;font-weight:800;font-size:13px;border-radius:99px;padding:8px 13px;border:1.5px solid var(--ln);background:var(--cd);cursor:pointer}
+.pt .kchip input:checked+span{border-color:var(--b);color:var(--b)}.pt .kchip input:focus-visible+span{outline:3px solid #FFC861}.pt .kchip.flash span{animation:ptfl 1.2s ease-out}@keyframes ptfl{0%{box-shadow:0 0 0 0 rgba(31,95,191,.5)}100%{box-shadow:0 0 0 14px rgba(31,95,191,0)}}
+.pt #pform input:not([type=radio]),.pt #pform textarea{width:100%;font:inherit;font-size:15px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--ln);background:var(--cd);color:inherit;margin-bottom:10px;box-sizing:border-box}
+.pt #pform .hp{position:absolute;left:-9999px;width:1px;height:1px}.pt #pform button[type=submit]{width:100%;justify-content:center}.pt #pmsg{font-weight:800;color:var(--g);min-height:1em}
+.pt .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pt button:focus-visible,.pt a:focus-visible,.pt summary:focus-visible{outline:3px solid #FFC861;outline-offset:2px}
+@media (max-width:960px){.pt .price{grid-template-columns:repeat(2,minmax(0,1fr))}.pt .why{grid-template-columns:1fr}}
+@media (max-width:860px){.pt .story{grid-template-columns:1fr;gap:20px}.pt .pw{position:relative;top:auto;order:-1}.pt .steplist{display:none}.pt .ctl{display:flex}.pt .calc,.pt .rpt,.pt .join{grid-template-columns:1fr}.pt .join{padding:22px}}
+@media (max-width:480px){.pt .ptabs,.pt .price{grid-template-columns:1fr}.pt .phone{zoom:.9}}
+@media (max-width:370px){.pt .phone{zoom:.8}}
+@media (prefers-reduced-motion:reduce){.pt *{animation:none!important;transition:none!important}}
+</style>
+<section class="w" style="padding-top:28px">
+  <div class="k">FOR BUSINESSES · ATLANTA</div>
+  <h1>Meet drivers at the exact moment they need you.</h1>
+  <p class="lead">Carvessa helps people plan a car they can afford and fix what goes wrong, in English and Spanish. See how a driver finds your business, step by step.</p>
+  <div><span class="offer">★ Founding partners in Atlanta: first month free, no contract</span></div>
+  <div class="btns"><a class="cta" href="#partner" id="heroCta">Become a partner →</a><a class="cta alt" href="#story" id="howBtn">See how it works</a></div>
+  <div class="proof"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Free for drivers, always</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>English y Español</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Atlanta first</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Safety data from NHTSA</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Every paid spot labeled</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Same fair-price check for everyone</span></div>
 </section>
-<section id="video" class="wrap"><div class="rowhead"><h2>See how it works · 30 seconds</h2></div><div class="v3 off-state" data-player>
-  <i class="bg"></i>
-  <div class="halo" aria-hidden="true"></div>
-  <div class="cockpit">
-    <button class="start reveal" data-start aria-label="Engine start: turn the screen on and play" style="--d:.3s"><span>ENGINE</span><b>START</b><span>STOP</span><i></i></button>
-    <div data-vbox>
-      <div class="off"><span>CARVESSA</span></div>
-      <div class="hint reveal" style="--d:.6s">Press START to play ▸</div>
-      <div class="bootv" aria-hidden="true"><div><svg viewBox="0 0 100 92"><defs><linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3DDB4"/><stop offset="1" stop-color="#A9844F"/></linearGradient></defs><polygon points="0,0 27,0 52,70 40,92" fill="url(#vg)"/><polygon points="100,0 73,0 48,70 60,92" fill="url(#vg)"/></svg><div>CARVESSA</div></div></div>
-      <div class="ui">
-        <div class="top"><span data-clock></span><span class="brand">CAR<b>V</b>ESSA</span><span class="r"><span>72°</span><span class="sig"></span></span></div>
-        <div class="vid"><video playsinline preload="none"></video>
-          <div class="ov"><button data-act="toggle" data-icon="toggle"></button><div class="seek" data-act="seek" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" tabindex="0"><i></i></div><span class="t-num"><span data-cur>0:00</span> / <span data-dur>0:00</span></span><button data-act="mute" aria-label="Sound on or off"></button><button data-full aria-label="Full screen"><span data-ico="full"></span></button></div>
-        </div>
-        <div class="side">
-          <div class="c route"><small>ROUTE</small><div data-map style="position:absolute;inset:0"></div><b data-left>0:00 left</b></div>
-          <button class="c next" data-nextcard aria-label="Play the next video"><small>NEXT UP</small><div class="art" data-next-art></div><b data-next-title></b><span class="go"><span data-ico="play"></span></span></button>
-        </div>
-        <div class="modes" data-chap></div>
-        <div class="dials">
-          <div class="dial"><button data-act="knob" data-k="vol" data-d="-1" aria-label="Volume down">‹</button><div><div class="ring" data-ring="vol"></div><small>VOLUME</small></div><button data-act="knob" data-k="vol" data-d="1" aria-label="Volume up">›</button></div>
-          <div class="dial"><button data-act="knob" data-k="rate" data-d="-1" aria-label="Slower">‹</button><div><div class="ring" data-ring="rate"></div><small>SPEED</small></div><button data-act="knob" data-k="rate" data-d="1" aria-label="Faster">›</button></div>
-        </div>
-      </div>
-    </div>
+<section class="w story" id="story">
+  <div>
+    <div class="ptabs" role="tablist" aria-label="Kind of business" id="ptabs"><button class="ptab" type="button" role="tab" data-i="0"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 16h14M6 16l1.5-5h9L18 16M5 16v3h2v-2M19 16v3h-2v-2M7.5 11 9 7h6l1.5 4"/></svg></span><span><b>Car dealers</b><small>Used and new, sales and service</small></span><span class="bar"></span></button><button class="ptab" type="button" role="tab" data-i="1"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span><span><b>Credit unions & lenders</b><small>Fair car loans, credit unions first</small></span><span class="bar"></span></button><button class="ptab" type="button" role="tab" data-i="2"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span><b>Insurance</b><small>The full cost before they buy</small></span><span class="bar"></span></button><button class="ptab" type="button" role="tab" data-i="3"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 1-2-2Z"/></svg></span><span><b>Repair & tire shops</b><small>When a light comes on, drivers find you</small></span><span class="bar"></span></button></div>
+    <div class="gets" id="pgets" aria-live="polite"></div>
+    <div class="ctl"><button type="button" id="ppause">❚❚ Pause</button><span id="pstep"></span></div>
+    <div class="steplist" id="psteps"></div>
+    <div class="endcta"><a class="cta" href="#partner" id="storyCta">Become a partner →</a><button class="copy" type="button" id="pcopy">Copy link to this story</button><span class="copied" id="pcopied" aria-live="polite"></span></div>
   </div>
-</div>
+  <div class="pw"><div class="glow" aria-hidden="true"></div>
+    <div class="phone"><div class="screen" id="pscreen" role="img" aria-label="Carvessa app example"><div class="notch"></div><div class="sbar"><span>9:41</span><span>●●● ▮</span></div><div class="dots" id="pdots"></div><div class="tapdot" id="ptap"></div><div id="pscr"></div><div class="cap" id="pcap"></div></div></div>
+    <p class="fine2" style="text-align:center;max-width:330px">Example screens. Business names are made up.</p>
+  </div>
 </section>
-<section class="wrap"><h2>Who we work with</h2><p class="lead">Every paid spot is labeled “Sponsored” or “Partner”. Our fair-price check is the same for everyone.</p><div class="whos"><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16h14M4 16l2-6h12l2 6v3H4zM7 19v1M17 19v1"/><circle cx="8" cy="16" r="1"/><circle cx="16" cy="16" r="1"/></svg></div><h3>Car dealers</h3><p class="sm">Used and new, sales and service.</p><ul><li>Shoppers who already know their monthly budget</li><li>Honest prices get a “Looks fair” tag</li><li>Service: recall and warning-light visits</li><li>First month free, then a small fee per ready buyer (planned)</li></ul></div><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.4-.4-2.6z"/></svg></div><h3>Repair &amp; tire shops</h3><p class="sm">When a light comes on, drivers find you.</p><ul><li>Your shop at the top of “Find a shop near me”, labeled</li><li>Your offer, in your words</li><li>Never inside safety steps</li><li>First month free, then a small fee per customer (planned)</li></ul></div><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></div><h3>Credit unions &amp; lenders</h3><p class="sm">Fair car loans. Credit unions first.</p><ul><li>Shoppers who already know their monthly payment</li><li>Your rates shown honestly, with a “Partner” label</li><li>We never take loan applications ourselves</li><li>Referral per funded loan (planned)</li></ul></div><div class="card who"><div class="icb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div><h3>Insurance</h3><p class="sm">The full cost before they buy.</p><ul><li>Quotes where people check what a car costs to own</li><li>Clear “Partner” label</li><li>Only when the driver asks</li><li>Referral per quote (planned)</li></ul></div></div></section>
-<section class="wrap"><h2>How it works</h2><div class="steps3">
-<div class="card step"><span class="n">1</span><h3>Drivers plan in Carvessa</h3><p>Budget, monthly payment, kind of car, or a warning light that just came on.</p></div>
-<div class="card step"><span class="n">2</span><h3>We show good local options</h3><p>Fair-price tags, out-the-door prices, shops near them, and your offer, clearly labeled.</p></div>
-<div class="card step"><span class="n">3</span><h3>They contact you</h3><p>Only when they choose to. You get a short report each week.</p></div>
-</div></section>
-<section class="wrap"><h2>Our promise</h2><div class="promise">
-<div class="card"><h3>To drivers</h3><p>Free, always. Safety help is never an ad. We never sell their information, and we share it only when they choose to contact you.</p></div>
-<div class="card"><h3>To partners</h3><p>No contract to start, no monthly fee in the pilot, a short weekly report, and an honest look at what worked.</p></div>
-</div></section>
-<section class="wrap"><h2>Who we are</h2><p class="lead">A small, local team from Atlanta. We built Carvessa so buying and keeping a car feels simple and fair, for drivers and for the businesses that serve them.</p></section>
-<section id="partner" class="wrap"><div class="notify pform">
-<div><h2>Want to be one of our first partners?</h2><p>Tell us about your business. We’ll call you within 2 business days. Or email <a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.</p><p class="fine">¿Prefiere español? Escríbanos y le llamamos en español.</p></div>
-<form id="pform" novalidate>
-<div class="kchips" role="radiogroup" aria-label="Kind of business"><label class="kchip"><input type="radio" name="kind" value="Dealer" checked><span>Dealer</span></label><label class="kchip"><input type="radio" name="kind" value="Repair / tire shop"><span>Repair / tire shop</span></label><label class="kchip"><input type="radio" name="kind" value="Lender"><span>Lender</span></label><label class="kchip"><input type="radio" name="kind" value="Insurance"><span>Insurance</span></label><label class="kchip"><input type="radio" name="kind" value="Other"><span>Other</span></label></div>
-<label class="sr" for="pb">Business name</label><input id="pb" name="business" placeholder="Business name" required maxlength="120" autocomplete="organization">
-<label class="sr" for="pn">Your name</label><input id="pn" name="name" placeholder="Your name" required maxlength="80" autocomplete="name">
-<label class="sr" for="pp">Phone</label><input id="pp" name="phone" type="tel" placeholder="Phone" required maxlength="30" autocomplete="tel">
-<label class="sr" for="pe">Business email</label><input id="pe" name="email" type="email" placeholder="Business email" required maxlength="254" autocomplete="email">
-<label class="sr" for="pt">Anything we should know? (optional)</label><textarea id="pt" name="note" rows="3" maxlength="800" placeholder="Anything we should know? (optional)"></textarea>
-<input class="hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
-<button type="submit">Send →</button>
-<p id="pmsg" role="status" aria-live="polite"></p>
-<p class="fine">We use this only to call you back about Carvessa. <a href="/new/privacy/">Privacy</a></p>
-</form></div></section>
+<section class="w sec" id="why"><h2>Why buyers want this</h2><p class="sub2">Surprise fees are the top worry. Carvessa shows the fair price and the out-the-door total first, so buyers walk in ready.</p>
+ <div class="why">
+  <div><b>71%</b><p>of used-car buyers ran into bait-and-switch pricing, paying about $640 extra on average.</p><a href="https://www.aol.com/articles/used-car-dealership-tactic-costing-151322912.html" rel="noopener">Source: CoPilot study, 2025</a></div>
+  <div><b>53%</b><p>of car buyers still did every step at the dealership.</p><a href="https://www.coxautoinc.com/insights/cox-automotive-car-buyer-journey-study-finds-efficiency-digital-tools-and-ai-drive-record-satisfaction/" rel="noopener">Source: Cox Automotive Car Buyer Journey, 2025</a></div>
+  <div class="us"><b>What Carvessa does</b><p>Buyers arrive knowing their monthly budget, the fair price and the total with Georgia tax and fees. Dealers with honest prices get a “Looks fair” tag.</p></div>
+ </div></section>
+<section class="w sec" id="pricing"><h2>Simple pricing</h2><p class="sub2">No monthly fee, no contract and no setup cost in the pilot. You only pay when Carvessa sends you someone. Amounts are planned and agreed with you before you pay anything.</p>
+ <div class="price"><div class="pc"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 16h14M6 16l1.5-5h9L18 16M5 16v3h2v-2M19 16v3h-2v-2M7.5 11 9 7h6l1.5 4"/></svg></span><h3>Car dealers</h3><div class="amt2">$15–$25 <small>per ready buyer</small></div><ul><li>Buyer knows their budget and car</li><li>Only when they choose to contact you</li><li>Service visits from recall and warning-light help</li></ul><span class="pl">Planned · first month free</span></div><div class="pc"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 1-2-2Z"/></svg></span><h3>Repair & tire shops</h3><div class="amt2">Small fee <small>per new customer</small></div><ul><li>Your shop on top of “Find a shop near me”</li><li>Labeled “Sponsored”, never in safety steps</li><li>Price set together in the pilot</li></ul><span class="pl">Planned · first month free</span></div><div class="pc"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span><h3>Credit unions & lenders</h3><div class="amt2">Referral <small>per funded loan</small></div><ul><li>Paid only when a loan is funded</li><li>Rates shown with a “Partner” label</li><li>Applications stay on your website</li></ul><span class="pl">Planned · first month free</span></div><div class="pc"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><h3>Insurance</h3><div class="amt2">Referral <small>per quote</small></div><ul><li>Only when the driver asks to compare</li><li>Clear “Partner” label</li><li>Reminders before renewal (planned)</li></ul><span class="pl">Planned · first month free</span></div></div>
+ <div class="allfree">Every founding partner in Atlanta: first month free. Stop any time with one email. Paying never changes our fair-price check or the safety help drivers see.</div></section>
+<section class="w sec" id="calc"><h2>What does a customer cost you today?</h2><p class="sub2">Type in your own numbers. We don’t guess them for you.</p>
+ <div class="calc"><div class="box">
+   <label for="cLeads">Leads you buy each month <b id="vLeads"></b></label><input type="range" id="cLeads" min="5" max="300" step="5" value="60">
+   <label for="cCost">What you pay per lead <b id="vCost"></b></label><input type="range" id="cCost" min="5" max="150" step="5" value="40">
+   <label for="cRate">Leads that turn into a sale <b id="vRate"></b></label><input type="range" id="cRate" min="1" max="30" step="1" value="10">
+  </div><div class="box res" aria-live="polite">
+   <div class="r"><span>You spend each month</span><b id="oSpend"></b></div>
+   <div class="r"><span>Sales from those leads</span><b id="oSales"></b></div>
+   <div class="r"><span>Cost per sale today</span><b id="oPer"></b></div>
+   <div class="r us"><span>If Carvessa sent you that many ready buyers (planned $15–$25 each)</span><b id="oUs"></b></div>
+   <p class="fine2">Planned pilot price for car dealers, first month free. Carvessa sends buyers who already know their budget and the car they want; your results will differ. Shops, lenders and insurers: we set your price together.</p>
+  </div></div></section>
+<section class="w sec rpt" id="report"><div><h2>A short report every week</h2><p class="sub2" style="margin-bottom:14px">See what Carvessa did for you, in plain numbers. Nothing to log in to.</p>
+  <ul><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg><span>How many drivers saw your business and tapped call or directions</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg><span>Each request, with what the driver asked for</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg><span>What you paid, and what to try next week</span></li></ul></div>
+ <div class="rep"><div class="rh"><b>Example Tire &amp; Auto · this week</b><span>Mon–Sun</span></div>
+  <div class="kp"><div><small>Drivers who saw you</small><b>—</b></div><div><small>Calls and directions</small><b>—</b></div><div><small>Requests sent to you</small><b>—</b></div><div><small>You paid</small><b>—</b></div></div>
+  <div class="bars" aria-hidden="true"><i style="height:30%"></i><i style="height:45%"></i><i style="height:38%"></i><i style="height:60%"></i><i style="height:52%"></i><i style="height:75%"></i><i style="height:40%"></i></div>
+  <span class="pl">Example layout · real numbers start with the pilot</span></div></section>
+<section class="w sec" id="faq"><h2>Questions businesses ask</h2><p class="sub2">Straight answers. Ask us anything else on the call.</p><div class="faq"><details><summary>Is there a contract?</summary><p>No. The pilot has no contract and no monthly fee. Stop any time with one email.</p></details><details><summary>Do drivers pay to use Carvessa?</summary><p>No. Carvessa is free for drivers, and safety help is never an ad.</p></details><details><summary>Can I pay to get a better price tag or rating?</summary><p>No. Our fair-price check and “Looks fair” tags work the same for everyone. Paying never changes them.</p></details><details><summary>How do you mark paid spots?</summary><p>Every paid spot says “Sponsored” or “Partner”. The closest shops and other options always show too.</p></details><details><summary>What if nobody comes from Carvessa?</summary><p>Then you don’t pay. You only pay when we send you a ready buyer, a customer or a funded loan, at a price agreed with you first.</p></details><details><summary>What do you share about drivers?</summary><p>Only what the driver chooses to send when they contact you. We never sell their information.</p></details><details><summary>Do you speak Spanish?</summary><p>Sí. The app works in English and Spanish, and we can call you in Spanish.</p></details><details><summary>How do I get started?</summary><p>Send the form below. We call you within 2 business days, set up your offer together, and your first month is free.</p></details></div></section>
+<section class="w"><div class="join" id="partner">
+ <div><div class="k">FOUNDING PARTNERS</div><h2>Want to be one of our first partners?</h2>
+  <p>First month free, no contract and no monthly fee in the pilot. Tell us about your business and we’ll call you within 2 business days. Or email <a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.</p>
+  <p>¿Prefiere español? Escríbanos y le llamamos en español.</p>
+  <p>A small, local team from Atlanta.</p>
+  <div class="docs"><a href="/assets/docs/carvessa-dealer-sheet.pdf">↓ One-page sheet for dealers (PDF)</a><a href="/assets/docs/carvessa-shop-sheet.pdf">↓ One-page sheet for shops (PDF)</a></div></div>
+ <form id="pform" novalidate>
+  <div class="kchips" role="radiogroup" aria-label="Kind of business"><label class="kchip"><input type="radio" name="kind" value="Dealer" checked><span>Dealer</span></label><label class="kchip"><input type="radio" name="kind" value="Repair / tire shop"><span>Repair / tire shop</span></label><label class="kchip"><input type="radio" name="kind" value="Lender"><span>Lender</span></label><label class="kchip"><input type="radio" name="kind" value="Insurance"><span>Insurance</span></label><label class="kchip"><input type="radio" name="kind" value="Other"><span>Other</span></label></div>
+  <label class="sr" for="pb">Business name</label><input id="pb" name="business" placeholder="Business name" required maxlength="120" autocomplete="organization">
+  <label class="sr" for="pn">Your name</label><input id="pn" name="name" placeholder="Your name" required maxlength="80" autocomplete="name">
+  <label class="sr" for="pp">Phone</label><input id="pp" name="phone" type="tel" placeholder="Phone" required maxlength="30" autocomplete="tel">
+  <label class="sr" for="pe">Business email</label><input id="pe" name="email" type="email" placeholder="Business email" required maxlength="254" autocomplete="email">
+  <label class="sr" for="pt">Anything we should know? (optional)</label><textarea id="pt" name="note" rows="3" maxlength="800" placeholder="Anything we should know? (optional)"></textarea>
+  <input class="hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+  <button class="cta" type="submit">Send →</button>
+  <p id="pmsg" role="status" aria-live="polite"></p>
+  <p class="fine2">We use this only to call you back about Carvessa. <a href="/new/privacy/">Privacy</a></p>
+ </form></div></section>
 </main>
 <script>
 (function(){
-  var HOUSE=48, CAR=54, GAP=6, tallQ=matchMedia('(max-width:600px)');
-  document.querySelectorAll('.vp').forEach(function(vp){
-    var v=vp.querySelector('video'), road=vp.querySelector('.vp-road'), car=vp.querySelector('.vp-car'), trail=vp.querySelector('.vp-trail'),
-        time=vp.querySelector('.vp-time'), pp=vp.querySelector('.vp-pp'), mute=vp.querySelector('.vp-mute'), langB=vp.querySelector('.vp-lang'),
-        lang='en', tall=null, raf=0, drag=false, arriveT=0;
-    function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+('0'+s%60).slice(-2);}
-    function dur(){return isFinite(v.duration)&&v.duration>0?v.duration:29;}
-    function load(keep){
-      tall=tallQ.matches; var f='/assets/video/maya-'+(tall?'tall':'wide')+'-'+lang, t=keep?v.currentTime:0, was=keep&&!v.paused;
-      vp.classList.toggle('tall',tall); v.poster='/assets/video/maya-poster'+(tall?'-tall':'')+'.jpg';
-      v.innerHTML='<source src="'+f+'.mp4" type="video/mp4"><source src="'+f+'.webm" type="video/webm">'; v.load();
-      if(t){v.addEventListener('loadedmetadata',function once(){v.removeEventListener('loadedmetadata',once);v.currentTime=t;if(was)play();});}
-    }
-    function track(){return Math.max(0,road.clientWidth-HOUSE-CAR-GAP);}
-    function draw(){
-      var p=Math.min(1,v.currentTime/dur()), x=p*track();
-      car.style.transform='translateX('+x+'px)'; trail.style.width=(x+CAR/2)+'px';
-      time.textContent=fmt(v.currentTime); road.setAttribute('aria-valuenow',Math.round(v.currentTime)); road.setAttribute('aria-valuetext',fmt(v.currentTime)+' of '+fmt(dur()));
-    }
-    function loop(){draw(); if(!v.paused)raf=requestAnimationFrame(loop);}
-    function unArrive(){clearTimeout(arriveT);road.classList.remove('arrive');vp.classList.remove('done');}
-    function play(){unArrive(); if(v.ended)v.currentTime=0; var p=v.play(); if(p&&p.catch)p.catch(function(){});}
-    function toggle(){v.paused?play():v.pause();}
-    v.addEventListener('play',function(){vp.classList.add('playing');pp.setAttribute('aria-label','Pause');cancelAnimationFrame(raf);loop();});
-    v.addEventListener('pause',function(){vp.classList.remove('playing');pp.setAttribute('aria-label','Play');draw();});
-    v.addEventListener('loadedmetadata',draw);
-    v.addEventListener('ended',function(){draw();road.classList.add('arrive');arriveT=setTimeout(function(){vp.classList.add('done');},2400);});
-    vp.querySelector('.vp-big').addEventListener('click',play); pp.addEventListener('click',toggle); v.addEventListener('click',toggle);
-    mute.addEventListener('click',function(){v.muted=!v.muted;vp.classList.toggle('muted',v.muted);mute.setAttribute('aria-label',v.muted?'Turn sound on':'Mute');});
-    langB.addEventListener('click',function(){lang=lang==='en'?'es':'en';langB.textContent=lang==='en'?'Español':'English';load(true);});
-    function seek(e){var r=road.getBoundingClientRect(), x=e.clientX-r.left-CAR/2; v.currentTime=Math.max(0,Math.min(1,x/track()))*dur(); unArrive(); draw();}
-    road.addEventListener('pointerdown',function(e){drag=true;road.setPointerCapture(e.pointerId);seek(e);});
-    road.addEventListener('pointermove',function(e){if(drag)seek(e);});
-    road.addEventListener('pointerup',function(){drag=false;});
-    road.addEventListener('keydown',function(e){var k=e.key;
-      if(k==='ArrowRight'||k==='ArrowLeft'){v.currentTime=Math.max(0,Math.min(dur(),v.currentTime+(k==='ArrowRight'?2:-2)));unArrive();draw();e.preventDefault();}
-      else if(k==='Home'){v.currentTime=0;unArrive();draw();e.preventDefault();}
-      else if(k===' '||k==='Enter'){toggle();e.preventDefault();}});
-    tallQ.addEventListener('change',function(){if(tallQ.matches!==tall)load(true);});
-    addEventListener('resize',draw);
-    load(false); draw();
-  });
-})();
-</script>
-<script>
-(function(){
-  var f=document.getElementById('pform'), msg=document.getElementById('pmsg');
+  var S=[{"key": "dealers", "name": "Car dealers", "cta": "Become a founding dealer", "kind": "Dealer", "gets": ["A buyer who already knows their monthly budget and the car they want", "Your car shows with an honest “Looks fair” tag next to the price", "The buyer taps “Ask the dealer” and you get their request (planned)"], "steps": [{"cap": "<b>1 · Plan.</b> Maria tells the coach what she can pay each month.", "html": "<div class=\"t2\">What monthly payment works for you?</div><div class=\"sm\">We use it to show cars you can really afford.</div>\n<div class=\"chipr\"><span>$300</span><span class=\"on\">$400</span><span>$500</span><span>$600+</span></div>\n<div class=\"c\"><div class=\"sm\">Your plan</div><div class=\"row sb\" style=\"margin-top:4px\"><b>Good credit · $1,750 down</b><span class=\"pill pb\">72 mo</span></div></div>\n<div class=\"c\"><div class=\"sm\">Kind of car</div><div class=\"chipr\" style=\"margin-top:6px\"><span class=\"on\">Sedan</span><span>SUV</span><span>Truck</span></div></div><div class=\"pbtn\">Show my matches</div>", "tap": [120, 300]}, {"cap": "<b>2 · Match.</b> She sees cars that fit, with our fair-price estimate.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Your top match</b></div><div class=\"band\"><img src=\"/assets/cutouts/civic.webp\" alt=\"\"></div>\n<div class=\"row sb\" style=\"margin-top:10px\"><b style=\"font-size:16px\">2022 Honda Civic</b><span class=\"pill pg\">92% match</span></div>\n<div class=\"row\" style=\"gap:6px;margin-top:6px;flex-wrap:wrap\"><span class=\"pill pg\">✓ Fits your plan</span><span class=\"pill pb\">Fair price $18K–$23K</span></div>\n<div class=\"c row sb\"><div><div class=\"sm\">About</div><div class=\"big\">≈ $391<span style=\"font-size:13px\">/mo</span></div></div><div style=\"text-align:right\"><div class=\"sm\">Out the door, GA</div><b>≈ $22,834</b></div></div>\n<div class=\"pbtn\">See 6 for sale near you</div>", "tap": [160, 330]}, {"cap": "<b>3 · Your car.</b> Your listing shows up near her, with an honest price tag.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>For sale near you</b></div>\n<div class=\"c\"><div class=\"row\"><div class=\"thumb\"><img src=\"/assets/cutouts/civic.webp\" alt=\"\"></div><div style=\"flex:1;min-width:0\"><b style=\"font-size:13.5px\">2022 Civic LX · 31,200 mi</b><div class=\"sm\">Example Motors · 12 min away</div></div></div>\n<div class=\"row sb\" style=\"margin-top:8px\"><b style=\"font-size:18px\">$19,900</b><span class=\"pill pg\">Looks fair</span></div></div>\n<div class=\"c\"><div class=\"row\"><div class=\"thumb\"><img src=\"/assets/cutouts/civic.webp\" alt=\"\"></div><div style=\"flex:1;min-width:0\"><b style=\"font-size:13.5px\">2022 Civic Sport · 44,900 mi</b><div class=\"sm\">Another dealer · 25 min</div></div></div>\n<div class=\"row sb\" style=\"margin-top:8px\"><b style=\"font-size:18px\">$22,750</b><span class=\"pill pgo\">A bit high</span></div></div>\n<div class=\"pbtn\">Ask Example Motors</div><div class=\"pbtn2\">Directions</div>", "tap": [160, 452]}, {"cap": "<b>4 · Ready buyer.</b> You get her request: budget, car and how to reach her. (planned)", "html": "<div class=\"top\"><b>Request sent ✓</b></div><div class=\"sm\">Example Motors will call you. We shared only what you chose.</div>\n<div class=\"biz\"><span class=\"pill\">NEW READY BUYER</span><div style=\"font-weight:800;font-size:15px;margin-top:8px\">Maria · wants a 2022 Civic</div>\n<div style=\"font-size:12.5px;opacity:.85;line-height:1.6;margin-top:4px\">Budget about $400/mo · $1,750 down<br>Good credit · buying this month<br>Lives 12 min away · prefers a call</div></div>\n<div class=\"sm\" style=\"margin-top:10px\">What the dealer sees. No ads in between, no bidding for the buyer.</div>", "tap": [0, 0]}]}, {"key": "lenders", "name": "Credit unions & lenders", "cta": "Become a founding lender", "kind": "Lender", "gets": ["People who picked a car and know the payment they can handle", "Your rates shown plainly with a “Partner” label", "They continue on your website; we never take loan applications (planned)"], "steps": [{"cap": "<b>1 · The car.</b> James found a 2022 Corolla Hybrid that fits his plan.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>2022 Toyota Corolla Hybrid</b></div><div class=\"band\"><img src=\"/assets/cutouts/corolla.webp\" alt=\"\"></div>\n<div class=\"c\"><div class=\"line\"><span>Price, used (est.)</span><b>$18,500</b></div><div class=\"line\"><span>Georgia tax + fees</span><span>≈ $2,194</span></div><div class=\"line\"><span>Money down</span><span>− $1,750</span></div><div class=\"line\"><span>Loan amount</span><span>≈ $18,944</span></div></div>\n<div class=\"pbtn\">How do I pay for it?</div>", "tap": [160, 500]}, {"cap": "<b>2 · Compare.</b> Loan options side by side. Credit unions first.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Ways to pay</b></div><div class=\"sm\">Example rates. Your real rate depends on your credit.</div>\n<div class=\"spon\"><div class=\"row sb\"><b>Example Credit Union</b><span class=\"pill pgo\">Partner</span></div><div class=\"row sb\" style=\"margin-top:6px\"><span class=\"sm\">Used car loan from</span><b style=\"font-size:18px\">5.9% APR</b></div><div class=\"sm\">≈ $313/mo for 72 months (example)</div></div>\n<div class=\"c\"><div class=\"row sb\"><b>Typical bank loan</b><span class=\"sm\">avg.</span></div><div class=\"row sb\" style=\"margin-top:6px\"><span class=\"sm\">Used car loan about</span><b>7.7% APR</b></div></div>\n<div class=\"c\"><div class=\"row sb\"><b>Dealer financing</b><span class=\"sm\">varies</span></div><div class=\"sm\" style=\"margin-top:4px\">Ask for the APR in writing.</div></div>", "tap": [160, 250]}, {"cap": "<b>3 · Your site.</b> He goes to your website to apply. We never collect applications.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Example Credit Union</b></div>\n<div class=\"c\"><div class=\"sm\">You’re leaving Carvessa</div><div style=\"font-weight:800;font-size:15px;margin-top:4px\">Apply on Example Credit Union’s website</div><div class=\"sm\" style=\"margin-top:6px\">Carvessa may earn money if you get a loan. Our fair-price check is the same either way.</div></div>\n<div class=\"c row\"><span class=\"okc\">✓</span><div class=\"sm\">Your payment plan goes with you, so you don’t retype it.</div></div>\n<div class=\"pbtn\">Continue to apply ↗</div><div class=\"pbtn2\">Not now</div>", "tap": [160, 420]}, {"cap": "<b>4 · Funded.</b> You pay a referral only when a loan is funded. (planned)", "html": "<div class=\"top\"><b>Partner report</b></div><div class=\"sm\">What the credit union sees each week (example layout).</div>\n<div class=\"biz\"><span class=\"pill\">THIS WEEK · EXAMPLE</span><div class=\"line dk\" style=\"margin-top:8px\"><span>Visits to your site</span><b>—</b></div><div class=\"line dk\"><span>Applications started</span><b>—</b></div><div class=\"line dk\" style=\"border:0\"><span>Loans funded</span><b>—</b></div></div>\n<div class=\"sm\" style=\"margin-top:10px\">Real numbers appear once the pilot starts. We never make them up.</div>", "tap": [0, 0]}]}, {"key": "insurance", "name": "Insurance", "cta": "Become a founding insurance partner", "kind": "Insurance", "gets": ["Drivers who save their renewal date in their free account (planned)", "A reminder before renewal with your quote button, labeled “Partner”", "Only when the driver asks to compare"], "steps": [{"cap": "<b>1 · My Garage.</b> Ana adds her insurance renewal date to her car. (planned)", "html": "<div class=\"top\"><b>My Garage</b></div><div class=\"band\"><img src=\"/assets/cutouts/kona.webp\" alt=\"\"></div>\n<div class=\"c\"><div style=\"font-weight:800\">Add your insurance</div><div class=\"sm\">We’ll remind you before it renews.</div>\n<div class=\"field\"><small>Company</small>Your current insurer</div><div class=\"field\"><small>Renews on</small>December 12</div><div class=\"field\"><small>Pays about</small>$142 a month</div></div><div class=\"pbtn\">Save</div>", "tap": [160, 452]}, {"cap": "<b>2 · Reminder.</b> Two weeks before renewal, a gentle heads-up.", "html": "<div class=\"lock\"><div class=\"time\">9:41</div><div class=\"date\">Saturday, November 28</div>\n<div class=\"push\"><div class=\"ap\">V</div><div><div style=\"font-weight:800;font-size:13px\">Carvessa</div><div style=\"font-size:12.5px;line-height:1.4\">Your car insurance renews in 14 days. Want to compare quotes before then?</div></div></div>\n<div class=\"push\" style=\"opacity:.6\"><div class=\"ap\" style=\"background:#3A3F48;color:#fff\">✓</div><div style=\"font-size:12px\">Oil change due in about 800 miles</div></div></div>", "tap": [160, 232]}, {"cap": "<b>3 · Compare.</b> Your quote button shows, clearly marked “Partner”.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Compare car insurance</b></div><div class=\"sm\">For your 2022 Hyundai Kona · ZIP 30310</div>\n<div class=\"spon\"><div class=\"row sb\"><b>Example Insurance</b><span class=\"pill pgo\">Partner</span></div><div class=\"sm\" style=\"margin-top:4px\">Get a quote in about 2 minutes</div><div class=\"pbtn\" style=\"margin-top:8px\">Get my quote ↗</div></div>\n<div class=\"c\"><div class=\"sm\">You pay now</div><b style=\"font-size:18px\">$142/mo</b></div>\n<div class=\"sm\" style=\"margin-top:10px\">Carvessa may earn money from partners. We never sell your info.</div>", "tap": [160, 330]}, {"cap": "<b>4 · New customer.</b> Referral per quote; you only hear from drivers who asked. (planned)", "html": "<div class=\"top\"><b>Quote requested ✓</b></div><div class=\"sm\">Example Insurance will email your quote.</div>\n<div class=\"biz\"><span class=\"pill\">NEW QUOTE REQUEST</span><div style=\"font-weight:800;font-size:15px;margin-top:8px\">2022 Hyundai Kona · Atlanta</div><div style=\"font-size:12.5px;opacity:.85;line-height:1.6;margin-top:4px\">Renews Dec 12 · shopping now<br>Asked to be contacted by email</div></div>\n<div class=\"c row\"><span class=\"okc\">✓</span><div class=\"sm\">Ana gets a reminder next year too, so you stay in front of her.</div></div>", "tap": [0, 0]}]}, {"key": "shops", "name": "Repair & tire shops", "cta": "Become a founding shop", "kind": "Repair / tire shop", "gets": ["Drivers who just learned what’s wrong and need a shop now", "Your shop on top of “Find a shop near me”, labeled “Sponsored” (planned)", "Never inside safety steps; the closest shops always show too"], "steps": [{"cap": "<b>1 · Problem.</b> Kevin’s tire light came on. He opens Carvessa.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Low tire pressure</b></div>\n<div class=\"c row\"><div class=\"thumb\" style=\"background:#FFF4DE\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#B9770E\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M7 5c-2 2-3 4.5-3 7s1 5 3 7M17 5c2 2 3 4.5 3 7s-1 5-3 7\"/><path d=\"M12 7v6M12 16v.5\"/></svg></div><div><b>Tire pressure light</b><div class=\"sm\">Usually not an emergency. Check soon.</div></div></div>\n<div class=\"bub me\">The light is on and the back tire looks a little low</div>\n<div class=\"bub\">Do you see anything in the tire, like a nail or a screw?</div>\n<div class=\"chipr\"><span class=\"on\">Yes, a screw</span><span>No</span><span>Not sure</span></div>", "tap": [200, 470]}, {"cap": "<b>2 · Answer.</b> The app explains what it likely is and a rough cost.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Low tire pressure</b></div>\n<div class=\"bub me\">Yes, a screw in the middle of the tread</div>\n<div class=\"bub\"><b>Leave it in for now.</b> A screw in the middle of the tread can usually be patched.<br><br>Patch: about $20–$50 (estimate). Add air and drive slowly to a tire shop.</div>\n<div class=\"c\"><div class=\"sm\">We can be wrong. A mechanic can tell you for sure.</div></div><div class=\"pbtn\">Find a tire shop near me</div>", "tap": [160, 500]}, {"cap": "<b>3 · Your shop.</b> One sponsored shop on top, the closest shops under it.", "html": "<div class=\"top\"><span class=\"bk\">‹</span><b>Tire shops near you</b></div>\n<div class=\"spon\"><div class=\"row sb\"><b>Example Tire &amp; Auto</b><span class=\"pill pgo\">Sponsored</span></div><div class=\"sm\" style=\"margin-top:3px\">1.2 mi · Open until 7 PM · Hablamos español</div><div class=\"row\" style=\"gap:6px;margin-top:6px;flex-wrap:wrap\"><span class=\"pill pg\">Free tire check</span><span class=\"pill pb\">Patch from $25</span></div><div class=\"pbtn\" style=\"margin-top:8px\">Call · Directions</div></div>\n<div class=\"sm\" style=\"margin:12px 0 2px;font-weight:800\">Closest to you</div>\n<div class=\"shop\"><span class=\"mk\">⌖</span><div style=\"flex:1\"><b style=\"font-size:13px\">Neighborhood Tire Shop</b><div class=\"sm\">0.8 mi</div></div></div>\n<div class=\"shop\"><span class=\"mk\">⌖</span><div style=\"flex:1\"><b style=\"font-size:13px\">Corner Auto Repair</b><div class=\"sm\">1.6 mi</div></div></div>\n<div class=\"shop\"><span class=\"mk\">⌖</span><div style=\"flex:1\"><b style=\"font-size:13px\">City Tire Center</b><div class=\"sm\">2.1 mi</div></div></div>", "tap": [160, 240]}, {"cap": "<b>4 · Walk-in.</b> He shows up with a note for the mechanic. Small fee per customer. (planned)", "html": "<div class=\"top\"><b>Note for the mechanic</b></div>\n<div class=\"c\" style=\"font-size:12.5px;line-height:1.55\"><b>2019 Toyota RAV4 · 48,000 mi</b><br>Tire pressure light on. Back right tire low. Screw in the middle of the tread. Added air, drove slowly.</div>\n<div class=\"biz\"><span class=\"pill\">NEW CUSTOMER · FROM CARVESSA</span><div style=\"font-weight:800;font-size:15px;margin-top:8px\">Kevin · tire patch</div><div style=\"font-size:12.5px;opacity:.85;line-height:1.6;margin-top:4px\">Coming in today · 1.2 mi away</div></div>", "tap": [0, 0]}]}],W={"get": "What {n} get", "step": "{n} · step {a} of {b}", "pause": "❚❚ Pause", "play": "▶ Play", "copied": "Copied: ", "page": "https://carvessa.app/partners/", "plan": "Planned · comes with the pilot", "need": "Please add your business name, your name, a phone number and your business email.", "sending": "Sending…", "thanks": "Thank you! We’ll call you within 2 business days.", "fail": "Couldn’t send. Please email us at "};
+  var $=function(id){return document.getElementById(id);};
+  var RM=matchMedia('(prefers-reduced-motion: reduce)').matches,WIDE=matchMedia('(min-width: 861px)');
+  var si=0,st=0,timer=null,paused=RM,DUR=4200,io=null,tabs=[].slice.call(document.querySelectorAll('.ptab'));
+  var CHK='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>';
+  function parts(c){var m=c.match(/<b>\d+ · (.*?)\.<\/b>\s*(.*)$/),t=m?m[2]:c;return{title:m?m[1]:'',text:t.replace(/\s*\((planned|planeado)\)/,''),pl:/\((planned|planeado)\)/.test(t)};}
+  function pick(i,fromTab){si=i;var s=S[i];try{history.replaceState(null,'','#'+s.key);}catch(e){}
+    tabs.forEach(function(b,k){b.setAttribute('aria-selected',String(k===i));});
+    $('pgets').innerHTML='<h3>'+W.get.replace('{n}',s.name.toLowerCase())+'</h3><ul>'+s.gets.map(function(g){return '<li>'+CHK+'<span>'+g+'</span></li>';}).join('')+'</ul>';
+    $('storyCta').textContent=s.cta+' →';$('heroCta').textContent=s.cta+' →';
+    $('pscr').innerHTML=s.steps.map(function(x){return '<div class="step">'+x.html+'</div>';}).join('');
+    $('pdots').innerHTML=s.steps.map(function(){return '<i></i>';}).join('');
+    $('psteps').innerHTML=s.steps.map(function(x,k){var p=parts(x.cap);return '<div class="sc" data-k="'+k+'"><span class="n">'+(k+1)+'</span><h3>'+p.title+'</h3><p>'+p.text+'</p>'+(p.pl?'<span class="pl">'+W.plan+'</span>':'')+'</div>';}).join('');
+    watch();show(0);
+    if(fromTab&&WIDE.matches){var top=$('story').getBoundingClientRect().top+scrollY-80;if(Math.abs(scrollY-top)>40)scrollTo({top:top,behavior:RM?'auto':'smooth'});}}
+  function show(j){st=j;var s=S[si],auto=!WIDE.matches&&!paused;
+    [].forEach.call($('pscr').children,function(el,k){el.className='step'+(k===j?' on':k<j?' past':'');});
+    [].forEach.call($('pdots').children,function(d,k){d.className=k===j?'on':'';});
+    [].forEach.call($('psteps').children,function(el,k){el.classList.toggle('on',k===j);});
+    $('pcap').innerHTML=s.steps[j].cap;$('pstep').textContent=W.step.replace('{n}',s.name).replace('{a}',j+1).replace('{b}',s.steps.length);
+    tabs.forEach(function(b,k){var bar=b.querySelector('.bar');bar.style.transition='none';bar.style.width=k===si?(j/s.steps.length*100)+'%':'0';});
+    var bar=tabs[si].querySelector('.bar');requestAnimationFrame(function(){bar.style.transition=auto?'width '+DUR+'ms linear':'width .3s';bar.style.width=((j+1)/s.steps.length*100)+'%';});
+    var t=s.steps[j].tap,td=$('ptap');if(t[0]&&!RM)setTimeout(function(){td.style.left=(t[0]-17)+'px';td.style.top=(t[1]-17)+'px';td.classList.remove('go');void td.offsetWidth;td.classList.add('go');},auto?DUR-1400:500);
+    clearTimeout(timer);if(auto)timer=setTimeout(function(){if(st+1<s.steps.length)show(st+1);else pick((si+1)%S.length);},DUR);}
+  function watch(){if(io)io.disconnect();if(!WIDE.matches||!window.IntersectionObserver)return;io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)show(+e.target.getAttribute('data-k'));});},{rootMargin:'-45% 0px -45% 0px'});[].forEach.call($('psteps').children,function(el){io.observe(el);});}
+  if(WIDE.addEventListener)WIDE.addEventListener('change',function(){watch();show(st);});
+  tabs.forEach(function(b){b.addEventListener('click',function(){pick(+b.getAttribute('data-i'),true);});});
+  $('ppause').textContent=paused?W.play:W.pause;
+  $('ppause').addEventListener('click',function(){paused=!paused;this.textContent=paused?W.play:W.pause;show(st);});
+  $('pscreen').addEventListener('click',function(){if(!WIDE.matches){paused=true;$('ppause').textContent=W.play;}show((st+1)%S[si].steps.length);});
+  function toForm(e){e.preventDefault();var k=S[si].kind,r=document.querySelector('#pform input[name=kind][value="'+k+'"]');if(r)r.checked=true;
+    $('partner').scrollIntoView({behavior:RM?'auto':'smooth'});setTimeout(function(){var l=r&&r.parentNode;if(l){l.classList.add('flash');setTimeout(function(){l.classList.remove('flash');},1300);}$('pb').focus({preventScroll:true});},RM?0:500);}
+  $('heroCta').addEventListener('click',toForm);$('storyCta').addEventListener('click',toForm);
+  $('howBtn').addEventListener('click',function(e){e.preventDefault();$('story').scrollIntoView({behavior:RM?'auto':'smooth'});});
+  $('pcopy').addEventListener('click',function(){var u=W.page+'#'+S[si].key;var ok=function(){$('pcopied').textContent=W.copied+u;};if(navigator.clipboard)navigator.clipboard.writeText(u).then(ok,ok);else ok();});
+  var fm=function(n){return '$'+Math.round(n).toLocaleString('en-US');};
+  function calc(){var L=+$('cLeads').value,C=+$('cCost').value,R=+$('cRate').value/100,sp=L*C,sa=L*R,n=Math.max(1,Math.round(sa));
+    $('vLeads').textContent=L;$('vCost').textContent=fm(C);$('vRate').textContent=Math.round(R*100)+'%';
+    $('oSpend').textContent=fm(sp);$('oSales').textContent=sa<1?sa.toFixed(1):Math.round(sa);$('oPer').textContent=sa>0?fm(sp/sa):'—';$('oUs').textContent=fm(n*15)+'–'+fm(n*25);}
+  ['cLeads','cCost','cRate'].forEach(function(id){$(id).addEventListener('input',calc);});calc();
+  var start=0;S.forEach(function(s,i){if(location.hash==='#'+s.key)start=i;});pick(start,false);
+  var f=$('pform'),msg=$('pmsg');
   f.addEventListener('submit',function(ev){
     ev.preventDefault(); if(f.company.value) return;
-    var b=f.business.value.trim(), n=f.name.value.trim(), ph=f.phone.value.trim();
-    var em=f.email.value.trim();
-    if(!b||!n||ph.replace(/\D/g,'').length<7||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){msg.textContent='Please add your business name, your name, a phone number and your business email.';return;}
+    var b=f.business.value.trim(), n=f.name.value.trim(), ph=f.phone.value.trim(), em=f.email.value.trim();
+    if(!b||!n||ph.replace(/\D/g,'').length<7||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){msg.textContent=W.need;return;}
     var kind=(f.querySelector('input[name=kind]:checked')||{value:'Other'}).value;
     var text='[Partner lead] kind='+kind+' | business='+b+' | name='+n+' | phone='+ph+' | email='+em+' | note='+f.note.value.trim().replace(/\s+/g,' ');
-    var btn=f.querySelector('button'); btn.disabled=true; msg.textContent='Sending…';
+    var btn=f.querySelector('button[type=submit]'); btn.disabled=true; msg.textContent=W.sending;
     fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/feedback',{method:'POST',headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'},
       body:JSON.stringify({mood:'ok',message:text.slice(0,2000),screen:'website:/partners',platform:'web'})})
-    .then(function(r){if(!r.ok)throw 0; f.reset(); msg.textContent='Thank you! We’ll call you within 2 business days.';})
-    .catch(function(){msg.innerHTML='Couldn’t send. Please email us at <a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.';})
+    .then(function(r){if(!r.ok)throw 0; f.reset(); msg.textContent=W.thanks; if(window.gtag)gtag('event','partner_form_sent',{kind:kind,lang:'en'});})
+    .catch(function(){msg.innerHTML=W.fail+'<a href="mailto:hello@carvessa.app">hello@carvessa.app</a>.';})
     .then(function(){btn.disabled=false;});
   });
 })();
@@ -170,7 +266,7 @@
     <div><b>Carvessa</b><span><a href="/new/#about">About us</a><br><a href="/new/partners/">For businesses</a><br><a href="/new/#faq">FAQ</a><br><a href="mailto:hello@carvessa.app">Contact</a></span></div>
     <div><b>Legal</b><span><a href="/new/privacy/">Privacy</a><br><a href="/new/terms/">Terms</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA · Carvessa™ and the V logo are trademarks of Carvessa.</span><span>Prices and payments are estimates, not offers. Car data from NHTSA and EPA.</span></div></div>
-<script src="/assets/player.js?v=9b798d30"></script>
+
 <script>(function(){
   var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
