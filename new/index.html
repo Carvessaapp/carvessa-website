@@ -60,7 +60,7 @@
         <div class="stars" id="cstars" aria-hidden="true"></div><svg class="city" id="ccity" aria-hidden="true"></svg><div class="lamps" id="clamps" aria-hidden="true"></div>
         <div class="asph" aria-hidden="true"></div><div class="curb" aria-hidden="true"></div><div class="road" aria-hidden="true"></div>
         <div class="cstring" aria-hidden="true"></div><a class="ctag" id="ctag" href="/cars/"></a>
-        <img class="hero in" id="hero" src="/assets/cutouts/versa.webp" alt="">
+        <img class="hero in" id="hero" src="/assets/cutouts/civic.webp" alt="2022 Honda Civic" fetchpriority="high" decoding="async">
         <button type="button" class="cnav l" id="cprev" aria-label="Previous car">‹</button><button type="button" class="cnav r" id="cnext" aria-label="Next car">›</button>
       </div>
       <div class="miniw"><div class="mini" id="mini" aria-live="polite"></div><button type="button" class="mnav l" id="mprev" aria-label="Scroll left">‹</button><button type="button" class="mnav r" id="mnext" aria-label="Scroll right">›</button></div>
@@ -208,7 +208,7 @@
     var four=fits, wide=Math.max.apply(null,fits.map(function(c){return c.pay;}).concat([1])), bar=function(c){return Math.min(100,c.pay/Math.min(top,wide)*100);}, key=four.map(function(c){return c.id;}).join()+kind;
     if(key===lastKey){[].forEach.call($('mini').children,function(el,i){var c=four[i];if(c&&el.querySelector('.bar i'))el.querySelector('.bar i').style.width=bar(c)+'%';});return;}
     lastKey=key; cList=fits; ci=0; cDriveSoon();
-    var h=$('hero'); if(four[0]){h.style.opacity=0;setTimeout(function(){h.src='/assets/cutouts/'+four[0].id+'.webp';h.alt=four[0].name;h.style.opacity=1;},180);}
+    var h=$('hero'),hs='/assets/cutouts/'+(four[0]?four[0].id:'')+'.webp'; if(four[0]&&h.getAttribute('src')===hs){h.alt=four[0].name;}else if(four[0]){h.style.opacity=0;setTimeout(function(){h.src='/assets/cutouts/'+four[0].id+'.webp';h.alt=four[0].name;h.style.opacity=1;},180);}
     $('mini').innerHTML=four.length?four.map(function(c){return '<a class="mc swap" href="'+CB+c.slug+'/"><div class="bd"><img src="/assets/cutouts/'+c.id+'.webp" alt=""></div><b>'+c.name+'</b><div class="p">'+money(c.price)+(c.isNew?' new':'')+'<span>≈'+money(c.pay)+'</span></div><div class="bar"><i style="width:'+bar(c)+'%"></i></div></a>';}).join(''):'<div class="mc" style="grid-column:1/-1">No '+(kind||'car').toLowerCase()+' fits this payment yet. Turn the gauge up a little.</div>';
     $('mini').scrollLeft=0;navState();
     requestAnimationFrame(function(){[].forEach.call($('mini').children,function(el,i){setTimeout(function(){el.classList.remove('swap');},60*Math.min(i,6));});});
