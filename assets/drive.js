@@ -65,7 +65,7 @@
           var r = el('i', '', o); r.style.cssText += 'width:' + hpx + 'px;height:' + hpx + 'px;margin:' + (-hpx / 2) + 'px 0 0 ' + (-hpx / 2) + 'px;background-image:url(' + img.src + ');background-size:' + (cw * kx) + 'px ' + ch + 'px;background-position:' + (-(x * kx - hpx / 2)) + 'px ' + (-(y - hpx / 2)) + 'px;transform:scaleX(' + (1 / kx) + ')';
           wheels.push({ el: r, k: 1 / kx, circ: Math.PI * hpx });
         });
-        (d.cover || []).forEach(function (Q) { var p = el('i', 'dplate', host); p.style.cssText += 'left:' + Q.x + '%;top:' + Q.y + '%;width:' + Q.w + '%;height:' + Q.h + '%'; });
+        (d.cover || []).forEach(function (Q) { var p = el('i', 'dplate', host); p.style.cssText += 'left:' + Q.x + '%;top:' + Q.y + '%;width:' + Q.w + '%;height:' + Q.h + '%' + (Q.c ? ';background:' + Q.c + ';border-radius:' + (Q.r || '4px') + ';box-shadow:none' : ''); });
         resolve({ el: car, body: body, lights: lights, wheels: wheels, c: c, d: d, cw: cw });
       }
       if (img.complete && img.naturalWidth) ready(); else { img.onload = ready; img.onerror = ready; }
