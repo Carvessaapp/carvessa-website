@@ -7,6 +7,9 @@
   var D = window.DRIVE || {}, st = document.getElementById('stageC'), tag = document.getElementById('ctag');
   if (!st || !tag) return;
   var wide = matchMedia('(min-width:1200px)'), still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Phones: only with the preview class 'mst' (picture 252 A) until Loudjier says yes.
+  var MST = document.documentElement.classList.contains('mst');
+  function on() { return wide.matches || MST; }
   var IN = [.15, .7, .25, 1], OUT = [.55, 0, .9, .45], TIN = 1150, TOUT = 800, GAP = 60, FLOOR = 528;
   var cur = null, busy = false, want = null, render = null;
 
@@ -23,7 +26,11 @@
   var eIn = bez(IN), eOut = bez(OUT);
   function ease(p) { return 'cubic-bezier(' + p.join(',') + ')'; }
   // Where the car stops (middle of the right side) and how big cars are for this box width.
-  function geo() { var W = st.clientWidth, sw = Math.max(200, W - 396); return { W: W, cx: W - 16 - sw / 2, s: Math.min(1, (sw + 40) / 440) }; }
+  function geo() {
+    var W = st.clientWidth;
+    if (!wide.matches) return { W: W, cx: W / 2, s: Math.min(.7, W / 560), floor: st.clientHeight - 40 };
+    var sw = Math.max(200, W - 396); return { W: W, cx: W - 16 - sw / 2, s: Math.min(1, (sw + 40) / 440), floor: FLOOR };
+  }
   function place() { var cx = geo().cx; st.style.setProperty('--cx', cx + 'px'); if (cur && !busy) cur.el.style.left = cx + 'px'; }
 
   // How long after the last car starts leaving the next one can start coming, so they always keep GAP px apart.
@@ -53,7 +60,7 @@
         var asp = img.naturalWidth / img.naturalHeight || 2;
         // Same size: every car covers about the same area, whatever the shape of its photo.
         var cw = Math.min(380, Math.sqrt(340 * 178 * asp)) * g.s, ch = cw / asp, lights = [], wheels = [];
-        car.style.width = cw + 'px'; car.style.marginLeft = (-cw / 2) + 'px'; car.style.top = (FLOOR - ch + 4) + 'px';
+        car.style.width = cw + 'px'; car.style.marginLeft = (-cw / 2) + 'px'; car.style.top = (g.floor - ch + 4) + 'px';
         (d.lights || []).forEach(function (L, i) {
           var h = el('i', 'dhl', host); h.style.left = L.x + '%'; h.style.top = L.y + '%'; h.style.width = (L.w * cw / 100 * 2.3) + 'px'; h.style.height = (L.h * cw / 100 * 3.8) + 'px'; lights.push(h);
           if (i === 0) { var b = el('i', 'dbeam', host); b.style.top = L.y + '%'; if (d.face > 0) b.style.left = L.x + '%'; else { b.style.left = 'calc(' + L.x + '% - 170px)'; b.style.transform = 'translateY(-50%) scaleX(-1)'; } lights.push(b); }
@@ -115,7 +122,7 @@
   }
   // A car with no wheel data can't drive nicely: it just appears, parked.
   window.Drive = {
-    on: function () { return wide.matches; },
+    on: on,
     has: function (id) { return !!D[id]; },
     show: function (c, r) { render = r || render; place(); show(c); }
   };
@@ -128,7 +135,7 @@
 (function () {
   var svg = document.getElementById('ccity'), st = document.getElementById('stageC');
   if (!svg || !st) return;
-  var NS = 'http://www.w3.org/2000/svg', G = 200, K = 2.2, still = matchMedia('(prefers-reduced-motion: reduce)').matches, wins = [], timer = 0;
+  var NS = 'http://www.w3.org/2000/svg', G = 200, K = 2.2, wideQ = matchMedia('(min-width:1200px)'), MST = document.documentElement.classList.contains('mst'), still = matchMedia('(prefers-reduced-motion: reduce)').matches, wins = [], timer = 0;
   var BACK = [{x:0,w:22,h:22},{x:20,w:14,h:32,top:'pyr'},{x:36,w:18,h:27},{x:56,w:12,h:37,top:'fin'},{x:70,w:20,h:24},{x:182,w:16,h:29},{x:236,w:14,h:42,top:'pyr'},{x:252,w:20,h:33},{x:274,w:16,h:45,top:'oac'},{x:292,w:22,h:29},{x:314,w:16,h:22}];
   var FRONT = [{x:6,w:26,h:16},{x:34,w:20,h:33,top:'step'},{x:58,w:18,h:40,top:'round'},{x:80,w:24,h:20},{x:104,w:20,h:45,top:'twin'},{x:128,w:22,h:48,top:'step'},{x:152,w:12,h:22},{x:166,w:20,h:60,top:'boa'},{x:190,w:24,h:26},{x:218,w:18,h:50,top:'oac'},{x:240,w:26,h:19},{x:270,w:16,h:30},{x:290,w:30,h:17}];
   function path(t) {
@@ -148,9 +155,10 @@
   function draw() {
     var Wpx = st.clientWidth; if (!Wpx) return;
     while (svg.firstChild) svg.removeChild(svg.firstChild); wins = [];
+    var wd = wideQ.matches; G = wd ? 200 : (svg.clientHeight || 150); K = wd ? 2.2 : 1.45;
     svg.setAttribute('viewBox', '0 0 ' + Wpx + ' ' + G);
     // Bank of America Plaza stands between the price buttons and the car.
-    var sw = Math.max(200, Wpx - 396), cx = Wpx - 16 - sw / 2, W = Wpx / K, x0 = (cx - 114) / K - 176, r = seeded(11);
+    var sw = Math.max(200, Wpx - 396), cx = Wpx - 16 - sw / 2, W = Wpx / K, x0 = (wd ? cx - 114 : Wpx * .22) / K - 176, r = seeded(11);
     var back = BACK.map(function (t) { return { x: t.x + x0, w: t.w, h: t.h, top: t.top }; }), front = FRONT.map(function (t) { return { x: t.x + x0, w: t.w, h: t.h, top: t.top }; });
     var x, w;
     for (x = x0 - 4; x > -24;) { w = 14 + Math.round(r() * 10); x -= w + 2; back.push({ x: x, w: w, h: 20 + Math.round(r() * 16) }); front.push({ x: x + 4, w: w - 2, h: 12 + Math.round(r() * 12) }); }
@@ -170,10 +178,10 @@
     front.forEach(function (t) { for (var y = G - t.h + (t.top ? 11 : 5); y < G - 4; y += 4.2) for (var x = t.x + 2.5; x < t.x + t.w - 2.5; x += 3.6) if (wr() < .5) wins.push(add('rect', { x: x, y: y, width: 1.7, height: 2, fill: wr() < .85 ? '#FFD98A' : '#CFE6FF', opacity: wr() < .6 ? .95 : .08, 'class': 'win' })); });
     // street lamps and stars
     var L = document.getElementById('clamps'), S = document.getElementById('cstars'), sr = seeded(3);
-    if (L) { L.innerHTML = ''; for (var lx = 60; lx < Wpx; lx += 190) { var i = document.createElement('i'); i.style.left = lx + 'px'; L.appendChild(i); } }
+    if (L) { L.innerHTML = ''; for (var lx = wd ? 60 : 30; lx < Wpx; lx += wd ? 190 : 120) { var i = document.createElement('i'); i.style.left = lx + 'px'; L.appendChild(i); } }
     if (S) { S.innerHTML = ''; for (var n = 0; n < 70; n++) { var s = document.createElement('i'); s.style.left = (sr() * 100) + '%'; s.style.top = (sr() * 80) + '%'; s.style.opacity = .2 + sr() * .6; s.style.animationDelay = (sr() * 3) + 's'; S.appendChild(s); } }
   }
-  function blink() { if (!wins.length || document.hidden || !matchMedia('(min-width:1200px)').matches) return; for (var n = 0; n < 6; n++) { var w = wins[Math.floor(Math.random() * wins.length)]; w.setAttribute('opacity', +w.getAttribute('opacity') > .5 ? .08 : .95); } }
+  function blink() { if (!wins.length || document.hidden || !(wideQ.matches || MST)) return; for (var n = 0; n < 6; n++) { var w = wins[Math.floor(Math.random() * wins.length)]; w.setAttribute('opacity', +w.getAttribute('opacity') > .5 ? .08 : .95); } }
   var last = 0;
   function redraw() { var Wpx = st.clientWidth; if (Wpx && Wpx !== last) { last = Wpx; draw(); } }
   redraw(); addEventListener('resize', function () { clearTimeout(timer); timer = setTimeout(redraw, 150); });

@@ -68,7 +68,7 @@ nav{display:flex;align-items:center;gap:6px;height:72px;position:relative}
 .gc span{font-weight:700;opacity:.8}
 .fitbtn{cursor:pointer;font-family:inherit;pointer-events:auto;display:inline-block;margin-top:10px;background:#fff;color:var(--buyB);font-weight:800;padding:9px 16px;border-radius:99px;font-size:14px;border:0}
 .hint{font-size:12px;opacity:.75;margin-top:2px}
-.buy .gaugeBox{margin-bottom:16px}
+.buy .gaugeBox{margin-bottom:16px;-webkit-user-select:none;user-select:none}
 .opts{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
 .opts span{background:rgba(255,255,255,.14);border-radius:99px;padding:7px 12px;font-weight:700;font-size:13px}
 .buy .hero{position:absolute;right:22px;top:170px;width:min(300px,42%);filter:drop-shadow(0 26px 22px rgba(0,0,0,.3));transition:opacity .35s,transform .35s}
@@ -290,18 +290,45 @@ footer .socs .soc{margin-top:0;width:40px;height:40px;justify-content:center;pad
   .stageC>.ctag em{display:block;margin-top:5px;font-style:normal;font-size:11.5px;font-weight:800;color:#147A4B;background:#E3F5EA;border-radius:99px;padding:3px 8px;width:max-content}
   .stageC>.ctag:hover b{text-decoration:underline}
   .buy .stageC .hero{display:none}
-  .dcar{position:absolute;z-index:1;will-change:transform}
-  .dbody{position:relative;transform-origin:50% 100%}
-  .dflip{position:relative;transform:scaleX(-1)}
-  .dimg{position:relative;width:100%;display:block}
-  .dshadow{position:absolute;left:4%;right:4%;bottom:-8px;height:26px;border-radius:50%;background:rgba(0,0,0,.42);filter:blur(7px)}
-  .dtyre{position:absolute;height:12px;border-radius:50%;background:rgba(0,0,0,.75);filter:blur(3px);transform:translate(-50%,-60%)}
-  .dwh{position:absolute;border-radius:50%;overflow:hidden;pointer-events:none}
-  .dwh i{position:absolute;left:50%;top:50%;border-radius:50%;background-repeat:no-repeat;will-change:transform}
-  .dplate{position:absolute;border-radius:4px;background:#2B5FB8;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
-  .dhl{position:absolute;transform:translate(-50%,-50%);border-radius:50%;opacity:0;mix-blend-mode:screen;pointer-events:none;background:radial-gradient(closest-side,#fff 0 18%,rgba(205,232,255,.95) 32%,rgba(130,190,255,.45) 60%,transparent 100%)}
-  .dbeam{position:absolute;width:170px;height:70px;transform:translateY(-50%);opacity:0;mix-blend-mode:screen;pointer-events:none;background:linear-gradient(90deg,rgba(220,238,255,.75),rgba(220,238,255,0));clip-path:polygon(0 42%,100% 0,100% 100%,0 58%)}
 }
+
+/* Car pieces for the tap-to-drive street (any screen size; they only exist once a car is drawn). */
+.dcar{position:absolute;z-index:1;will-change:transform}
+.dbody{position:relative;transform-origin:50% 100%}
+.dflip{position:relative;transform:scaleX(-1)}
+.dimg{position:relative;width:100%;display:block}
+.dshadow{position:absolute;left:4%;right:4%;bottom:-8px;height:26px;border-radius:50%;background:rgba(0,0,0,.42);filter:blur(7px)}
+.dtyre{position:absolute;height:12px;border-radius:50%;background:rgba(0,0,0,.75);filter:blur(3px);transform:translate(-50%,-60%)}
+.dwh{position:absolute;border-radius:50%;overflow:hidden;pointer-events:none}
+.dwh i{position:absolute;left:50%;top:50%;border-radius:50%;background-repeat:no-repeat;will-change:transform}
+.dplate{position:absolute;border-radius:4px;background:#2B5FB8;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
+.dhl{position:absolute;transform:translate(-50%,-50%);border-radius:50%;opacity:0;mix-blend-mode:screen;pointer-events:none;background:radial-gradient(closest-side,#fff 0 18%,rgba(205,232,255,.95) 32%,rgba(130,190,255,.45) 60%,transparent 100%)}
+.dbeam{position:absolute;width:170px;height:70px;transform:translateY(-50%);opacity:0;mix-blend-mode:screen;pointer-events:none;background:linear-gradient(90deg,rgba(220,238,255,.75),rgba(220,238,255,0));clip-path:polygon(0 42%,100% 0,100% 100%,0 58%)}
+.stageC.moving>.road{animation:cdash .5s linear infinite}
+/* Picture 252 A (Nov 17, 2026) PREVIEW ONLY: phones and tablets get the Atlanta night street under the dial.
+   Shows only with ?mstreet=1 (class 'mst' on <html>) until Loudjier says yes. */
+@media (max-width:1199px){
+  .mst .buy{background:linear-gradient(180deg,#0A1636 0%,#10255A 55%,#1B2F66 100%)}
+  .mst .stageC{display:block;position:relative;height:290px;margin:8px -22px -22px;overflow:hidden;--cx:50%}
+  .mst .buy .stageC .hero{display:none}
+  .mst .stageC>.stars{display:block;position:absolute;left:0;right:0;top:0;height:150px;pointer-events:none}
+  .mst .stageC>.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:ctw 3s ease-in-out infinite}
+  .mst .stageC>.city{display:block;position:absolute;left:0;width:100%;top:30px;height:150px}
+  .mst .stageC>.city .win{transition:opacity 1.2s}.mst .stageC>.city .crown{animation:ccrown 4s ease-in-out infinite}.mst .stageC>.city .beacon{animation:cbeacon 1.6s steps(1) infinite}
+  .mst .stageC>.curb{display:block;position:absolute;left:0;right:0;top:178px;height:6px;background:#8E9AB3}
+  .mst .stageC>.asph{display:block;position:absolute;left:0;right:0;top:183px;bottom:0;background:linear-gradient(180deg,#2E3A55,#1B2338)}
+  .mst .stageC>.road{display:block;position:absolute;left:0;right:0;top:236px;height:3px;background:repeating-linear-gradient(90deg,#fff 0 24px,transparent 24px 52px)}
+  .mst .stageC>.lamps{display:block;position:absolute;left:0;right:0;top:148px;height:32px;pointer-events:none}
+  .mst .stageC>.lamps i{position:absolute;bottom:0;width:2px;height:30px;background:#26324F}
+  .mst .stageC>.lamps i:before{content:'';position:absolute;top:-3px;left:-6px;width:12px;height:4px;border-radius:3px;background:#3B4D7E}
+  .mst .stageC>.lamps i:after{content:'';position:absolute;top:2px;left:-36px;width:72px;height:90px;background:radial-gradient(50% 100% at 50% 0,rgba(255,214,140,.38),transparent 70%);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%)}
+  .mst .stageC>.ctag{display:block;position:absolute;left:50%;top:10px;z-index:2;background:#fff;color:#10151B;text-decoration:none;border-radius:12px;padding:7px 11px;box-shadow:0 8px 20px rgba(0,0,0,.3);font-size:11.5px;font-weight:700;white-space:nowrap;opacity:0;transform:translateX(-50%) translateY(-20px);transition:opacity .35s,transform .5s cubic-bezier(.3,1.6,.5,1)}
+  .mst .stageC>.ctag.show{opacity:1;transform:translateX(-50%)}
+  .mst .stageC>.ctag b{display:inline;font-size:15px;color:#2167CF;margin-left:6px}.mst .stageC>.ctag small{display:none}
+  .mst .stageC>.ctag em{display:block;margin-top:3px;font-style:normal;font-size:10.5px;font-weight:800;color:#147A4B}
+  .mst .buy .miniw{margin-top:30px}
+}
+@media (min-width:981px) and (max-width:1199px){.mst .stageC{margin:8px -40px -36px}}
 @keyframes ctw{50%{opacity:.15}}
 @keyframes ccrown{50%{opacity:.75}}
 @keyframes cbeacon{0%{opacity:1}50%{opacity:.08}}
