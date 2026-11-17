@@ -74,8 +74,13 @@
 .pt .pl{display:inline-block;margin-top:8px;font-size:11.5px;font-weight:800;color:var(--gd);background:var(--gds);border-radius:99px;padding:3px 9px;align-self:flex-start}
 .pt .endcta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0 0}.pt .copied{font-size:13px;color:var(--g);font-weight:800}
 .pt .pw{position:sticky;top:90px;justify-self:center}.pt .glow{position:absolute;inset:40px 0;background:radial-gradient(closest-side,rgba(31,95,191,.25),transparent);filter:blur(20px)}
-.pt .phone{position:relative;width:330px;height:680px;border-radius:48px;background:#0E1116;padding:12px;box-shadow:0 30px 60px rgba(15,27,51,.28)}
-.pt .screen{position:relative;width:100%;height:100%;border-radius:38px;background:#F4F6FA;overflow:hidden;color:#10151B;cursor:pointer}
+.pt .phone,.pt .syphone{border:4px solid transparent;background:linear-gradient(#0B0D11,#0B0D11) padding-box,linear-gradient(135deg,#F6E7C8 0%,#D2B07A 22%,#F1DEB8 42%,#B8925A 64%,#E9D3A8 82%,#C6A26A 100%) border-box}
+.pt .phone{position:relative;width:330px;height:680px;border-radius:52px;padding:8px;box-shadow:0 30px 60px rgba(15,27,51,.28),0 0 0 1px rgba(120,90,40,.35)}
+/* Gold phone (Nov 17, 2026, Loudjier: 'make the phone gold iphone new one'): gold frame + side buttons, thin black bezel. */
+.pt .phone:before,.pt .phone:after,.pt .syphone:before,.pt .syphone:after{content:'';position:absolute;width:4px;border-radius:2px;background:linear-gradient(180deg,#E9D3A8,#B8925A)}
+.pt .phone:before,.pt .syphone:before{right:-8px;top:170px;height:84px}
+.pt .phone:after,.pt .syphone:after{left:-8px;top:140px;height:52px;box-shadow:0 70px 0 #C9A66B,0 0 0 transparent}
+.pt .screen{position:relative;width:100%;height:100%;border-radius:42px;background:#F4F6FA;overflow:hidden;color:#10151B;cursor:pointer}
 .pt .notch{position:absolute;top:10px;left:50%;width:96px;height:26px;margin-left:-48px;border-radius:99px;background:#0E1116;z-index:9}
 .pt .sbar{position:absolute;top:0;left:0;right:0;height:46px;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font-size:12.5px;font-weight:800;z-index:8}
 .pt .step{position:absolute;inset:46px 0 0;padding:10px 16px 16px;opacity:0;transform:translateX(30px);transition:opacity .45s,transform .55s cubic-bezier(.2,.8,.2,1);pointer-events:none}
@@ -110,8 +115,8 @@
 .pt .syf input{width:100%;font:inherit;font-size:15px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--ln);background:#F4F6FA;color:inherit;box-sizing:border-box}
 .pt .sykinds{display:flex;flex-wrap:wrap;gap:8px}.pt .sykinds button{font:inherit;font-weight:800;font-size:13px;border-radius:99px;padding:8px 13px;border:1.5px solid var(--ln);background:var(--cd);color:inherit;cursor:pointer}.pt .sykinds button[aria-pressed="true"]{border-color:var(--b);color:var(--b);background:var(--bs)}
 .pt .syhonest{margin:14px 0 16px;background:var(--gds);color:var(--gd);border-radius:14px;padding:10px 14px;font-size:13.5px;font-weight:700;line-height:1.5;max-width:560px}
-.pt .syphone{width:320px;height:620px;border-radius:46px;background:#0E1116;padding:12px;box-shadow:0 30px 60px rgba(15,27,51,.25);justify-self:center}
-.pt .syscreen{position:relative;width:100%;height:100%;border-radius:36px;background:#F4F6FA;overflow:hidden;color:#10151B;padding:52px 15px 15px}
+.pt .syphone{position:relative;width:320px;height:620px;border-radius:50px;padding:8px;box-shadow:0 30px 60px rgba(15,27,51,.25),0 0 0 1px rgba(120,90,40,.35);justify-self:center}
+.pt .syscreen{position:relative;width:100%;height:100%;border-radius:40px;background:#F4F6FA;overflow:hidden;color:#10151B;padding:52px 15px 15px}
 .pt .spon.you{box-shadow:0 0 0 3px rgba(31,95,191,.35);position:relative}.pt .youtag{position:absolute;top:-11px;right:12px;background:#1F5FBF;color:#fff;border-radius:99px;padding:3px 9px;font-size:10.5px;font-weight:800}
 .pt .syex{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(16,21,27,.86);color:#fff;border-radius:14px;padding:8px 11px;font-size:11.5px;line-height:1.4}
 .pt .sywel{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:linear-gradient(135deg,#1F5FBF,#123A78);color:#fff;border-radius:24px;padding:20px 24px}.pt .sywel h2{font-size:clamp(22px,2.6vw,30px);letter-spacing:-.7px;margin:0;line-height:1.15}.pt .sywel p{margin:6px 0 0;opacity:.9}.pt .sywel>div:nth-child(2){flex:1;min-width:220px}
