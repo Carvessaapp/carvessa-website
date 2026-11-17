@@ -29,7 +29,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
 <link rel="preload" href="/assets/fonts/manrope-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/manrope-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/home2.css?v=74af8107">
-<link rel="stylesheet" href="/assets/cars.css?v=818cdca0">
+<link rel="stylesheet" href="/assets/cars.css?v=5e9b5b34">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/cars/land-rover-range-rover/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/autos/land-rover-range-rover/">
 </head>
 <body><header><div class="wrap"><nav id="nav" aria-label="Main">
@@ -75,6 +75,18 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
       <a class="cta" href="/es/#join">Consigue la app gratis para revisar un carro real →</a>
     </aside>
   </div>
+  <section class="gsign" aria-labelledby="gsignH"><h2 id="gsignH">Recibe el precio justo de un Land Rover Range Rover cerca de Atlanta</h2><p>Te escribimos cuando Carvessa abra, con el precio justo y el costo total de este carro. Gratis. Sin spam.</p>
+  <form id="gsignF" novalidate><label class="sr" for="gsignE">Tu correo</label><input id="gsignE" type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" maxlength="254"><button type="submit">Avísame</button><input name="company" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp"></form>
+  <div class="gsm" id="gsignM" role="status"></div><small>Un correo cuando abramos. Nunca vendemos tu correo.</small></section>
+<script>(function(){var f=document.getElementById('gsignF'),m=document.getElementById('gsignM'),b=f.querySelector('button'),i=document.getElementById('gsignE');
+function say(t,c){m.textContent=t;m.className='gsm '+(c||'');}
+f.addEventListener('submit',function(ev){ev.preventDefault();if(f.company.value)return;var em=i.value.trim().toLowerCase();
+if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(em)){say("Escribe un correo real, por favor.",'bad');return;}
+b.disabled=true;say("Guardando…");
+fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/waitlist',{method:'POST',headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({email:em,source:"guide-es:land-rover-range-rover"})})
+.then(function(r){if(r.status===201){if(window.gtag)gtag('event','sign_up',{method:'guide',page:location.pathname});say("¡Listo! Te escribimos el día que abramos.",'good');i.value='';}
+else if(r.status===409){say("Ya estabas en la lista. ¡Gracias!",'good');}else{say("No funcionó. Inténtalo otra vez.",'bad');}})
+.catch(function(){say("No funcionó. Inténtalo otra vez.",'bad');}).then(function(){b.disabled=false;});});})();</script>
   <div class="cgrid">
     <div class="box"><h2>Sobre el Land Rover Range Rover</h2><p>Una SUV de lujo de primer nivel, cómoda en la carretera y fuerte fuera de ella. Muy elegante y muy cara.</p><p class="atl">¿Buscas carro en Atlanta o en otra parte de Georgia? Un Land Rover Range Rover 2022 de unos $47,500 sale en unos $51,724 en total, con el impuesto TAVT de 7% de Georgia y cargos comunes (estimado). Los concesionarios de Atlanta cobran en promedio unos $730 de cargo por documentos (doc fee), así que pide el precio total por escrito. <a href="https://caredge.com/dealers/near/atlanta-ga" rel="noopener" style="color:var(--link)">Fuente del promedio: CarEdge, nov. 2026</a></p><p class="upk">Mantenimiento y reparaciones: unos $1,320 al año para un Land Rover Range Rover 2022 (estimado aproximado, 12,000 millas al año; los carros más viejos y las marcas de lujo cuestan más).</p><p>Flota como una nube y es muy silenciosa. Se siente como un jet privado sobre ruedas.</p><p><b>Consejo:</b> Las reparaciones pueden costar mucho. Cómpralo certificado o con garantía extendida.</p></div>
     <div class="box"><h2>Por qué la gente lo compra</h2><div class="whys"><div><b>Lujo de primer nivel</b><span>Una de las SUV más lujosas que existen.</span></div><div><b>También va por tierra</b><span>Muy capaz, aunque la mayoría nunca sale del pavimento.</span></div><div><b>Diseño icónico</b><span>Se reconoce de inmediato.</span></div><div><b>Potencia suave</b><span>6 cilindros fuerte, V8 o híbrido enchufable.</span></div></div></div>

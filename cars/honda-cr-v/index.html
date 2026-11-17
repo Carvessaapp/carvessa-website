@@ -29,7 +29,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
 <link rel="preload" href="/assets/fonts/manrope-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/manrope-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/home2.css?v=74af8107">
-<link rel="stylesheet" href="/assets/cars.css?v=818cdca0">
+<link rel="stylesheet" href="/assets/cars.css?v=5e9b5b34">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/cars/honda-cr-v/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/autos/honda-cr-v/">
 </head>
 <body><header><div class="wrap"><nav id="nav" aria-label="Main">
@@ -75,6 +75,18 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
       <a class="cta" href="/#join">Get the free app to check a real car →</a>
     </aside>
   </div>
+  <section class="gsign" aria-labelledby="gsignH"><h2 id="gsignH">Get the fair price for a Honda CR-V near Atlanta</h2><p>We’ll email you when Carvessa opens, with the fair price and out-the-door cost for this car. Free. No spam.</p>
+  <form id="gsignF" novalidate><label class="sr" for="gsignE">Your email</label><input id="gsignE" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" maxlength="254"><button type="submit">Notify me</button><input name="company" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp"></form>
+  <div class="gsm" id="gsignM" role="status"></div><small>One email at launch. We never sell your email.</small></section>
+<script>(function(){var f=document.getElementById('gsignF'),m=document.getElementById('gsignM'),b=f.querySelector('button'),i=document.getElementById('gsignE');
+function say(t,c){m.textContent=t;m.className='gsm '+(c||'');}
+f.addEventListener('submit',function(ev){ev.preventDefault();if(f.company.value)return;var em=i.value.trim().toLowerCase();
+if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(em)){say("Please type a real email.",'bad');return;}
+b.disabled=true;say("Saving…");
+fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/waitlist',{method:'POST',headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({email:em,source:"guide:honda-cr-v"})})
+.then(function(r){if(r.status===201){if(window.gtag)gtag('event','sign_up',{method:'guide',page:location.pathname});say("You’re on the list! We’ll email you on launch day.",'good');i.value='';}
+else if(r.status===409){say("You’re already on the list. Thank you!",'good');}else{say("That didn’t work. Please try again.",'bad');}})
+.catch(function(){say("That didn’t work. Please try again.",'bad');}).then(function(){b.disabled=false;});});})();</script>
   <div class="cgrid">
     <div class="box"><h2>About the Honda CR-V</h2><p>A roomy, comfortable SUV with a huge back seat and big cargo space. It drives smoothly and is easy to live with every day.</p><p class="atl">Shopping in Atlanta or anywhere in Georgia? A 2022 Honda CR-V at about $27,500 comes to about $30,324 out the door with Georgia’s 7% TAVT and typical fees (estimate). Atlanta dealers charge about $730 in doc fees on average, so ask for the out-the-door price in writing. <a href="https://caredge.com/dealers/near/atlanta-ga" rel="noopener" style="color:var(--link)">Doc fee average: CarEdge, Nov 2026</a></p><p class="upk">Upkeep and repairs: about $1,240 a year for a 2022 Honda CR-V (rough estimate at 12,000 miles a year; older cars and luxury brands cost more).</p><p>Smooth and quiet. It’s not fast, but it never feels slow in traffic. It parks like a car, not a truck. The Hybrid feels quicker from a stop.</p><p><b>Tip:</b> The hybrid adds power and saves gas. Test-drive both to feel the difference.</p></div>
     <div class="box"><h2>Why people buy it</h2><div class="whys"><div><b>Huge back seat</b><span>Grown-ups fit behind grown-ups. Easy for car seats.</span></div><div><b>Big cargo space</b><span>One of the biggest trunks in its class.</span></div><div><b>Good on gas</b><span>The Hybrid gets close to small-car gas mileage.</span></div><div><b>Lasts and holds value</b><span>Hondas are known for lasting. It sells for more later than many SUVs.</span></div></div></div>

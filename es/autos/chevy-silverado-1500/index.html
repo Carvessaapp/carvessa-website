@@ -29,7 +29,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
 <link rel="preload" href="/assets/fonts/manrope-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/manrope-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/home2.css?v=74af8107">
-<link rel="stylesheet" href="/assets/cars.css?v=818cdca0">
+<link rel="stylesheet" href="/assets/cars.css?v=5e9b5b34">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/cars/chevy-silverado-1500/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/autos/chevy-silverado-1500/">
 </head>
 <body><header><div class="wrap"><nav id="nav" aria-label="Main">
@@ -75,6 +75,18 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
       <a class="cta" href="/es/#join">Consigue la app gratis para revisar un carro real →</a>
     </aside>
   </div>
+  <section class="gsign" aria-labelledby="gsignH"><h2 id="gsignH">Recibe el precio justo de un Chevy Silverado 1500 cerca de Atlanta</h2><p>Te escribimos cuando Carvessa abra, con el precio justo y el costo total de este carro. Gratis. Sin spam.</p>
+  <form id="gsignF" novalidate><label class="sr" for="gsignE">Tu correo</label><input id="gsignE" type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" maxlength="254"><button type="submit">Avísame</button><input name="company" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp"></form>
+  <div class="gsm" id="gsignM" role="status"></div><small>Un correo cuando abramos. Nunca vendemos tu correo.</small></section>
+<script>(function(){var f=document.getElementById('gsignF'),m=document.getElementById('gsignM'),b=f.querySelector('button'),i=document.getElementById('gsignE');
+function say(t,c){m.textContent=t;m.className='gsm '+(c||'');}
+f.addEventListener('submit',function(ev){ev.preventDefault();if(f.company.value)return;var em=i.value.trim().toLowerCase();
+if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(em)){say("Escribe un correo real, por favor.",'bad');return;}
+b.disabled=true;say("Guardando…");
+fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/waitlist',{method:'POST',headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({email:em,source:"guide-es:chevy-silverado-1500"})})
+.then(function(r){if(r.status===201){if(window.gtag)gtag('event','sign_up',{method:'guide',page:location.pathname});say("¡Listo! Te escribimos el día que abramos.",'good');i.value='';}
+else if(r.status===409){say("Ya estabas en la lista. ¡Gracias!",'good');}else{say("No funcionó. Inténtalo otra vez.",'bad');}})
+.catch(function(){say("No funcionó. Inténtalo otra vez.",'bad');}).then(function(){b.disabled=false;});});})();</script>
   <div class="cgrid">
     <div class="box"><h2>Sobre el Chevy Silverado 1500</h2><p>Una pickup grande, fuerte, amplia y buena para remolcar. Muchas versiones, de la básica a la elegante.</p><p class="atl">¿Buscas carro en Atlanta o en otra parte de Georgia? Un Chevy Silverado 1500 2022 de unos $35,000 sale en unos $38,349 en total, con el impuesto TAVT de 7% de Georgia y cargos comunes (estimado). Los concesionarios de Atlanta cobran en promedio unos $730 de cargo por documentos (doc fee), así que pide el precio total por escrito. <a href="https://caredge.com/dealers/near/atlanta-ga" rel="noopener" style="color:var(--link)">Fuente del promedio: CarEdge, nov. 2026</a></p><p class="upk">Mantenimiento y reparaciones: unos $1,270 al año para un Chevy Silverado 1500 2022 (estimado aproximado, 12,000 millas al año; los carros más viejos y las marcas de lujo cuestan más).</p><p>Se siente como camioneta grande: fuerte, un poco dura vacía. Los V8 suenan muy bien; el diésel es el que menos gasta.</p><p><b>Consejo:</b> Revisa el tamaño de la caja y de la cabina. Cambian cuánto cabe adentro y en la caja.</p></div>
     <div class="box"><h2>Por qué la gente lo compra</h2><div class="whys"><div><b>Motores fuertes</b><span>Turbo de 4, V8 y diésel para escoger.</span></div><div><b>Caja grande</b><span>Una de las cajas más amplias de su tipo.</span></div><div><b>Muchas a la venta</b><span>Fácil de encontrar usada para comparar precios.</span></div><div><b>Piezas en todas partes</b><span>Camioneta común: las reparaciones son fáciles de conseguir.</span></div></div></div>

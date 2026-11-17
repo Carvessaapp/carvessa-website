@@ -29,7 +29,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
 <link rel="preload" href="/assets/fonts/manrope-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/manrope-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/home2.css?v=74af8107">
-<link rel="stylesheet" href="/assets/cars.css?v=818cdca0">
+<link rel="stylesheet" href="/assets/cars.css?v=5e9b5b34">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/cars/jeep-wrangler/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/autos/jeep-wrangler/">
 </head>
 <body><header><div class="wrap"><nav id="nav" aria-label="Main">
@@ -75,6 +75,18 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
       <a class="cta" href="/es/#join">Consigue la app gratis para revisar un carro real →</a>
     </aside>
   </div>
+  <section class="gsign" aria-labelledby="gsignH"><h2 id="gsignH">Recibe el precio justo de un Jeep Wrangler cerca de Atlanta</h2><p>Te escribimos cuando Carvessa abra, con el precio justo y el costo total de este carro. Gratis. Sin spam.</p>
+  <form id="gsignF" novalidate><label class="sr" for="gsignE">Tu correo</label><input id="gsignE" type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" maxlength="254"><button type="submit">Avísame</button><input name="company" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp"></form>
+  <div class="gsm" id="gsignM" role="status"></div><small>Un correo cuando abramos. Nunca vendemos tu correo.</small></section>
+<script>(function(){var f=document.getElementById('gsignF'),m=document.getElementById('gsignM'),b=f.querySelector('button'),i=document.getElementById('gsignE');
+function say(t,c){m.textContent=t;m.className='gsm '+(c||'');}
+f.addEventListener('submit',function(ev){ev.preventDefault();if(f.company.value)return;var em=i.value.trim().toLowerCase();
+if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(em)){say("Escribe un correo real, por favor.",'bad');return;}
+b.disabled=true;say("Guardando…");
+fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/waitlist',{method:'POST',headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({email:em,source:"guide-es:jeep-wrangler"})})
+.then(function(r){if(r.status===201){if(window.gtag)gtag('event','sign_up',{method:'guide',page:location.pathname});say("¡Listo! Te escribimos el día que abramos.",'good');i.value='';}
+else if(r.status===409){say("Ya estabas en la lista. ¡Gracias!",'good');}else{say("No funcionó. Inténtalo otra vez.",'bad');}})
+.catch(function(){say("No funcionó. Inténtalo otra vez.",'bad');}).then(function(){b.disabled=false;});});})();</script>
   <div class="cgrid">
     <div class="box"><h2>Sobre el Jeep Wrangler</h2><p>La SUV todoterreno clásica. Las puertas y el techo se quitan, y puede ir casi a cualquier lado. Es ruidosa y brusca en la autopista.</p><p class="atl">¿Buscas carro en Atlanta o en otra parte de Georgia? Un Jeep Wrangler 2022 de unos $32,000 sale en unos $35,139 en total, con el impuesto TAVT de 7% de Georgia y cargos comunes (estimado). Los concesionarios de Atlanta cobran en promedio unos $730 de cargo por documentos (doc fee), así que pide el precio total por escrito. <a href="https://caredge.com/dealers/near/atlanta-ga" rel="noopener" style="color:var(--link)">Fuente del promedio: CarEdge, nov. 2026</a></p><p class="upk">Mantenimiento y reparaciones: unos $1,260 al año para un Jeep Wrangler 2022 (estimado aproximado, 12,000 millas al año; los carros más viejos y las marcas de lujo cuestan más).</p><p>Ruidoso y brincón en la autopista, y la dirección se siente suelta. En tierra es increíble. Es más un estilo de vida que un carro para ir al trabajo.</p><p><b>Consejo:</b> La versión híbrida enchufable (4xe) puede hacer viajes cortos solo con electricidad.</p></div>
     <div class="box"><h2>Por qué la gente lo compra</h2><div class="whys"><div><b>Va a casi cualquier lugar</b><span>De los mejores todoterreno que existen.</span></div><div><b>Diversión al aire libre</b><span>Las puertas y el techo se quitan.</span></div><div><b>Mantiene su valor</b><span>El Wrangler se vende bien.</span></div><div><b>Opción enchufable</b><span>El 4xe puede hacer viajes cortos con electricidad.</span></div></div></div>

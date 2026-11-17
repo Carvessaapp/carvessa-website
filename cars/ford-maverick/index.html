@@ -29,7 +29,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
 <link rel="preload" href="/assets/fonts/manrope-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/manrope-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/home2.css?v=74af8107">
-<link rel="stylesheet" href="/assets/cars.css?v=818cdca0">
+<link rel="stylesheet" href="/assets/cars.css?v=5e9b5b34">
 <link rel="alternate" hreflang="en" href="https://carvessa.app/cars/ford-maverick/"><link rel="alternate" hreflang="es" href="https://carvessa.app/es/autos/ford-maverick/">
 </head>
 <body><header><div class="wrap"><nav id="nav" aria-label="Main">
@@ -75,6 +75,18 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
       <a class="cta" href="/#join">Get the free app to check a real car →</a>
     </aside>
   </div>
+  <section class="gsign" aria-labelledby="gsignH"><h2 id="gsignH">Get the fair price for a Ford Maverick near Atlanta</h2><p>We’ll email you when Carvessa opens, with the fair price and out-the-door cost for this car. Free. No spam.</p>
+  <form id="gsignF" novalidate><label class="sr" for="gsignE">Your email</label><input id="gsignE" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" maxlength="254"><button type="submit">Notify me</button><input name="company" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp"></form>
+  <div class="gsm" id="gsignM" role="status"></div><small>One email at launch. We never sell your email.</small></section>
+<script>(function(){var f=document.getElementById('gsignF'),m=document.getElementById('gsignM'),b=f.querySelector('button'),i=document.getElementById('gsignE');
+function say(t,c){m.textContent=t;m.className='gsm '+(c||'');}
+f.addEventListener('submit',function(ev){ev.preventDefault();if(f.company.value)return;var em=i.value.trim().toLowerCase();
+if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(em)){say("Please type a real email.",'bad');return;}
+b.disabled=true;say("Saving…");
+fetch('https://psviaekoxhmwdijdnjjw.supabase.co/rest/v1/waitlist',{method:'POST',headers:{'apikey':'sb_publishable_VWz6f0GXImnAGm-swjz30A_9XEjzb5F','Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({email:em,source:"guide:ford-maverick"})})
+.then(function(r){if(r.status===201){if(window.gtag)gtag('event','sign_up',{method:'guide',page:location.pathname});say("You’re on the list! We’ll email you on launch day.",'good');i.value='';}
+else if(r.status===409){say("You’re already on the list. Thank you!",'good');}else{say("That didn’t work. Please try again.",'bad');}})
+.catch(function(){say("That didn’t work. Please try again.",'bad');}).then(function(){b.disabled=false;});});})();</script>
   <div class="cgrid">
     <div class="box"><h2>About the Ford Maverick</h2><p>A small, affordable pickup truck. It is easy to park and the hybrid version gets car-like gas mileage. Great for weekend projects.</p><p class="atl">Shopping in Atlanta or anywhere in Georgia? A 2022 Ford Maverick at about $24,500 comes to about $27,114 out the door with Georgia’s 7% TAVT and typical fees (estimate). Atlanta dealers charge about $730 in doc fees on average, so ask for the out-the-door price in writing. <a href="https://caredge.com/dealers/near/atlanta-ga" rel="noopener" style="color:var(--link)">Doc fee average: CarEdge, Nov 2026</a></p><p class="upk">Upkeep and repairs: about $1,230 a year for a 2022 Ford Maverick (rough estimate at 12,000 miles a year; older cars and luxury brands cost more).</p><p>Drives like a car, not a truck. Smooth and easy. The turbo version is quicker and can tow more.</p><p><b>Tip:</b> It is in high demand. Be ready for waitlists or markups on new ones.</p></div>
     <div class="box"><h2>Why people buy it</h2><div class="whys"><div><b>Truck for less</b><span>One of the lowest-priced pickups.</span></div><div><b>Car-like gas mileage</b><span>The Hybrid is very easy on gas for a truck.</span></div><div><b>Easy to park</b><span>Small enough for city streets and garages.</span></div><div><b>Handy bed</b><span>Great for home projects, bikes and side hustles.</span></div></div></div>
