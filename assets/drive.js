@@ -56,7 +56,7 @@
         car.style.width = cw + 'px'; car.style.marginLeft = (-cw / 2) + 'px'; car.style.top = (FLOOR - ch + 4) + 'px';
         (d.lights || []).forEach(function (L, i) {
           var h = el('i', 'dhl', host); h.style.left = L.x + '%'; h.style.top = L.y + '%'; h.style.width = (L.w * cw / 100 * 2.3) + 'px'; h.style.height = (L.h * cw / 100 * 3.8) + 'px'; lights.push(h);
-          if (i === 0) { var b = el('i', 'dbeam', host); b.style.top = L.y + '%'; if (d.face > 0) b.style.left = L.x + '%'; else { b.style.left = (L.x - 50) + '%'; b.style.transform = 'translateY(-50%) scaleX(-1)'; } lights.push(b); }
+          if (i === 0) { var b = el('i', 'dbeam', host); b.style.top = L.y + '%'; if (d.face > 0) b.style.left = L.x + '%'; else { b.style.left = 'calc(' + L.x + '% - 170px)'; b.style.transform = 'translateY(-50%) scaleX(-1)'; } lights.push(b); }
         });
         // Spinning wheels: a round copy of each rim, squashed back into the wheel's oval.
         (d.wheels || []).forEach(function (Q) {
@@ -120,4 +120,62 @@
     show: function (c, r) { render = r || render; place(); show(c); }
   };
   place(); addEventListener('resize', place);
+})();
+
+/* Picture 251 B (Nov 17, 2026, Loudjier: "build B"): Atlanta at night behind the street. Real skyline shapes from the
+   app (picture 135): Bank of America Plaza with its gold crown and blinking spire light, One Atlantic Center, the round
+   Westin, 191 Peachtree's twin domes, stepped towers. Windows switch on and off; stars twinkle; street lamps glow. */
+(function () {
+  var svg = document.getElementById('ccity'), st = document.getElementById('stageC');
+  if (!svg || !st) return;
+  var NS = 'http://www.w3.org/2000/svg', G = 200, K = 2.2, still = matchMedia('(prefers-reduced-motion: reduce)').matches, wins = [], timer = 0;
+  var BACK = [{x:0,w:22,h:22},{x:20,w:14,h:32,top:'pyr'},{x:36,w:18,h:27},{x:56,w:12,h:37,top:'fin'},{x:70,w:20,h:24},{x:182,w:16,h:29},{x:236,w:14,h:42,top:'pyr'},{x:252,w:20,h:33},{x:274,w:16,h:45,top:'oac'},{x:292,w:22,h:29},{x:314,w:16,h:22}];
+  var FRONT = [{x:6,w:26,h:16},{x:34,w:20,h:33,top:'step'},{x:58,w:18,h:40,top:'round'},{x:80,w:24,h:20},{x:104,w:20,h:45,top:'twin'},{x:128,w:22,h:48,top:'step'},{x:152,w:12,h:22},{x:166,w:20,h:60,top:'boa'},{x:190,w:24,h:26},{x:218,w:18,h:50,top:'oac'},{x:240,w:26,h:19},{x:270,w:16,h:30},{x:290,w:30,h:17}];
+  function path(t) {
+    var x = t.x, w = t.w, h = t.h, y = G - h, r = x + w, H = G, m = x + w / 2;
+    switch (t.top) {
+      case 'boa': return 'M'+x+' '+H+'V'+(y+18)+'H'+(x+2)+'V'+(y+12)+'H'+(x+4)+'V'+(y+8)+'L'+m+' '+(y-6)+'L'+(r-4)+' '+(y+8)+'V'+(y+12)+'H'+(r-2)+'V'+(y+18)+'H'+r+'V'+H+'Z M'+(m-.6)+' '+(y-6)+'V'+(y-20)+'h1.2V'+(y-6)+'Z';
+      case 'oac': return 'M'+x+' '+H+'V'+(y+10)+'H'+(x+1.5)+'V'+(y+6)+'L'+m+' '+(y-8)+'L'+(r-1.5)+' '+(y+6)+'V'+(y+10)+'H'+r+'V'+H+'Z M'+(m-.5)+' '+(y-8)+'V'+(y-13)+'h1V'+(y-8)+'Z';
+      case 'round': return 'M'+x+' '+H+'V'+(y+3)+'Q'+x+' '+y+' '+(x+3)+' '+y+'H'+(r-3)+'Q'+r+' '+y+' '+r+' '+(y+3)+'V'+H+'Z';
+      case 'twin': return 'M'+x+' '+H+'V'+(y+8)+'H'+(x+3)+'V'+(y+3)+'Q'+(x+5)+' '+(y-2)+' '+(x+7)+' '+(y+3)+'V'+(y+8)+'H'+(r-7)+'V'+(y+3)+'Q'+(r-5)+' '+(y-2)+' '+(r-3)+' '+(y+3)+'V'+(y+8)+'H'+r+'V'+H+'Z';
+      case 'step': return 'M'+x+' '+H+'V'+(y+10)+'H'+(x+3)+'V'+(y+5)+'H'+(x+6)+'V'+y+'H'+(r-6)+'V'+(y+5)+'H'+(r-3)+'V'+(y+10)+'H'+r+'V'+H+'Z';
+      case 'fin': return 'M'+x+' '+H+'V'+(y+6)+'H'+(r-5)+'L'+r+' '+(y-6)+'V'+H+'Z';
+      case 'pyr': return 'M'+x+' '+H+'V'+(y+8)+'H'+(x+2)+'V'+(y+5)+'L'+m+' '+(y-3)+'L'+(r-2)+' '+(y+5)+'V'+(y+8)+'H'+r+'V'+H+'Z';
+      default: return 'M'+x+' '+H+'V'+y+'H'+r+'V'+H+'Z';
+    }
+  }
+  function seeded(seed) { var s = seed; return function () { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
+  function draw() {
+    var Wpx = st.clientWidth; if (!Wpx) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild); wins = [];
+    svg.setAttribute('viewBox', '0 0 ' + Wpx + ' ' + G);
+    // Bank of America Plaza stands between the price buttons and the car.
+    var sw = Math.max(200, Wpx - 396), cx = Wpx - 16 - sw / 2, W = Wpx / K, x0 = (cx - 114) / K - 176, r = seeded(11);
+    var back = BACK.map(function (t) { return { x: t.x + x0, w: t.w, h: t.h, top: t.top }; }), front = FRONT.map(function (t) { return { x: t.x + x0, w: t.w, h: t.h, top: t.top }; });
+    var x, w;
+    for (x = x0 - 4; x > -24;) { w = 14 + Math.round(r() * 10); x -= w + 2; back.push({ x: x, w: w, h: 20 + Math.round(r() * 16) }); front.push({ x: x + 4, w: w - 2, h: 12 + Math.round(r() * 12) }); }
+    for (x = x0 + 334; x < W + 4;) { w = 14 + Math.round(r() * 10); back.push({ x: x, w: w, h: 20 + Math.round(r() * 16) }); front.push({ x: x + 4, w: w - 2, h: 12 + Math.round(r() * 12) }); x += w + 2; }
+    var g = document.createElementNS(NS, 'g'); g.setAttribute('transform', 'translate(0 ' + (G - G * K) + ') scale(' + K + ')'); svg.appendChild(g);
+    function add(tag, a) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); g.appendChild(e); return e; }
+    var wr = seeded(5);
+    add('path', { d: back.map(path).join(' '), fill: '#14244F' });
+    back.forEach(function (t) { for (var y = G - t.h + 8; y < G - 4; y += 4) for (var x = t.x + 2.5; x < t.x + t.w - 2.5; x += 3.5) if (wr() < .18) wins.push(add('rect', { x: x, y: y, width: 1.4, height: 1.6, fill: '#FFD58A', opacity: .55, 'class': 'win' })); });
+    add('path', { d: front.map(path).join(' '), fill: '#0B1736' });
+    var B = front[7], O = front[9], y = G - B.h, m = B.x + B.w / 2, y2 = G - O.h;
+    add('path', { d: 'M' + (B.x + 4) + ' ' + (y + 8) + 'L' + m + ' ' + (y - 6) + 'L' + (B.x + B.w - 4) + ' ' + (y + 8) + 'Z', fill: '#F4C24E', 'class': 'crown' });
+    add('rect', { x: m - .6, y: y - 20, width: 1.2, height: 14, fill: '#F4C24E' });
+    add('circle', { cx: m, cy: y - 20.5, r: 1.3, fill: '#FF4D4D', 'class': 'beacon' });
+    add('circle', { cx: O.x + O.w / 2, cy: y2 - 13.5, r: 1.1, fill: '#FF4D4D', 'class': 'beacon', style: 'animation-delay:.8s' });
+    add('path', { d: 'M' + (O.x + 1.5) + ' ' + (y2 + 6) + 'L' + (O.x + O.w / 2) + ' ' + (y2 - 8) + 'L' + (O.x + O.w - 1.5) + ' ' + (y2 + 6) + 'Z', fill: 'none', stroke: '#9CC6FF', 'stroke-width': .6 });
+    front.forEach(function (t) { for (var y = G - t.h + (t.top ? 11 : 5); y < G - 4; y += 4.2) for (var x = t.x + 2.5; x < t.x + t.w - 2.5; x += 3.6) if (wr() < .5) wins.push(add('rect', { x: x, y: y, width: 1.7, height: 2, fill: wr() < .85 ? '#FFD98A' : '#CFE6FF', opacity: wr() < .6 ? .95 : .08, 'class': 'win' })); });
+    // street lamps and stars
+    var L = document.getElementById('clamps'), S = document.getElementById('cstars'), sr = seeded(3);
+    if (L) { L.innerHTML = ''; for (var lx = 60; lx < Wpx; lx += 190) { var i = document.createElement('i'); i.style.left = lx + 'px'; L.appendChild(i); } }
+    if (S) { S.innerHTML = ''; for (var n = 0; n < 70; n++) { var s = document.createElement('i'); s.style.left = (sr() * 100) + '%'; s.style.top = (sr() * 80) + '%'; s.style.opacity = .2 + sr() * .6; s.style.animationDelay = (sr() * 3) + 's'; S.appendChild(s); } }
+  }
+  function blink() { if (!wins.length || document.hidden || !matchMedia('(min-width:1200px)').matches) return; for (var n = 0; n < 6; n++) { var w = wins[Math.floor(Math.random() * wins.length)]; w.setAttribute('opacity', +w.getAttribute('opacity') > .5 ? .08 : .95); } }
+  var last = 0;
+  function redraw() { var Wpx = st.clientWidth; if (Wpx && Wpx !== last) { last = Wpx; draw(); } }
+  redraw(); addEventListener('resize', function () { clearTimeout(timer); timer = setTimeout(redraw, 150); });
+  if (!still) setInterval(blink, 450);
 })();

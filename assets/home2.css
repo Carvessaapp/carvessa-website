@@ -256,10 +256,11 @@ footer .socs .soc{margin-top:0;width:40px;height:40px;justify-content:center;pad
 
 /* Picture 248 C · Tap to drive on an Atlanta street (Nov 17, 2026; replaces the 239 C turntable). Computers 1200px and wider only; smaller screens keep the gauge.
    A car stays parked; tapping a payment makes a car that fits drive in (assets/drive.js). */
-.payC,.stageC>.city,.stageC>.asph,.stageC>.curb,.stageC>.road,.stageC>.cstring,.stageC>.ctag,.stageC>.cnav{display:none}
+.payC,.stageC>.stars,.stageC>.lamps,.stageC>.city,.stageC>.asph,.stageC>.curb,.stageC>.road,.stageC>.cstring,.stageC>.ctag,.stageC>.cnav{display:none}
 .stageC{display:contents}
 @media (min-width:1200px){
-  .buy{background:linear-gradient(180deg,#2167CF 0%,#3B86E0 45%,#8EC3F0 78%,#CFE6F7 100%)}
+  /* Picture 251 B (Nov 17, 2026, Loudjier: 'build B'): Atlanta at night, lights on. */
+  .buy{background:linear-gradient(180deg,#060F28 0%,#0C1D4A 55%,#1B2F66 100%)}
   .buy>.k,.buy>h1{position:relative;z-index:3}
   .buy .gaugeBox,.buy .miniw{display:none}
   .payC{display:block;position:absolute;left:40px;top:196px;width:330px;z-index:3}
@@ -274,9 +275,16 @@ footer .socs .soc{margin-top:0;width:40px;height:40px;justify-content:center;pad
   .buy .opts{position:absolute;left:40px;bottom:32px;width:300px;z-index:3}
   .buy .opts span{background:rgba(16,21,27,.35)}
   .stageC{display:block;position:absolute;inset:0;overflow:hidden;border-radius:inherit;--cx:70%}
-  .stageC>.city{display:block;position:absolute;left:0;width:100%;top:305px;height:140px}
-  .stageC>.curb{display:block;position:absolute;left:0;right:0;top:440px;height:8px;background:#C9D3E2}
-  .stageC>.asph{display:block;position:absolute;left:0;right:0;top:446px;bottom:0;background:linear-gradient(180deg,#3A475E,#252F42)}
+  .stageC>.stars{display:block;position:absolute;left:0;right:0;top:0;height:300px;pointer-events:none}
+  .stageC>.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:ctw 3s ease-in-out infinite}
+  .stageC>.city{display:block;position:absolute;left:0;width:100%;top:245px;height:200px}
+  .stageC>.city .win{transition:opacity 1.2s}.stageC>.city .crown{animation:ccrown 4s ease-in-out infinite}.stageC>.city .beacon{animation:cbeacon 1.6s steps(1) infinite}
+  .stageC>.lamps{display:block;position:absolute;left:0;right:0;top:404px;height:44px;pointer-events:none}
+  .stageC>.lamps i{position:absolute;bottom:0;width:3px;height:40px;background:#26324F}
+  .stageC>.lamps i:before{content:'';position:absolute;top:-3px;left:-8px;width:16px;height:5px;border-radius:4px;background:#3B4D7E}
+  .stageC>.lamps i:after{content:'';position:absolute;top:2px;left:-50px;width:100px;height:120px;background:radial-gradient(50% 100% at 50% 0,rgba(255,214,140,.38),transparent 70%);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%)}
+  .stageC>.curb{display:block;position:absolute;left:0;right:0;top:440px;height:8px;background:#8E9AB3}
+  .stageC>.asph{display:block;position:absolute;left:0;right:0;top:446px;bottom:0;background:linear-gradient(180deg,#2E3A55,#1B2338)}
   .stageC>.road{display:block;position:absolute;left:0;right:0;top:520px;height:4px;background:repeating-linear-gradient(90deg,#fff 0 30px,transparent 30px 64px)}
   .stageC.moving>.road{animation:cdash .5s linear infinite}
   .stageC>.cstring{display:block;position:absolute;left:var(--cx);top:0;width:2px;height:158px;background:rgba(255,255,255,.55);z-index:2}
@@ -298,6 +306,10 @@ footer .socs .soc{margin-top:0;width:40px;height:40px;justify-content:center;pad
   .dhl{position:absolute;transform:translate(-50%,-50%);border-radius:50%;opacity:0;mix-blend-mode:screen;pointer-events:none;background:radial-gradient(closest-side,#fff 0 18%,rgba(205,232,255,.95) 32%,rgba(130,190,255,.45) 60%,transparent 100%)}
   .dbeam{position:absolute;width:170px;height:70px;transform:translateY(-50%);opacity:0;mix-blend-mode:screen;pointer-events:none;background:linear-gradient(90deg,rgba(220,238,255,.75),rgba(220,238,255,0));clip-path:polygon(0 42%,100% 0,100% 100%,0 58%)}
 }
+@keyframes ctw{50%{opacity:.15}}
+@keyframes ccrown{50%{opacity:.75}}
+@keyframes cbeacon{0%{opacity:1}50%{opacity:.08}}
+@media (prefers-reduced-motion:reduce){.stageC>.stars i,.stageC>.city .crown,.stageC>.city .beacon{animation:none}}
 @keyframes cdash{to{background-position:-64px 0}}
 @keyframes cpop{0%{transform:scale(.85)}100%{transform:scale(1)}}
 
