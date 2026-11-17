@@ -309,8 +309,8 @@ footer .socs .soc{margin-top:0;width:40px;height:40px;justify-content:center;pad
 .dhl{position:absolute;transform:translate(-50%,-50%);border-radius:50%;opacity:0;mix-blend-mode:screen;pointer-events:none;background:radial-gradient(closest-side,#fff 0 18%,rgba(205,232,255,.95) 32%,rgba(130,190,255,.45) 60%,transparent 100%)}
 .dbeam{position:absolute;width:170px;height:70px;transform:translateY(-50%);opacity:0;mix-blend-mode:screen;pointer-events:none;background:linear-gradient(90deg,rgba(220,238,255,.75),rgba(220,238,255,0));clip-path:polygon(0 42%,100% 0,100% 100%,0 58%)}
 .stageC.moving>.road{animation:cdash .5s linear infinite}
-/* Picture 252 A (Nov 17, 2026) PREVIEW ONLY: phones and tablets get the Atlanta night street under the dial.
-   Shows only with ?mstreet=1 (class 'mst' on <html>) until Loudjier says yes. */
+/* Picture 252 A (Nov 17, 2026, Loudjier: 'Both' = yes for everyone): phones and tablets get the Atlanta night street
+   under the dial. Class 'mst' on <html> is on for everyone; ?mstreet=0 turns it off to compare. */
 @media (max-width:1199px){
   .mst .buy{background:linear-gradient(180deg,#0A1636 0%,#10255A 55%,#1B2F66 100%)}
   .mst .stageC{display:block;position:relative;height:290px;margin:8px -22px -22px;overflow:hidden;--cx:50%}
@@ -339,6 +339,11 @@ footer .socs .soc{margin-top:0;width:40px;height:40px;justify-content:center;pad
 @media (prefers-reduced-motion:reduce){.stageC>.stars i,.stageC>.city .crown,.stageC>.city .beacon{animation:none}}
 @keyframes cdash{to{background-position:-64px 0}}
 @keyframes cpop{0%{transform:scale(.85)}100%{transform:scale(1)}}
+/* Phone spacing fix (Nov 17, 2026, Loudjier: 'Both'): the dial's drawing has empty space above the arc, which left a
+   big dark gap under the headline on phones and tablets; pull the dial up. The 4 plan chips sit in two even rows of 2
+   on narrow phones instead of 3 + 1 ('Georgia' alone). */
+@media (max-width:1199px){.buy .gaugeBox{margin-top:-46px}}
+@media (max-width:560px){.buy .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}.buy .opts span{text-align:center}}
 
 /* Maya video player (same as the old home) */
 .vp{max-width:1080px}
