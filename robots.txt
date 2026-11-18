@@ -4,5 +4,7 @@ Disallow: /try/
 Disallow: /new/
 Disallow: /unsubscribe/
 Disallow: /partners/link/
+Disallow: /business/
+Disallow: /shops/
 Disallow: /assets/hq/
 Sitemap: https://carvessa.app/sitemap.xml
