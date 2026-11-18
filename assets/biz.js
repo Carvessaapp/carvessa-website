@@ -52,7 +52,7 @@
       '<label class="bz-f"><span>Business name</span><input id="fName" maxlength="80" value="' + esc(b.name) + '" autocomplete="organization"></label>' +
       '<div class="bz-f"><span>What kind of business?</span><div class="bz-chips" id="fKind"></div></div>' +
       '<label class="bz-f"><span>Address</span><input id="fAddr" maxlength="160" value="' + esc(b.address) + '" autocomplete="street-address"></label>' +
-      '<label class="bz-f"><span>City</span><input id="fCity" maxlength="60" value="' + esc(b.city || 'Atlanta') + '"></label>' +
+      '<label class="bz-f"><span>City and state</span><input id="fCity" maxlength="60" placeholder="Atlanta, GA" value="' + esc(b.city || '') + '"></label>' +
       '<label class="bz-f"><span>Phone</span><input id="fPhone" maxlength="30" value="' + esc(b.phone) + '" inputmode="tel" autocomplete="tel"></label>' +
       '<label class="bz-f"><span>Website (optional)</span><input id="fWeb" maxlength="200" value="' + esc(b.website) + '" inputmode="url"></label>' +
       '<label class="bz-f"><span>Hours</span><input id="fHours" maxlength="160" value="' + esc(b.hours) + '" placeholder="Mon–Sat 8 AM–6 PM · Closed Sunday"></label>' +
@@ -99,8 +99,9 @@
       var name = $('fName').value.trim(), phone = $('fPhone').value.trim();
       var msg = $('fMsg'); msg.className = 'bz-msg bad';
       if (name.length < 2) { msg.textContent = 'Please type your business name.'; return; }
+      if ($('fCity').value.trim().length < 2) { msg.textContent = 'Please type your city and state.'; return; }
       if (!/\d{7,}/.test(phone.replace(/\D/g, ''))) { msg.textContent = 'Please type a phone number we can call to confirm you\'re the owner.'; return; }
-      var row = { name: name, kind: st.kind, address: $('fAddr').value.trim() || null, city: $('fCity').value.trim() || 'Atlanta', phone: phone, website: $('fWeb').value.trim() || null,
+      var row = { name: name, kind: st.kind, address: $('fAddr').value.trim() || null, city: $('fCity').value.trim(), phone: phone, website: $('fWeb').value.trim() || null,
         hours: $('fHours').value.trim() || null, about: $('fAbout').value.trim() || null, offer: $('fOffer').value.trim() || null, wallpaper: st.wall, photos: st.photos };
       var svcs = st.svcs.map(function (s) { var n = String(s.name || '').trim(); var pr = String(s.price || '').replace(/[^\d.]/g, ''); return n ? { name: n, price_from: pr ? Number(pr) : null } : null; }).filter(Boolean);
       $('fSave').disabled = true; msg.className = 'bz-msg'; msg.textContent = 'Saving…';

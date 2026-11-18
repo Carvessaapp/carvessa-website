@@ -74,7 +74,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
     var u='https://carvessa.app/'+(es?'es/negocios':'partners')+'/?for='+encodeURIComponent(slug(n))+'&n='+encodeURIComponent(n)+'&type='+k;
     $('lkLink').textContent=u;$('lkOpen').href=u.replace('https://carvessa.app','');
     var who=me?(es?'soy '+me+' de Carvessa':'this is '+me+' from Carvessa'):(es?'le escribimos de Carvessa':'this is Carvessa');
-    $('lkMsg').textContent=es?'Hola, '+who+'. Gracias por su tiempo hoy. Aquí puede ver cómo se vería '+n+' en nuestra app para conductores de Atlanta: '+u:'Hi, '+who+'. Thanks for your time today. Here’s how '+n+' would look in our app for Atlanta drivers: '+u;}
+    $('lkMsg').textContent=es?'Hola, '+who+'. Gracias por su tiempo hoy. Aquí puede ver cómo se vería '+n+' en nuestra app para conductores cerca de usted: '+u:'Hi, '+who+'. Thanks for your time today. Here’s how '+n+' would look in our app for drivers near you: '+u;}
   function copy(t,ok){var done=function(){$(ok).textContent='Copied';setTimeout(function(){$(ok).textContent='';},2500);};if(navigator.clipboard)navigator.clipboard.writeText(t).then(done,function(){$(ok).textContent='Select the text to copy';});else $(ok).textContent='Select the text to copy';}
   ['lkMe','lkName','lkLang'].forEach(function(i){$(i).addEventListener('input',make);});
   $('lkCopy').onclick=function(){copy($('lkLink').textContent,'lkOk');};$('lkCopy2').onclick=function(){copy($('lkMsg').textContent,'lkOk2');};
