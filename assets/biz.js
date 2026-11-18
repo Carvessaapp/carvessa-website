@@ -209,7 +209,7 @@
       root.innerHTML =
         '<div class="shop-cover" style="background:' + wallCss(b.wallpaper) + '"><div class="shop-logo" aria-hidden="true">' + esc(initials(b.name)) + '</div></div>' +
         (b.status !== 'live' ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you\'re the owner (we\'ll call or text you).</div>' : '') +
-        '<div class="shop-head"><h1>' + esc(b.name) + '</h1><div class="k">' + esc(kindName(b.kind)) + ' · ' + esc(b.city || 'Atlanta') + '</div>' + (b.founding ? '<span class="shop-badge">★ Founding Partner</span>' : '') + '</div>' +
+        '<div class="shop-head"><h1>' + esc(b.name) + '</h1><div class="k">' + esc(kindName(b.kind)) + ' · ' + esc(b.city || 'Atlanta') + '</div>' + (b.status === 'live' ? '<span class="shop-badge">✓ Verified by Carvessa</span>' : '') + '</div>' +
         (b.offer ? '<div class="shop-card shop-offer"><h2>' + esc(b.offer) + '</h2>Show this page at the counter.</div>' : '') +
         (svcs.length ? '<div class="shop-card"><h2>Services and prices</h2>' + svcs.map(function (x) { return '<div class="shop-svc"><span>' + esc(x.name) + '</span><b>' + (x.price_from != null ? 'from ' + money(x.price_from) : 'Ask') + '</b></div>'; }).join('') + '<div class="shop-note">Prices set by the business. Ask for a written quote.</div></div>' : '') +
         (b.about ? '<div class="shop-card"><h2>About</h2>' + esc(b.about) + '</div>' : '') +
