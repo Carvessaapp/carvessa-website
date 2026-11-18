@@ -126,12 +126,12 @@
       }
       var tab = 'join';
       function draw() {
-        box.innerHTML = '<div class="bz-tabs"><button type="button" data-t="join" class="' + (tab === 'join' ? 'on' : '') + '">Create account</button><button type="button" data-t="login" class="' + (tab === 'login' ? 'on' : '') + '">Log in</button></div>' +
+        box.innerHTML = '<div class="bz-tabs"><button type="button" data-tab="join" class="' + (tab === 'join' ? 'on' : '') + '">Create account</button><button type="button" data-tab="login" class="' + (tab === 'login' ? 'on' : '') + '">Log in</button></div>' +
           '<p class="lead" style="font-size:15px">' + (tab === 'join' ? 'Your page belongs to this account. Use an email you check.' : 'Use the email and password of your Carvessa account.') + '</p>' +
           '<label class="bz-f"><span>Email</span><input id="aEmail" type="email" autocomplete="email" inputmode="email"></label>' +
           '<label class="bz-f"><span>Password' + (tab === 'join' ? ' (8 or more characters)' : '') + '</span><input id="aPw" type="password" autocomplete="' + (tab === 'join' ? 'new-password' : 'current-password') + '"></label>' +
           '<div class="bz-row"><button class="bz-btn" id="aDo">' + (tab === 'join' ? 'Create account' : 'Log in') + '</button></div><div class="bz-msg" id="aMsg" role="status"></div>';
-        box.querySelector('.bz-tabs').onclick = function (e) { var t = e.target.getAttribute('data-t'); if (t) { tab = t; draw(); } };
+        box.querySelector('.bz-tabs').onclick = function (e) { var t = e.target.getAttribute("data-tab"); if (t) { tab = t; draw(); } };
         box.querySelector('#aDo').onclick = async function () {
           var em = box.querySelector('#aEmail').value.trim().toLowerCase(), pw = box.querySelector('#aPw').value, m = box.querySelector('#aMsg');
           m.className = 'bz-msg bad';
