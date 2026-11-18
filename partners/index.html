@@ -184,7 +184,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
   <h1>Meet drivers at the exact moment they need you.</h1>
   <p class="lead">Carvessa helps people plan a car they can afford and fix what goes wrong, in English and Spanish. See how a driver finds your business, step by step.</p>
   <div><span class="offer">★ Founding partners in Atlanta: first month free, no contract</span></div>
-  <div class="btns"><a class="cta" href="#partner" id="heroCta">Become a partner →</a><a class="cta alt" href="#story" id="howBtn">See how it works</a></div>
+  <div class="btns"><a class="cta" href="/business/join/?src=partners" id="heroCta">Become a partner →</a><a class="cta alt" href="#story" id="howBtn">See how it works</a></div>
   <div class="proof"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Free for drivers, always</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>English y Español</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Atlanta first</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Safety data from NHTSA</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Every paid spot labeled</span><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg>Same fair-price check for everyone</span></div>
 </section>
 <section class="w story" id="story">
@@ -193,7 +193,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
     <div class="gets" id="pgets" aria-live="polite"></div>
     <div class="ctl"><button type="button" id="ppause">❚❚ Pause</button><span id="pstep"></span></div>
     <div class="steplist" id="psteps"></div>
-    <div class="endcta"><a class="cta" href="#partner" id="storyCta">Become a partner →</a><button class="copy" type="button" id="pcopy">Copy link to this story</button><span class="copied" id="pcopied" aria-live="polite"></span></div>
+    <div class="endcta"><a class="cta" href="/business/join/?src=partners" id="storyCta">Become a partner →</a><button class="copy" type="button" id="pcopy">Copy link to this story</button><span class="copied" id="pcopied" aria-live="polite"></span></div>
   </div>
   <div class="pw"><div class="glow" aria-hidden="true"></div>
     <div class="phone"><div class="screen" id="pscreen" role="img" aria-label="Carvessa app example"><div class="notch"></div><div class="sbar"><span class="clk">9:41</span><span>●●● ▮</span></div><div class="dots" id="pdots"></div><div class="tapdot" id="ptap"></div><div id="pscr"></div><div class="cap" id="pcap"></div></div></div>
@@ -213,7 +213,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
     <label class="sylab" for="syArea">Neighborhood or ZIP</label><input id="syArea" maxlength="30" value="Atlanta">
    </div>
    <p class="syhonest">Preview only. Distances, prices and other businesses are examples. Paid spots always say “Sponsored” or “Partner”, and the closest options always show too.</p>
-   <a class="cta" href="#partner" id="syCta">I want this for my business →</a>
+   <a class="cta" href="/business/join/?src=partners" id="syCta">I want this for my business →</a>
   </div>
   <div class="syphone"><div class="syscreen"><div class="notch"></div><div class="sbar"><span class="clk">9:41</span><span>●●● ▮</span></div><div id="syScr"></div></div></div>
  </div>
@@ -307,8 +307,11 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
   $('ppause').textContent=paused?W.play:W.pause;
   $('ppause').addEventListener('click',function(){paused=!paused;this.textContent=paused?W.play:W.pause;show(st);});
   $('pscreen').addEventListener('click',function(){if(!WIDE.matches){paused=true;$('ppause').textContent=W.play;}show((st+1)%S[si].steps.length);});
-  function toForm(e){e.preventDefault();var k=S[si].kind,r=document.querySelector('#pform input[name=kind][value="'+k+'"]');if(r)r.checked=true;
-    $('partner').scrollIntoView({behavior:RM?'auto':'smooth'});setTimeout(function(){var l=r&&r.parentNode;if(l){l.classList.add('flash');setTimeout(function(){l.classList.remove('flash');},1300);}$('pb').focus({preventScroll:true});},RM?0:500);}
+  // Become a partner → the business sign-up page, with their type (and name/offer from the preview box) filled in.
+  var BK={shop:'repair',shops:'repair',dealer:'dealer',dealers:'dealer',lender:'credit_union',lenders:'credit_union',insurance:'insurance'};
+  window.toJoin=function(key,pv){var u='/business/join/?src=partners&kind='+(BK[key]||'other'),n=pv&&$('syName')?$('syName').value.trim():'',o=pv&&$('syOffer')?$('syOffer').value.trim():'';
+    if(n&&n!==W.yourBizDefault)u+='&name='+encodeURIComponent(n);if(o)u+='&offer='+encodeURIComponent(o);location.href=u;};
+  function toForm(e){e.preventDefault();toJoin(S[si].key);}
   $('heroCta').addEventListener('click',toForm);$('storyCta').addEventListener('click',toForm);
   $('howBtn').addEventListener('click',function(e){e.preventDefault();$('story').scrollIntoView({behavior:RM?'auto':'smooth'});});
   $('pcopy').addEventListener('click',function(){var u=W.page+'#'+S[si].key;var ok=function(){$('pcopied').textContent=W.copied+u;};if(navigator.clipboard)navigator.clipboard.writeText(u).then(ok,ok);else ok();});
@@ -336,7 +339,7 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
     function setKind(k){kind=k;chips();if(!touched)$('syOffer').value=W['sy_off_'+k]||'';draw();}
     ['syName','syArea'].forEach(function(id){$(id).addEventListener('input',draw);});$('syOffer').addEventListener('input',function(){touched=true;draw();});
     var pb=document.getElementById('pb');if(pb)pb.addEventListener('input',function(){pb.dataset.typed=1;});
-    $('syCta').addEventListener('click',function(e){e.preventDefault();$('partner').scrollIntoView({behavior:RM?'auto':'smooth'});setTimeout(function(){var f=document.getElementById(pb&&pb.value?'pn':'pb');if(f)f.focus({preventScroll:true});},RM?0:500);});
+    $('syCta').addEventListener('click',function(e){e.preventDefault();toJoin(kind,true);});
     var q=new URLSearchParams(location.search),slug=(q.get('for')||'').slice(0,60),nm=(q.get('n')||'').slice(0,40),ty=q.get('type');
     if(!nm&&slug)nm=slug.split('-').filter(Boolean).map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' ');
     if(ty&&FK[ty])kind=ty;

@@ -156,7 +156,8 @@
     var c1 = root.querySelector('#ck1'), c2 = root.querySelector('#ck2'), go1 = root.querySelector('#go1');
     var upd = function () { go1.disabled = !(c1.checked && c2.checked); };
     c1.onchange = upd; c2.onchange = upd; upd();
-    go1.onclick = function () { agreedAt = new Date().toISOString(); show(1); account(function () { show(2); form({}, [], async function (row, svcs) {
+    go1.onclick = function () { agreedAt = new Date().toISOString(); show(1); account(function () { show(2); var pk = q.get('kind'), pre = { name: (q.get('name') || '').slice(0, 80), offer: (q.get('offer') || '').slice(0, 120), kind: KINDS.some(function (k) { return k[0] === pk; }) ? pk : undefined };
+      form(pre, [], async function (row, svcs) {
       row.agreed_at = agreedAt; row.terms_version = C.terms; row.source = (q.get('src') || 'website').slice(0, 60);
       var r = await sb.from('businesses').insert(row).select('id, slug').single(); if (r.error) throw r.error;
       await saveServices(r.data.id, svcs);
