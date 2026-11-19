@@ -54,7 +54,7 @@
   ];
   var SUGGEST = { credit_union: 'cu', insurance: 'shield', dealer: 'lot', repair: 'workshop', body: 'workshop', tires: 'tread' };
   var PUB = 'id, owner, slug, name, kind, address, city, state, phone, website, hours, about, offer, wallpaper, photos, logo, header, status, founding, created_at, updated_at';
-  var MINE = PUB + ', legal_name, control_no, owner_role, since_year, hq_look';
+  var MINE = PUB + ', legal_name, control_no, owner_role, since_year, hq_look, notify_email';
   var STATES = { alabama: 'AL', alaska: 'AK', arizona: 'AZ', arkansas: 'AR', california: 'CA', colorado: 'CO', connecticut: 'CT', delaware: 'DE', 'district of columbia': 'DC', florida: 'FL', georgia: 'GA', hawaii: 'HI', idaho: 'ID', illinois: 'IL', indiana: 'IN', iowa: 'IA', kansas: 'KS', kentucky: 'KY', louisiana: 'LA', maine: 'ME', maryland: 'MD', massachusetts: 'MA', michigan: 'MI', minnesota: 'MN', mississippi: 'MS', missouri: 'MO', montana: 'MT', nebraska: 'NE', nevada: 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', ohio: 'OH', oklahoma: 'OK', oregon: 'OR', pennsylvania: 'PA', 'rhode island': 'RI', 'south carolina': 'SC', 'south dakota': 'SD', tennessee: 'TN', texas: 'TX', utah: 'UT', vermont: 'VT', virginia: 'VA', washington: 'WA', 'west virginia': 'WV', wisconsin: 'WI', wyoming: 'WY' };
 
   var kindName = function (k) { for (var i = 0; i < KINDS.length; i++) if (KINDS[i][0] === k) return KINDS[i][1]; return 'Business'; };
@@ -690,8 +690,14 @@
         el.innerHTML = head('ACCOUNT', 'Look and settings') +
           '<div class="hq-card"><h4>PICK HOW BUSINESS HQ LOOKS</h4><p class="hq-fine">Only changes what you see here. Your public page keeps its own header and logo.</p><div class="hq-looks">' +
           LOOKS.map(function (l) { return '<button type="button" data-l="' + l[0] + '" class="' + ((cur.hq_look || 'racing') === l[0] ? 'on' : '') + '"><span class="sp"><i style="background:' + l[3] + '"></i><i style="background:' + l[4] + '"></i><i style="background:' + l[5] + '"></i><i style="background:' + l[6] + '"></i></span><b>' + l[1] + '</b><small>' + (l[0] === 'racing' ? 'Default' : l[0] === sug ? 'Suggested for you' : l[2]) + '</small></button>'; }).join('') + '</div><div class="bz-msg" id="lM" role="status"></div></div>' +
+          '<div class="hq-card"><h4>EMAIL ALERTS</h4><label class="bz-ck" style="margin:4px 0"><input type="checkbox" id="nE"' + (cur.notify_email !== false ? ' checked' : '') + '><span>Email me at <b>' + esc(u.email) + '</b> when a driver messages me, asks for a quote or writes a review.</span></label><p class="hq-fine">At most one email per chat every 15 minutes while you haven’t read it. Drivers get an email when you answer.</p><div class="bz-msg" id="nM" role="status"></div></div>' +
           '<div class="hq-card"><h4>LOGIN</h4>Signed in as <b>' + esc(u.email) + '</b>.<div class="bz-row"><a class="bz-btn soft bz-small" href="/business/terms/" target="_blank">Partner Terms</a><a class="bz-btn soft bz-small" href="mailto:hello@carvessa.app?subject=' + encodeURIComponent('Question about ' + cur.name) + '">Ask Carvessa a question</a></div><p class="hq-fine">You agreed to the Partner Terms version ' + esc(cur.terms_version || '') + (cur.agreed_at ? ' on ' + esc(new Date(cur.agreed_at).toLocaleDateString('en-US')) : '') + '.</p></div>' +
           '<div class="hq-card hq-red"><h4>RED FLAG ZONE</h4><b>Delete this page</b><p class="hq-fine">Removes your page, services, posts and sales. Type DELETE to confirm.</p><div class="bz-two"><label class="bz-f"><span>Type DELETE</span><input id="dT" autocomplete="off"></label><div class="bz-row" style="align-self:end"><button type="button" class="bz-btn red" id="dGo">Delete page</button></div></div><div class="bz-msg" id="dM" role="status"></div><p class="hq-fine">Want to hide your page for a while instead? Write to hello@carvessa.app.</p></div>';
+        el.querySelector('#nE').onchange = async function () {
+          var v = this.checked, x = await sb.from('businesses').update({ notify_email: v }).eq('id', cur.id), m = el.querySelector('#nM');
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save.'; this.checked = !v; return; }
+          cur.notify_email = v; m.className = 'bz-msg good'; m.textContent = v ? 'Email alerts are on.' : 'Email alerts are off.';
+        };
         el.querySelector('.hq-looks').onclick = async function (e) {
           var b = e.target.closest('button[data-l]'); if (!b) return;
           var l = b.getAttribute('data-l'), x = await sb.from('businesses').update({ hq_look: l }).eq('id', cur.id);
