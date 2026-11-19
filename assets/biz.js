@@ -281,19 +281,71 @@
     if (svcs.length) { var r = await sb.from('business_services').insert(svcs.map(function (s, i) { return { business_id: id, name: s.name, price_from: s.price_from, sort: i }; })); if (r.error) throw r.error; }
   }
 
+
+  // ---------- Reviews (picture 269–271): stars, the write form and the report box ----------
+  var REASONS = [['fake', 'Fake or not a real customer'], ['not_a_visit', 'Not about a visit to this business'], ['paid', 'Paid for or given for a discount'], ['insult', 'Insults, hate or threats'], ['private_info', 'Private information (phone, address, plate)'], ['off_topic', 'Off-topic'], ['other', 'Something else']];
+  var starRow = function (n) { var s = ''; for (var i = 1; i <= 5; i++) s += '<i class="' + (i <= n ? 'on' : '') + '">★</i>'; return '<span class="rv-stars" aria-label="' + n + ' out of 5 stars">' + s + '</span>'; };
+  var ago = function (d) { var t = new Date(d); return t.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: t.getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }); };
+  function reportBox(host, reviewId, done) {
+    host.innerHTML = '<div class="rv-report"><b>Report this review</b><p>We check it against our <a href="/business/review-rules/" target="_blank">Review Rules</a>. We never remove a review because it’s negative.</p>' +
+      REASONS.map(function (r, i) { return '<label class="bz-ck" style="font-weight:600;margin:6px 0"><input type="radio" name="rr" value="' + r[0] + '"' + (i === 0 ? ' checked' : '') + '><span>' + r[1] + '</span></label>'; }).join('') +
+      '<label class="bz-f"><span>Anything we should know? (optional)</span><input id="rrN" maxlength="300"></label><div class="bz-row"><button type="button" class="bz-btn bz-small" id="rrGo">Send report</button><button type="button" class="bz-btn soft bz-small" id="rrX">Cancel</button></div><div class="bz-msg" id="rrM" role="status"></div></div>';
+    host.querySelector('#rrX').onclick = function () { host.innerHTML = ''; };
+    host.querySelector('#rrGo').onclick = async function () {
+      var m = host.querySelector('#rrM'), reason = (host.querySelector('input[name=rr]:checked') || {}).value;
+      var x = await sb.from('business_review_reports').insert({ review_id: reviewId, reason: reason, note: host.querySelector('#rrN').value.trim() || null });
+      if (x.error && !/duplicate|unique/i.test(x.error.message)) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t send. Please try again.'; return; }
+      host.innerHTML = '<div class="bz-msg good">Thanks. We’ll check it against our Review Rules.</div>'; if (done) done();
+    };
+  }
+  function reviewForm(host, b, mine, onDone) {
+    var st = { stars: mine ? mine.stars : 0, photos: mine ? (mine.photos || []).slice() : [] };
+    host.innerHTML = '<div class="rv-form"><h3>' + (mine ? 'Edit your review' : 'Write a review') + '</h3><p class="rv-fine">Only your first name shows. Write about a real visit.</p>' +
+      '<div class="rv-pick" id="rS" role="radiogroup" aria-label="Your stars"></div>' +
+      '<label class="bz-f"><span>What happened? (optional)</span><textarea id="rB" maxlength="1000" placeholder="What did they fix, how long did it take, did the price match?">' + esc(mine ? mine.body : '') + '</textarea></label>' +
+      '<div class="bz-f"><span>Photos (optional, up to 4)</span><div class="bz-pics" id="rP"></div><small>About your visit only. No faces of other people and no license plates. Photos show after our check.</small></div>' +
+      '<label class="bz-ck"><input type="checkbox" id="rOk"' + (mine ? ' checked' : '') + '><span>This is about my own visit. Nobody paid me or gave me a discount or gift for this review.</span></label>' +
+      '<div class="bz-row"><button type="button" class="bz-btn" id="rGo">' + (mine ? 'Save my review' : 'Post my review') + '</button><button type="button" class="bz-btn soft" id="rX">Cancel</button></div><div class="bz-msg" id="rM" role="status"></div></div>';
+    var $ = function (id) { return host.querySelector('#' + id); };
+    var LBL = ['', 'Bad', 'Not good', 'OK', 'Good', 'Great'];
+    function drawS() { var h = ''; for (var i = 1; i <= 5; i++) h += '<button type="button" role="radio" aria-checked="' + (i === st.stars) + '" data-s="' + i + '" class="' + (i <= st.stars ? 'on' : '') + '" aria-label="' + i + ' star' + (i > 1 ? 's' : '') + '">★</button>'; $('rS').innerHTML = h + '<span>' + (LBL[st.stars] || 'Tap the stars') + '</span>'; }
+    function drawP() { $('rP').innerHTML = st.photos.map(function (p, i) { return '<div class="p"><img src="' + photoUrl(p) + '" alt="Photo ' + (i + 1) + '"><button type="button" data-rm="' + i + '" aria-label="Remove photo">✕</button></div>'; }).join('') + (st.photos.length < 4 ? '<label aria-label="Add a photo">+<input type="file" accept="image/*" id="rF" hidden></label>' : ''); }
+    drawS(); drawP();
+    $('rS').onclick = function (e) { var n = e.target.getAttribute('data-s'); if (n) { st.stars = +n; drawS(); } };
+    $('rP').onclick = function (e) { var i = e.target.getAttribute('data-rm'); if (i != null) { st.photos.splice(+i, 1); drawP(); } };
+    host.addEventListener('change', async function (e) {
+      if (e.target.id !== 'rF') return; var f = e.target.files && e.target.files[0]; if (!f) return;
+      var me = (await sb.auth.getUser()).data.user; if (!me) return;
+      $('rM').className = 'bz-msg'; $('rM').textContent = 'Uploading…';
+      try { st.photos.push(await upload(me.id, f, 1400)); drawP(); $('rM').textContent = ''; } catch (err) { $('rM').className = 'bz-msg bad'; $('rM').textContent = 'That photo didn’t upload. Try a JPG or PNG photo.'; }
+    });
+    $('rX').onclick = function () { host.innerHTML = ''; };
+    $('rGo').onclick = async function () {
+      var m = $('rM'); m.className = 'bz-msg bad';
+      if (!st.stars) { m.textContent = 'Tap 1 to 5 stars.'; return; }
+      if (!$('rOk').checked) { m.textContent = 'Please tick the box: reviews must be about your own visit, with no payment or discount.'; return; }
+      var row = { stars: st.stars, body: $('rB').value.trim() || null, photos: st.photos };
+      $('rGo').disabled = true; m.className = 'bz-msg'; m.textContent = 'Saving…';
+      var x = mine ? await sb.from('business_reviews').update(row).eq('id', mine.id) : await sb.from('business_reviews').insert(Object.assign({ business_id: b.id }, row));
+      $('rGo').disabled = false;
+      if (x.error) { m.className = 'bz-msg bad'; m.textContent = /own business/.test(x.error.message) ? 'You can’t review your own business.' : /duplicate|unique/i.test(x.error.message) ? 'You already reviewed this business. You can edit your review.' : /isn.t taking/.test(x.error.message) ? 'This business isn’t taking reviews yet.' : 'That didn’t save. Please try again.'; return; }
+      onDone();
+    };
+  }
+
   // ---------- Sign in / create account ----------
-  function account(next) {
-    var box = root.querySelector('#bzAcct');
+  function account(next, boxEl) {
+    var box = boxEl || root.querySelector('#bzAcct');
     sb.auth.getSession().then(function (r) {
       var u = r.data.session && r.data.session.user;
       if (u) {
         if (mode === 'edit') { next(u); return; }
         box.innerHTML = '<div class="bz-sec">Signed in as <b>' + esc(u.email) + '</b>. <a href="#" id="aOut">Not you?</a></div><div class="bz-row"><button class="bz-btn" id="aGo">Continue</button></div>';
         box.querySelector('#aGo').onclick = function () { next(u); };
-        box.querySelector('#aOut').onclick = function (e) { e.preventDefault(); sb.auth.signOut().then(function () { account(next); }); };
+        box.querySelector('#aOut').onclick = function (e) { e.preventDefault(); sb.auth.signOut().then(function () { account(next, boxEl); }); };
         return;
       }
-      var tab = mode === 'edit' ? 'login' : 'join';
+      var tab = mode === 'join' ? 'join' : 'login';
       function draw() {
         box.innerHTML = '<div class="bz-tabs"><button type="button" data-tab="join" class="' + (tab === 'join' ? 'on' : '') + '">Create account</button><button type="button" data-tab="login" class="' + (tab === 'login' ? 'on' : '') + '">Log in</button></div>' +
           '<p class="lead" style="font-size:15px">' + (tab === 'join' ? 'Your page belongs to this account. Use an email you check.' : 'Use the email and password of your Carvessa account.') + '</p>' +
@@ -307,7 +359,7 @@
           if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(em)) { m.textContent = 'Please type a real email.'; return; }
           if (pw.length < 8) { m.textContent = 'Your password needs 8 or more characters.'; return; }
           m.className = 'bz-msg'; m.textContent = tab === 'join' ? 'Creating your account…' : 'Logging in…';
-          var r = tab === 'join' ? await sb.auth.signUp({ email: em, password: pw, options: { emailRedirectTo: location.origin + location.pathname } }) : await sb.auth.signInWithPassword({ email: em, password: pw });
+          var r = tab === 'join' ? await sb.auth.signUp({ email: em, password: pw, options: { emailRedirectTo: location.origin + location.pathname + location.search } }) : await sb.auth.signInWithPassword({ email: em, password: pw });
           if (r.error) { m.className = 'bz-msg bad'; m.textContent = /registered|exists/i.test(r.error.message) ? 'That email already has an account. Tap Log in.' : /invalid/i.test(r.error.message) ? 'Email or password is wrong.' : 'That didn’t work. Please try again.'; return; }
           if (!r.data.session) { m.className = 'bz-msg good'; m.textContent = 'Almost done: we sent you an email. Tap the link in it, then come back to this page and log in.'; return; }
           next(r.data.session.user);
@@ -366,7 +418,7 @@
         shell.querySelector('.hq-nav').onclick = function (e) { var b = e.target.closest('button[data-tab]'); if (b) { tab = b.getAttribute('data-tab'); frame(); } };
         shell.querySelector('#hqOut').onclick = function () { sb.auth.signOut().then(function () { location.reload(); }); };
         var pk = shell.querySelector('#hqPick'); if (pk) pk.onchange = function () { cur = pages[+pk.value]; tab = 'overview'; frame(); };
-        ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: soon, messages: soon, account: settings })[tab](shell.querySelector('#hqBody'));
+        ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, messages: soon, account: settings })[tab](shell.querySelector('#hqBody'));
         var y = shell.getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
       }
       function head(k, title, badge) { return '<small class="hq-k">' + k + '</small><h2 class="hq-h">' + title + (badge ? ' <em>' + badge + '</em>' : '') + '</h2>'; }
@@ -380,7 +432,9 @@
         var t = { view: 0, call: 0, directions: 0, website: 0 }; (s.data || []).forEach(function (x) { t[x.kind] = (t[x.kind] || 0) + x.n; });
         var sales = sl.data || [], total = sales.reduce(function (a, x) { return a + (Number(x.amount) || 0); }, 0);
         var svc = await sb.from('business_services').select('id', { count: 'exact', head: true }).eq('business_id', cur.id);
+        var rvs = await sb.from('business_reviews').select('id', { count: 'exact', head: true }).eq('business_id', cur.id).eq('status', 'visible').is('reply', null);
         var todo = [];
+        if (rvs.count > 0) todo.push(['Reply to ' + rvs.count + ' review' + (rvs.count > 1 ? 's' : ''), 'A short thank-you shows drivers you care.', 'reviews']);
         if (cur.status === 'pending') todo.push(['Answer our call or text', 'We confirm you’re the owner, then your page goes live.']);
         if (!cur.hours) todo.push(['Add your hours', 'Drivers check if you’re open before they come.']);
         if (!(svc.count > 0)) todo.push(['Add services and prices', 'Pages with prices get more calls.']);
@@ -391,10 +445,10 @@
           (cur.status !== 'live' ? '<div class="hq-note">' + (cur.status === 'pending' ? 'Your page is waiting for our check. Only you can see it. We’ll call or text you at ' + esc(cur.phone || 'your number') + ' to confirm you’re the owner.' : 'Your page isn’t showing to drivers right now. Questions? Write to hello@carvessa.app.') + '</div>' : '') +
           '<div class="hq-laps">' + [['VIEWS', t.view], ['CALLS', t.call], ['DIRECTIONS', t.directions], ['WEBSITE', t.website]].map(function (x) { return '<div><small>' + x[0] + '</small><b>' + x[1] + '</b></div>'; }).join('') + '</div>' +
           (cur.status !== 'live' ? '<p class="hq-fine">Counts start when your page is live. Your own visits never count.</p>' : '<p class="hq-fine">Counts only, never names. Your own visits never count.</p>') +
-          '<div class="hq-two"><div class="hq-card"><h4>PIT STOP · TO DO</h4>' + (todo.length ? todo.slice(0, 5).map(function (x, i) { return '<div class="hq-pit"><b>' + String(i + 1).padStart(2, '0') + '</b><div>' + x[0] + '<small>' + x[1] + '</small></div></div>'; }).join('') : '<p>All set. Nice work.</p>') + '</div>' +
+          '<div class="hq-two"><div class="hq-card"><h4>PIT STOP · TO DO</h4>' + (todo.length ? todo.slice(0, 5).map(function (x, i) { return '<div class="hq-pit"' + (x[2] ? ' data-go="' + x[2] + '" style="cursor:pointer"' : '') + '><b>' + String(i + 1).padStart(2, '0') + '</b><div>' + x[0] + '<small>' + x[1] + '</small></div></div>'; }).join('') : '<p>All set. Nice work.</p>') + '</div>' +
           '<div class="hq-card"><h4>SALES FROM CARVESSA</h4><div class="hq-big">' + money(total || 0) + '</div><small>' + sales.length + ' customer' + (sales.length === 1 ? '' : 's') + ' you marked in the last 30 days · you reported</small><div class="bz-row"><button type="button" class="bz-btn bz-small" data-go="sales">Mark a customer</button></div></div></div>' +
           '<div class="hq-card"><h4>YOUR PLAN</h4>Free during our launch. Your page, reviews and messages stay free. We’ll tell you in writing before any paid option, and you can always say no.</div>';
-        el.onclick = function (e) { var g = e.target.getAttribute('data-go'); if (g) { tab = g; frame(); } };
+        el.onclick = function (e) { var t = e.target.closest('[data-go]'); if (t) { tab = t.getAttribute('data-go'); frame(); } };
       }
       async function myPage(el) {
         el.innerHTML = head('GARAGE SETUP', 'My page') + '<p class="hq-fine">Changing your name, address or phone sends your page to us for a quick check.</p><div id="hqForm"></div>';
@@ -443,6 +497,37 @@
         };
         el.querySelector('#sL').onclick = async function (e) { var id = e.target.getAttribute('data-del'); if (id && confirm('Delete this sale?')) { await sb.from('business_sales').delete().eq('id', id); sales(el); } };
       }
+
+      async function reviews(el, filter) {
+        filter = filter || 'all';
+        var r = await sb.from('business_reviews').select('*').eq('business_id', cur.id).order('created_at', { ascending: false });
+        var all = r.data || [], vis = all.filter(function (x) { return x.status === 'visible'; });
+        var avg = vis.length ? (vis.reduce(function (a, x) { return a + x.stars; }, 0) / vis.length) : 0;
+        var need = vis.filter(function (x) { return !x.reply; });
+        var list = filter === 'need' ? need : filter === 'low' ? vis.filter(function (x) { return x.stars <= 3; }) : all;
+        el.innerHTML = head('FROM THE STANDS', 'Reviews', vis.length ? '★ ' + avg.toFixed(1) + ' · ' + vis.length : 'none yet') +
+          '<p class="hq-fine">From Carvessa members. You can reply in public and report a review that breaks our <a href="/business/review-rules/" target="_blank">Review Rules</a>. Nobody can edit, hide or buy reviews.</p>' +
+          '<div class="bz-chips" id="rvF">' + [['all', 'All ' + all.length], ['need', 'Need a reply · ' + need.length], ['low', '1–3 stars · ' + vis.filter(function (x) { return x.stars <= 3; }).length]].map(function (f) { return '<button type="button" data-f="' + f[0] + '" class="' + (filter === f[0] ? 'on' : '') + '">' + f[1] + '</button>'; }).join('') + '</div>' +
+          (list.length ? list.map(function (x) {
+            var pics = (x.photos || []);
+            return '<div class="hq-card rv-item" data-id="' + x.id + '"><div class="rv-top">' + starRow(x.stars) + '<b>' + esc(x.first_name) + '</b><small>' + ago(x.created_at) + (x.updated_at && x.updated_at.slice(0, 16) !== x.created_at.slice(0, 16) ? ' · edited' : '') + '</small></div>' +
+              (x.status !== 'visible' ? '<div class="hq-note">Hidden by Carvessa' + (x.removed_reason ? ': ' + esc(x.removed_reason) : '') + '</div>' : '') +
+              (x.body ? '<p>' + esc(x.body) + '</p>' : '') +
+              (pics.length ? (x.photos_ok ? '<div class="rv-pics">' + pics.map(function (p) { return '<img src="' + photoUrl(p) + '" alt="Review photo" loading="lazy">'; }).join('') + '</div>' : '<p class="hq-fine">' + pics.length + ' photo' + (pics.length > 1 ? 's' : '') + ' waiting for our check.</p>') : '') +
+              '<label class="bz-f"><span>' + (x.reply ? 'Your public reply' : 'Reply in public') + '</span><textarea data-r="' + x.id + '" maxlength="600" placeholder="Thank you, ' + esc(x.first_name) + '! …">' + esc(x.reply || '') + '</textarea></label>' +
+              '<div class="bz-row"><button type="button" class="bz-btn bz-small" data-save="' + x.id + '">' + (x.reply ? 'Update reply' : 'Post reply') + '</button>' + (x.reply ? '<button type="button" class="bz-btn soft bz-small" data-clear="' + x.id + '">Delete reply</button>' : '') + '<button type="button" class="bz-btn red bz-small" data-rep="' + x.id + '">Report</button></div><div class="rv-rep-box"></div><div class="bz-msg" role="status"></div></div>';
+          }).join('') : '<div class="hq-card">' + (all.length ? 'Nothing here.' : 'No reviews yet. Tip: give your customers your page link or QR code and ask them to review you.') + '</div>');
+        el.querySelector('#rvF').onclick = function (e) { var f = e.target.getAttribute('data-f'); if (f) reviews(el, f); };
+        el.onclick = async function (e) {
+          var id = e.target.getAttribute('data-save') || e.target.getAttribute('data-clear'), rep = e.target.getAttribute('data-rep');
+          if (rep) { reportBox(e.target.closest('.rv-item').querySelector('.rv-rep-box'), rep); return; }
+          if (!id) return;
+          var card = e.target.closest('.rv-item'), m = card.querySelector('.bz-msg'), txt = e.target.getAttribute('data-clear') ? '' : card.querySelector('textarea').value.trim();
+          var x = await sb.from('business_reviews').update({ reply: txt || null }).eq('id', id);
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save. Please try again.'; return; }
+          reviews(el, filter);
+        };
+      }
       function soon(el) {
         var rv = tab === 'reviews';
         el.innerHTML = head(rv ? 'FROM THE STANDS' : 'TEAM RADIO', rv ? 'Reviews' : 'Messages', 'Coming next') +
@@ -481,10 +566,14 @@
       var r = slug ? await sb.from('businesses').select(PUB).eq('slug', slug).maybeSingle() : { data: null };
       var b = r.data;
       if (!b) { root.innerHTML = '<div class="bz"><h1>This page isn’t available</h1><p class="lead">It may be waiting for our check, or the link is wrong.</p><a class="bz-btn" href="/partners/">For businesses</a></div>'; return; }
-      var [s, ps] = await Promise.all([
+      var [s, ps, rv, me] = await Promise.all([
         sb.from('business_services').select('name, price_from, note').eq('business_id', b.id).order('sort'),
-        sb.from('business_posts').select('kind, title, body, until').eq('business_id', b.id).order('created_at', { ascending: false }).limit(3)
+        sb.from('business_posts').select('kind, title, body, until').eq('business_id', b.id).order('created_at', { ascending: false }).limit(3),
+        sb.rpc('business_reviews_public', { b: b.id }),
+        sb.auth.getSession()
       ]);
+      var reviews = rv.data || [], user = me.data.session && me.data.session.user, isOwner = user && user.id === b.owner;
+      var avg = reviews.length ? reviews.reduce(function (a, x) { return a + x.stars; }, 0) / reviews.length : 0;
       var svcs = s.data || [], today = new Date().toISOString().slice(0, 10);
       var posts = (ps.data || []).filter(function (p) { return !p.until || p.until >= today; });
       var info = KINFO[b.kind] || KINFO.other, hv = headerOf(b);
@@ -500,7 +589,7 @@
       root.innerHTML =
         '<div class="shop-cover" style="background:' + hv.css + '">' + logoHtml(b, 'shop-logo') + (hv.credit ? '<a class="shop-credit" href="' + esc(hv.credit[1]) + '" target="_blank" rel="noopener nofollow">Photo: ' + esc(hv.credit[0]) + ' · CC BY</a>' : '') + '</div>' +
         (b.status !== 'live' ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you’re the owner (we’ll call or text you).</div>' : '') +
-        '<div class="shop-head"><h1>' + esc(b.name) + '</h1><div class="k">' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</div>' + (b.status === 'live' ? '<span class="shop-badge">✓ Verified by Carvessa</span>' : '') + '</div>' +
+        '<div class="shop-head"><h1>' + esc(b.name) + '</h1><div class="k">' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</div>' + (b.status === 'live' ? '<span class="shop-badge">✓ Verified by Carvessa</span>' : '') + (reviews.length ? '<a class="shop-rating" href="#reviews">' + starRow(Math.round(avg)) + ' <b>' + avg.toFixed(1) + '</b> · ' + reviews.length + ' review' + (reviews.length > 1 ? 's' : '') + '</a>' : '') + '</div>' +
         '<div class="bz-row shop-cta">' + (info.first === 'directions' ? dirBtn + callBtn : callBtn + dirBtn) + (web ? '<a class="bz-btn soft" data-c="website" href="' + esc(web) + '" target="_blank" rel="noopener nofollow">Website</a>' : '') + '</div>' +
         (b.offer ? '<div class="shop-card shop-offer"><h2>' + esc(b.offer) + '</h2>Show this page at the counter.</div>' : '') +
         posts.map(function (p) { return '<div class="shop-card shop-post"><span class="hq-tag">' + (KP[p.kind] || 'News') + '</span><h2>' + esc(p.title) + '</h2>' + (p.body ? esc(p.body) : '') + (p.until ? '<div class="shop-note">Until ' + esc(new Date(p.until + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</div>' : '') + '</div>'; }).join('') +
@@ -509,9 +598,40 @@
         (b.about ? '<div class="shop-card"><h2>About</h2>' + esc(b.about) + '</div>' : '') +
         ((b.photos || []).length ? '<div class="shop-card"><h2>Photos</h2><div class="shop-pics">' + b.photos.map(function (p, i) { return '<img src="' + photoUrl(p) + '" alt="' + esc(b.name) + ' photo ' + (i + 1) + '" loading="lazy">'; }).join('') + '</div></div>' : '') +
         '<div class="shop-card"><div class="shop-kv">' + (b.address ? '<span>Address</span><div>' + esc(b.address) + (b.city ? ', ' + esc(b.city) : '') + '</div>' : '') + (b.phone ? '<span>Phone</span><div>' + esc(b.phone) + '</div>' : '') + (b.hours ? '<span>Hours</span><div>' + esc(b.hours) + '</div>' : '') + '</div></div>' +
-        '<div class="shop-card"><h2>Reviews</h2>Reviews from Carvessa members are coming soon.</div>' +
-        '<p class="shop-note" style="margin-top:14px">Carvessa doesn’t rank businesses by who pays. Paid spots in the app are always labeled. Is this your business? <a href="/business/edit/">Open Business HQ</a></p>';
+        '<div class="shop-card" id="reviews"><h2>Reviews' + (reviews.length ? ' <span class="rv-sum">★ ' + avg.toFixed(1) + ' · ' + reviews.length + '</span>' : '') + '</h2><p class="rv-fine">From Carvessa members. Only first names show. <a href="/business/review-rules/" target="_blank">Review Rules</a></p>' +
+          (b.status === 'live' && !isOwner ? '<div class="bz-row" style="margin:6px 0 10px"><button type="button" class="bz-btn bz-small" id="rvWrite">Write a review</button></div><div id="rvBox"></div>' : '') +
+          (reviews.length ? reviews.slice(0, 20).map(function (x) {
+            return '<div class="rv-item" data-id="' + x.id + '"><div class="rv-top">' + starRow(x.stars) + '<b>' + esc(x.first_name) + '</b><small>' + ago(x.created_at) + '</small></div>' + (x.body ? '<p>' + esc(x.body) + '</p>' : '') +
+              ((x.photos || []).length ? '<div class="rv-pics">' + x.photos.map(function (p) { return '<img src="' + photoUrl(p) + '" alt="Photo from ' + esc(x.first_name) + '" loading="lazy">'; }).join('') + '</div>' : '') +
+              (x.reply ? '<div class="rv-reply"><b>Reply from ' + esc(b.name) + '</b>' + esc(x.reply) + '</div>' : '') +
+              '<button type="button" class="rv-flag" data-flag="' + x.id + '">Report</button><div class="rv-rep-box"></div></div>';
+          }).join('') : '<p>' + (b.status === 'live' ? 'No reviews yet. Been here? Be the first.' : 'Reviews start when the page is live.') + '</p>') + '</div>' +
+        '<p class="shop-note" style="margin-top:14px">Carvessa doesn’t rank businesses by who pays. Reviews are never removed for being negative or because a business pays. Paid spots in the app are always labeled. Is this your business? <a href="/business/edit/">Open Business HQ</a></p>';
       root.addEventListener('click', function (e) { var a = e.target.closest('[data-c]'); if (a) count(a.getAttribute('data-c')); });
+      // Write / edit a review, or report one: members only (free account).
+      function signedIn(host, then) {
+        sb.auth.getSession().then(function (r) {
+          var u = r.data.session && r.data.session.user; if (u) { then(u); return; }
+          host.innerHTML = '<div class="rv-form"><h3>Log in or create a free account</h3><p class="rv-fine">Reviews come only from Carvessa members, one per person per business.</p><div class="rv-acct"></div></div>';
+          account(function (u2) { then(u2); }, host.querySelector('.rv-acct'));
+        });
+      }
+      var wr = root.querySelector('#rvWrite');
+      if (wr) wr.onclick = function () {
+        var box = root.querySelector('#rvBox');
+        signedIn(box, async function (u) {
+          if (u.id === b.owner) { box.innerHTML = '<div class="bz-msg bad">You can’t review your own business.</div>'; return; }
+          var mine = (await sb.from('business_reviews').select('id, stars, body, photos').eq('business_id', b.id).eq('author', u.id).maybeSingle()).data;
+          reviewForm(box, b, mine, function () { box.innerHTML = '<div class="bz-msg good">Thanks! Your review is up' + ' (photos show after our check). You can edit or delete it any time here.</div><div class="bz-row"><button type="button" class="bz-btn soft bz-small" id="rvDel">Delete my review</button></div>'; setTimeout(function () { location.reload(); }, 2500);
+          });
+          if (mine) { var d = document.createElement('div'); d.className = 'bz-row'; d.innerHTML = '<button type="button" class="bz-btn red bz-small">Delete my review</button>'; box.appendChild(d); d.firstChild.onclick = async function () { if (!confirm('Delete your review?')) return; await sb.from('business_reviews').delete().eq('id', mine.id); location.reload(); }; }
+        });
+      };
+      root.addEventListener('click', function (e) {
+        var id = e.target.getAttribute('data-flag'); if (!id) return;
+        var host = e.target.parentNode.querySelector('.rv-rep-box');
+        signedIn(host, function () { reportBox(host, id); });
+      });
     })();
   }
 })();
