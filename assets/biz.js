@@ -1,6 +1,6 @@
-// Business pages (pictures 269–271, Nov 18, 2026): join (agree → account → page), edit, and the public page.
-// Talks to Supabase with the public key; the database rules decide what each person may read or change
-// (migration 026: pages start 'pending', only Carvessa makes them live).
+// Business pages (pictures 269–281, Nov 18–19, 2026): join (agree → account → page), Business HQ (the owner's
+// private dashboard) and the public page. Talks to Supabase with the public key; the database rules decide what
+// each person may read or change (migrations 026–028: pages start 'pending', only Carvessa makes them live).
 (function () {
   var C = window.BZ || {};
   var sb = window.supabase && window.supabase.createClient(C.url, C.key);
@@ -14,98 +14,265 @@
     night: 'linear-gradient(135deg,#0B1026,#1B2F66 60%,#5A3D6E)',
     steel: 'linear-gradient(135deg,#2B3A55,#5E6F8E 60%,#A9B4C6)'
   };
-  var KINDS = [['repair', 'Repair shop'], ['tires', 'Tire shop'], ['dealer', 'Car dealer'], ['credit_union', 'Credit union'], ['insurance', 'Insurance'], ['other', 'Other']];
+  var KINDS = [['repair', 'Repair shop'], ['tires', 'Tire shop'], ['dealer', 'Car dealer'], ['credit_union', 'Credit union / lender'], ['insurance', 'Insurance'], ['body', 'Body shop'], ['tow', 'Towing'], ['detail', 'Detailing / car wash'], ['other', 'Other']];
+  // Free header photos (CC BY, found with Openverse). Credit is shown under the header.
+  var FREE = {
+    repair: ['Ivan Radic', 'https://www.flickr.com/photos/26344495@N05/51316529244'],
+    tires: ['MSVG', 'https://www.flickr.com/photos/13907834@N00/4491986605'],
+    dealer: ['bradywahl', 'https://www.flickr.com/photos/66192446@N00/4445373875'],
+    credit_union: ['free pictures of money', 'https://www.flickr.com/photos/126278138@N03/17309004521'],
+    insurance: ['Dimitry B', 'https://www.flickr.com/photos/61533954@N00/15001243695'],
+    body: ['blastpaintrestore', 'https://www.flickr.com/photos/123973741@N03/14042802437'],
+    tow: ['srqpix', 'https://www.flickr.com/photos/85549619@N00/3606871463'],
+    detail: ['bark', 'https://www.flickr.com/photos/49503168860@N01/3595680965']
+  };
+  var freeKind = function (k) { return FREE[k] ? k : 'insurance'; };
+  // What each kind of page shows drivers (picture 280).
+  var KINFO = {
+    repair: { svc: 'Services and prices', tip: ['Bring your mechanic note', 'Used Carvessa’s car help? Tap “What do I tell the mechanic?” and show the note here: car, miles, what happened and your photos.'], first: 'call' },
+    tires: { svc: 'Tire services and prices', tip: ['Tire light on?', 'Ask for a free pressure check. If the light stays on with good air, ask them to check the tire sensors.'], first: 'directions' },
+    dealer: { svc: 'What they offer', tip: ['Ask for the out-the-door price', 'The total with Georgia tax and fees, in writing, before you go. Carvessa’s car pages show an estimate you can compare.'], first: 'call' },
+    credit_union: { svc: 'Loans and services', tip: ['Rates and who can join', 'Rates, terms and membership are set by the credit union. Not an offer from Carvessa.'], first: 'call' },
+    insurance: { svc: 'What they cover', tip: ['Before you buy a car', 'Ask what insurance would cost for the exact car you’re looking at, then compare it with your payment.'], first: 'call' },
+    body: { svc: 'Services and prices', tip: ['Estimate from photos', 'Take 3 clear photos of the damage (close, middle, far) and send them when you call or message.'], first: 'call' },
+    tow: { svc: 'Prices', tip: ['Ask the price before they come', 'Tell them where you are and what happened. If you’re on a highway, stay safe away from traffic.'], first: 'call' },
+    detail: { svc: 'Packages', tip: ['Selling or trading your car?', 'A clean car can help when you trade it in or sell it.'], first: 'call' },
+    other: { svc: 'Services and prices', tip: null, first: 'call' }
+  };
+  // Business HQ looks (picture 278). #1 is the default.
+  var LOOKS = [
+    ['racing', 'Carvessa Racing', 'Today’s design', '#0F1B33', '#F4F6FA', '#1F5FBF', '#E63B2E'],
+    ['garage', 'Garage Night', 'Dark garage, gold trim', '#0E0F12', '#16181C', '#E8C985', '#FF8A5B'],
+    ['cluster', 'Dashboard Cluster', 'Glowing dials', '#06080B', '#0B1118', '#5BC0FF', '#FFB547'],
+    ['pit', 'Pit Wall', 'Black, white, racing red', '#111111', '#FFFFFF', '#111111', '#E63B2E'],
+    ['showroom', 'Showroom', 'Bright floor, gold', '#FFFFFF', '#FBFAF7', '#9A7535', '#B0362B'],
+    ['cu', 'Credit Union', 'Calm green, rate card', '#123B2E', '#F5F2EA', '#1D7A46', '#B07A1F'],
+    ['shield', 'Shield', 'Navy and teal', '#0B2545', '#F2F6FA', '#13807A', '#C2410C'],
+    ['lot', 'Dealer Lot', 'Window-sticker cards', '#0D1B4C', '#F3F5FB', '#2347D9', '#E5322D'],
+    ['workshop', 'Workshop', 'Steel gray, safety orange', '#2B3036', '#ECEEF0', '#E8710A', '#C0392B'],
+    ['tread', 'Tire Tread', 'Charcoal and yellow', '#1A1A1A', '#F4F4F2', '#1A1A1A', '#F2B705']
+  ];
+  var SUGGEST = { credit_union: 'cu', insurance: 'shield', dealer: 'lot', repair: 'workshop', body: 'workshop', tires: 'tread' };
+  var PUB = 'id, owner, slug, name, kind, address, city, state, phone, website, hours, about, offer, wallpaper, photos, logo, header, status, founding, created_at, updated_at';
+  var MINE = PUB + ', legal_name, control_no, owner_role, since_year, hq_look';
+  var STATES = { alabama: 'AL', alaska: 'AK', arizona: 'AZ', arkansas: 'AR', california: 'CA', colorado: 'CO', connecticut: 'CT', delaware: 'DE', 'district of columbia': 'DC', florida: 'FL', georgia: 'GA', hawaii: 'HI', idaho: 'ID', illinois: 'IL', indiana: 'IN', iowa: 'IA', kansas: 'KS', kentucky: 'KY', louisiana: 'LA', maine: 'ME', maryland: 'MD', massachusetts: 'MA', michigan: 'MI', minnesota: 'MN', mississippi: 'MS', missouri: 'MO', montana: 'MT', nebraska: 'NE', nevada: 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', ohio: 'OH', oklahoma: 'OK', oregon: 'OR', pennsylvania: 'PA', 'rhode island': 'RI', 'south carolina': 'SC', 'south dakota': 'SD', tennessee: 'TN', texas: 'TX', utah: 'UT', vermont: 'VT', virginia: 'VA', washington: 'WA', 'west virginia': 'WV', wisconsin: 'WI', wyoming: 'WY' };
+
   var kindName = function (k) { for (var i = 0; i < KINDS.length; i++) if (KINDS[i][0] === k) return KINDS[i][1]; return 'Business'; };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var money = function (n) { return n == null || n === '' ? '' : '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 }); };
   var photoUrl = function (p) { return C.url + '/storage/v1/object/public/business-photos/' + p.split('/').map(encodeURIComponent).join('/'); };
-  var wallCss = function (w) { return WALLS[w] ? WALLS[w] : 'url("' + photoUrl(w) + '") center/cover'; };
   var initials = function (n) { return (n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join(''); };
+  var hex = function (c, d) { return /^#[0-9a-f]{6}$/i.test(c || '') ? c : d; };
   var q = new URLSearchParams(location.search);
 
+  // The header drivers see: a free photo for their kind (default), their own photo, their colors, or nothing.
+  function headerOf(b) {
+    var h = b.header || {}, s = h.style || 'photo';
+    if (s === 'own' && h.photo) return { css: 'url("' + photoUrl(h.photo) + '") center/cover' };
+    if (s === 'color') {
+      var a = hex(h.c1, '#1F3F9F'), z = hex(h.c2, '#5B8DEF'), p = h.pattern || 'fade';
+      if (p === 'solid') return { css: a };
+      if (p === 'stripes') return { css: 'repeating-linear-gradient(90deg,' + a + ' 0 22px,' + z + ' 22px 30px,' + a + ' 30px 38px,' + z + ' 38px 46px,' + a + ' 46px 70px)' };
+      if (p === 'checker') return { css: 'repeating-conic-gradient(' + a + ' 0 25%,' + z + ' 0 50%) 0 0/28px 28px' };
+      return { css: 'linear-gradient(120deg,' + a + ',' + z + ')' };
+    }
+    if (s === 'none') return { css: 'linear-gradient(120deg,#E3ECFA,#F4F6FA)' };
+    if (s === 'legacy' && WALLS[b.wallpaper]) return { css: WALLS[b.wallpaper] };
+    var k = freeKind(b.kind);
+    return { css: 'url("/assets/biz-photos/' + k + '.jpg") center/cover', credit: FREE[k] };
+  }
+  function logoHtml(b, cls) {
+    return b.logo ? '<div class="' + cls + '"><img src="' + photoUrl(b.logo) + '" alt=""></div>' : '<div class="' + cls + '" aria-hidden="true">' + esc(initials(b.name)) + '</div>';
+  }
+
   // Photo → smaller JPEG (max 1600 px) so it stays well under the 3 MB limit.
-  function shrink(file) {
+  function shrink(file, max) {
     return new Promise(function (ok, bad) {
       var img = new Image(), url = URL.createObjectURL(file);
       img.onload = function () {
-        var s = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        var s = Math.min(1, (max || 1600) / Math.max(img.width, img.height)), c = document.createElement('canvas');
         c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+        var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
         c.toBlob(function (b) { b ? ok(b) : bad(new Error('photo')); }, 'image/jpeg', 0.82);
       };
       img.onerror = function () { bad(new Error('photo')); };
       img.src = url;
     });
   }
-  async function upload(uid, file) {
-    var blob = await shrink(file);
+  async function upload(uid, file, max) {
+    var blob = await shrink(file, max);
     var path = uid + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
     var r = await sb.storage.from('business-photos').upload(path, blob, { contentType: 'image/jpeg', upsert: false });
     if (r.error) throw r.error;
     return path;
   }
 
-  // ---------- The business form (join step 3 and edit) ----------
-  function form(b, svcs, onSave) {
-    var st = { kind: b.kind || 'repair', wall: b.wallpaper || 'sunset', photos: (b.photos || []).slice(), svcs: svcs.length ? svcs.map(function (s) { return { name: s.name, price: s.price_from == null ? '' : s.price_from }; }) : [{ name: '', price: '' }] };
-    root.querySelector('#bzForm').innerHTML =
-      '<label class="bz-f"><span>Business name</span><input id="fName" maxlength="80" value="' + esc(b.name) + '" autocomplete="organization"></label>' +
+  // ---------- Name search: free OpenStreetMap search near the person, tap to fill the boxes ----------
+  var OSMKIND = { car_repair: 'repair', tyres: 'tires', car: 'dealer', car_parts: 'repair', car_wash: 'detail', insurance: 'insurance', bank: 'credit_union' };
+  function niceHours(oh) {
+    if (!oh || oh.length > 120) return oh || '';
+    var D = { Mo: 'Mon', Tu: 'Tue', We: 'Wed', Th: 'Thu', Fr: 'Fri', Sa: 'Sat', Su: 'Sun' };
+    var t = function (x) { var m = /^(\d{1,2}):(\d{2})$/.exec(x); if (!m) return x; var h = +m[1], ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + (m[2] !== '00' ? ':' + m[2] : '') + ' ' + ap; };
+    return oh.split(/\s*;\s*/).map(function (part) {
+      return part.replace(/\b(Mo|Tu|We|Th|Fr|Sa|Su)\b/g, function (d) { return D[d]; }).replace(/-/g, '–').replace(/(\d{1,2}:\d{2})–(\d{1,2}:\d{2})/g, function (_, a, b) { return t(a) + '–' + t(b); }).replace(/\boff\b/, 'Closed');
+    }).join(' · ');
+  }
+  function nameSearch(st, $, onPick) {
+    var inp = $('fName'), box = $('fSug'), timer = null, last = '';
+    inp.setAttribute('autocomplete', 'off');
+    inp.addEventListener('input', function () {
+      clearTimeout(timer);
+      var v = inp.value.trim();
+      if (v.length < 3 || st.picked === v) { box.hidden = true; return; }
+      timer = setTimeout(async function () {
+        if (v === last) return; last = v;
+        try {
+          var r = await fetch('https://photon.komoot.io/api/?limit=6&lat=33.75&lon=-84.39&q=' + encodeURIComponent(v));
+          var d = await r.json();
+          var hits = (d.features || []).filter(function (f) { var p = f.properties || {}; return p.name && /^(shop|amenity|craft|office)$/.test(p.osm_key || '') && (p.countrycode || 'US') === 'US'; }).slice(0, 4);
+          if (inp.value.trim() !== v) return;
+          box.innerHTML = '<div class="bz-sug-h">Is this you? Tap to fill your details</div>' + hits.map(function (f, i) {
+            var p = f.properties; return '<button type="button" data-i="' + i + '"><b>' + esc(p.name) + '</b><small>' + esc([[p.housenumber, p.street].filter(Boolean).join(' '), p.city, STATES[(p.state || '').toLowerCase()] || p.state].filter(Boolean).join(', ')) + '</small></button>';
+          }).join('') + '<div class="bz-sug-f">' + (hits.length ? 'Not listed? Keep typing and fill it in yourself.' : 'No match on the map. Just fill it in yourself.') + ' Search by OpenStreetMap.</div>';
+          box.hidden = false;
+          box.onclick = async function (e) {
+            var btn = e.target.closest('button[data-i]'); if (!btn) return;
+            var p = hits[+btn.getAttribute('data-i')].properties; box.hidden = true; st.picked = p.name;
+            var info = { name: p.name, address: [p.housenumber, p.street].filter(Boolean).join(' '), city: [p.city || p.county, STATES[(p.state || '').toLowerCase()] || p.state].filter(Boolean).join(', '), kind: OSMKIND[p.osm_value] };
+            if (info.kind === 'credit_union' && !/credit union|\bcu\b|federal/i.test(p.name)) info.kind = undefined;
+            try {
+              var t = { N: 'N', W: 'W', R: 'R' }[p.osm_type];
+              if (t) {
+                var x = await fetch('https://nominatim.openstreetmap.org/lookup?format=json&extratags=1&osm_ids=' + t + p.osm_id); var j = (await x.json())[0];
+                var ex = (j && j.extratags) || {};
+                info.phone = ex.phone || ex['contact:phone'] || ''; info.website = ex.website || ex['contact:website'] || ''; info.hours = niceHours(ex.opening_hours);
+              }
+            } catch (err) { /* the map details are a bonus */ }
+            onPick(info);
+          };
+        } catch (err) { box.hidden = true; }
+      }, 350);
+    });
+    document.addEventListener('click', function (e) { if (!box.contains(e.target) && e.target !== inp) box.hidden = true; });
+  }
+
+  // ---------- The business form (join step 3 and My page) ----------
+  function form(b, svcs, onSave, host) {
+    host = host || root.querySelector('#bzForm');
+    var h = b.header || { style: b.id && WALLS[b.wallpaper] && !b.header ? 'legacy' : 'photo' };
+    var st = { kind: b.kind || 'repair', header: { style: h.style || 'photo', pattern: h.pattern || 'fade', c1: hex(h.c1, '#1F3F9F'), c2: hex(h.c2, '#5B8DEF'), photo: h.photo || null }, logo: b.logo || null, photos: (b.photos || []).slice(), svcs: svcs.length ? svcs.map(function (s) { return { name: s.name, price: s.price_from == null ? '' : s.price_from }; }) : [{ name: '', price: '' }] };
+    var f = function (id, label, val, extra) { return '<label class="bz-f"><span>' + label + '</span><input id="' + id + '" value="' + esc(val) + '" ' + (extra || '') + '></label>'; };
+    host.innerHTML =
+      '<div class="bz-f bz-namebox"><span>Business name</span><input id="fName" maxlength="80" value="' + esc(b.name) + '" placeholder="Start typing, we’ll look you up"><div class="bz-sug" id="fSug" hidden></div></div>' +
+      '<div class="bz-found" id="fFound" hidden></div>' +
       '<div class="bz-f"><span>What kind of business?</span><div class="bz-chips" id="fKind"></div></div>' +
-      '<label class="bz-f"><span>Address</span><input id="fAddr" maxlength="160" value="' + esc(b.address) + '" autocomplete="street-address"></label>' +
-      '<label class="bz-f"><span>City and state</span><input id="fCity" maxlength="60" placeholder="Atlanta, GA" value="' + esc(b.city || '') + '"></label>' +
-      '<label class="bz-f"><span>Phone</span><input id="fPhone" maxlength="30" value="' + esc(b.phone) + '" inputmode="tel" autocomplete="tel"></label>' +
-      '<label class="bz-f"><span>Website (optional)</span><input id="fWeb" maxlength="200" value="' + esc(b.website) + '" inputmode="url"></label>' +
-      '<label class="bz-f"><span>Hours</span><input id="fHours" maxlength="160" value="' + esc(b.hours) + '" placeholder="Mon–Sat 8 AM–6 PM · Closed Sunday"></label>' +
+      f('fAddr', 'Address', b.address, 'maxlength="160" autocomplete="street-address"') +
+      f('fCity', 'City and state', b.city, 'maxlength="60" placeholder="Atlanta, GA"') +
+      f('fPhone', 'Phone', b.phone, 'maxlength="30" inputmode="tel" autocomplete="tel"') +
+      f('fWeb', 'Website (optional)', b.website, 'maxlength="200" inputmode="url"') +
+      f('fHours', 'Hours', b.hours, 'maxlength="160" placeholder="Mon–Sat 8 AM–6 PM · Closed Sunday"') +
       '<label class="bz-f"><span>About your business</span><textarea id="fAbout" maxlength="600" placeholder="Family shop since 2009. Tires, brakes and oil changes, most same day.">' + esc(b.about) + '</textarea></label>' +
       '<label class="bz-f"><span>One offer (optional)</span><input id="fOffer" maxlength="120" value="' + esc(b.offer) + '" placeholder="Free tire check"><small>Shown at the top of your page.</small></label>' +
-      '<div class="bz-f"><span>Services and prices (you set them)</span><div id="fSvcs"></div><button type="button" class="bz-btn soft" id="fAddSvc" style="min-height:42px;padding:9px 14px;font-size:14px">+ Add a service or item</button><small>Prices show as "from $X". Leave the price empty if it depends.</small></div>' +
-      '<div class="bz-f"><span>Header wallpaper</span><div class="bz-walls" id="fWalls"></div><small id="fWallNote"></small></div>' +
-      '<div class="bz-f"><span>Photos (up to 3)</span><div class="bz-pics" id="fPics"></div><small>Your shop, your work, your team. No customers\' license plates please.</small></div>' +
+      '<div class="bz-f"><span id="fSvcLab">Services and prices (you set them)</span><div id="fSvcs"></div><button type="button" class="bz-btn soft bz-small" id="fAddSvc">+ Add a service or item</button><small>Prices show as "from $X". Leave the price empty if it depends.</small></div>' +
+      '<div class="bz-f"><span>Header (optional)</span><div class="bz-hopts" id="fHopt"></div><div id="fHpanel"></div><div class="bz-hprev" id="fHprev"></div></div>' +
+      '<div class="bz-f"><span>Logo (optional)</span><div class="bz-logo-row" id="fLogo"></div></div>' +
+      '<div class="bz-f"><span>Photos (optional, up to 3)</span><div class="bz-pics" id="fPics"></div><small>Your shop, your work, your team. No customers’ license plates please.</small></div>' +
+      '<div class="bz-check"><h3>For our check (drivers never see this)</h3><p>We confirm every business before its page goes live. These help us find your business record fast.</p>' +
+      f('fLegal', 'Legal name, as registered with your state', b.legal_name, 'maxlength="120" placeholder="Tony’s Auto Shop LLC"') +
+      '<div class="bz-two">' + f('fRegState', 'State where it’s registered', b.state || '', 'maxlength="30" placeholder="Georgia"') + f('fCtrl', 'State control or file number (optional)', b.control_no, 'maxlength="30" placeholder="Helps us find you"') + '</div>' +
+      '<div class="bz-two"><label class="bz-f"><span>Your role</span><select id="fRole">' + ['Owner', 'Co-owner', 'Manager', 'Other'].map(function (r) { return '<option' + (b.owner_role === r ? ' selected' : '') + '>' + r + '</option>'; }).join('') + '</select></label>' + f('fSince', 'In business since (year)', b.since_year || '', 'inputmode="numeric" maxlength="4" placeholder="2014"') + '</div></div>' +
       '<div class="bz-row"><button class="bz-btn" id="fSave">' + (b.id ? 'Save changes' : 'Create my page') + '</button></div><div class="bz-msg" id="fMsg" role="status"></div>';
-    var $ = function (id) { return root.querySelector('#' + id); };
-    function drawKinds() { $('fKind').innerHTML = KINDS.map(function (k) { return '<button type="button" data-k="' + k[0] + '" class="' + (st.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>'; }).join(''); }
+    var $ = function (id) { return host.querySelector('#' + id); };
+    function drawKinds() {
+      $('fKind').innerHTML = KINDS.map(function (k) { return '<button type="button" data-k="' + k[0] + '" class="' + (st.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>'; }).join('');
+      $('fSvcLab').textContent = (KINFO[st.kind] || KINFO.other).svc + ' (you set them)';
+    }
     function drawSvcs() {
       $('fSvcs').innerHTML = st.svcs.map(function (s, i) { return '<div class="bz-svc"><input data-i="' + i + '" data-f="name" maxlength="80" placeholder="Oil change" value="' + esc(s.name) + '" aria-label="Service name"><input data-i="' + i + '" data-f="price" inputmode="decimal" placeholder="From $" value="' + esc(s.price) + '" aria-label="Price from"><button type="button" data-del="' + i + '" aria-label="Remove">✕</button></div>'; }).join('');
     }
-    function drawWalls() {
-      var own = !WALLS[st.wall];
-      $('fWalls').innerHTML = Object.keys(WALLS).map(function (w) { return '<button type="button" data-w="' + w + '" class="' + (st.wall === w ? 'on' : '') + '" style="background:' + WALLS[w] + '" aria-label="' + w + '"></button>'; }).join('') +
-        '<label class="bz-walls-own"><input type="file" accept="image/*" id="fWallFile" hidden><span class="' + (own ? 'on' : '') + '" style="display:grid;place-items:center;height:54px;border-radius:12px;border:3px solid ' + (own ? '#1F5FBF' : 'transparent') + ';background:' + (own ? wallCss(st.wall) : '#EEF2F8') + ';font-size:12px;font-weight:800;color:' + (own ? '#fff' : '#4A5565') + ';cursor:pointer">My photo</span></label>';
-      $('fWallNote').textContent = own ? 'Your own photo is the wallpaper.' : '';
+    var HOPTS = [['photo', 'Free photo'], ['color', 'My colors'], ['own', 'My photo'], ['none', 'No picture']];
+    var SW = ['#1F3F9F', '#5B8DEF', '#0F1B33', '#E63B2E', '#1D7A46', '#C9A45E', '#E8710A', '#13807A', '#6E3FA8', '#111111'];
+    function drawHeader() {
+      var hs = st.header;
+      $('fHopt').innerHTML = HOPTS.map(function (o) { return '<button type="button" data-h="' + o[0] + '" class="' + (hs.style === o[0] || (o[0] === 'photo' && hs.style === 'legacy') ? 'on' : '') + '">' + o[1] + '</button>'; }).join('');
+      var p = '';
+      if (hs.style === 'color') {
+        p = '<div class="bz-chips bz-pat">' + [['fade', 'Fade'], ['solid', 'Solid'], ['stripes', 'Stripes'], ['checker', 'Checker']].map(function (x) { return '<button type="button" data-p="' + x[0] + '" class="' + (hs.pattern === x[0] ? 'on' : '') + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+          '<div class="bz-colors"><label>Color 1 <input type="color" id="fC1" value="' + hs.c1 + '"></label>' + (hs.pattern === 'solid' ? '' : '<label>Color 2 <input type="color" id="fC2" value="' + hs.c2 + '"></label>') + '</div>' +
+          '<div class="bz-sw">' + SW.map(function (c) { return '<button type="button" data-sw="' + c + '" style="background:' + c + '" aria-label="Use ' + c + '"></button>'; }).join('') + '</div><small>Tap a color square to open the color picker, or tap a ready color.</small>';
+      } else if (hs.style === 'own') {
+        p = '<label class="bz-btn soft bz-small" style="margin-top:8px">' + (hs.photo ? 'Change photo' : 'Choose a photo') + '<input type="file" accept="image/*" id="fHFile" hidden></label>';
+      } else if (hs.style === 'photo' || hs.style === 'legacy') {
+        p = '<small>A free photo that matches your kind of business. Change it any time.</small>';
+      }
+      $('fHpanel').innerHTML = p;
+      var hv = headerOf({ header: hs, kind: st.kind, wallpaper: b.wallpaper });
+      $('fHprev').style.background = hv.css;
+      $('fHprev').innerHTML = (st.logo ? '<span class="lg"><img src="' + photoUrl(st.logo) + '" alt=""></span>' : '<span class="lg">' + esc(initials($('fName').value || b.name || 'Your Shop')) + '</span>') + (hv.credit ? '<em>Photo: ' + esc(hv.credit[0]) + ' · CC BY</em>' : '');
+    }
+    function drawLogo() {
+      $('fLogo').innerHTML = (st.logo ? '<span class="bz-logo"><img src="' + photoUrl(st.logo) + '" alt="Your logo"></span><button type="button" class="bz-btn soft bz-small" id="fLogoRm">Remove</button>' : '<span class="bz-logo">' + esc(initials($('fName').value || b.name || '?')) + '</span>') +
+        '<label class="bz-btn soft bz-small">' + (st.logo ? 'Change logo' : 'Upload a logo') + '<input type="file" accept="image/*" id="fLogoFile" hidden></label><small>Square works best. No logo? We show your initials.</small>';
     }
     function drawPics() {
       $('fPics').innerHTML = st.photos.map(function (p, i) { return '<div class="p"><img src="' + photoUrl(p) + '" alt="Photo ' + (i + 1) + '"><button type="button" data-rm="' + i + '" aria-label="Remove photo">✕</button></div>'; }).join('') +
         (st.photos.length < 3 ? '<label aria-label="Add a photo">+<input type="file" accept="image/*" id="fPicFile" hidden></label>' : '');
     }
-    drawKinds(); drawSvcs(); drawWalls(); drawPics();
-    $('fKind').onclick = function (e) { var k = e.target.getAttribute('data-k'); if (k) { st.kind = k; drawKinds(); } };
+    drawKinds(); drawSvcs(); drawHeader(); drawLogo(); drawPics();
+    nameSearch(st, $, function (info) {
+      var put = function (id, v) { if (v && !$(id).value.trim()) { $(id).value = v; return 1; } return 0; };
+      var n = 0;
+      $('fName').value = info.name; n += put('fAddr', info.address) + put('fCity', info.city) + put('fPhone', info.phone) + put('fWeb', info.website) + put('fHours', info.hours);
+      if (info.kind) { st.kind = info.kind; drawKinds(); n++; }
+      if (!$('fRegState').value && /, GA$/.test(info.city || '')) $('fRegState').value = 'Georgia';
+      $('fFound').hidden = false;
+      $('fFound').textContent = n ? '✓ We filled in ' + n + ' thing' + (n > 1 ? 's' : '') + ' from the public map. Check them and fix anything that’s off.' : 'Found you on the map, but there were no extra details. Please fill in the rest.';
+      drawHeader(); drawLogo();
+    });
+    $('fKind').onclick = function (e) { var k = e.target.getAttribute('data-k'); if (k) { st.kind = k; drawKinds(); drawHeader(); } };
     $('fSvcs').oninput = function (e) { var i = e.target.getAttribute('data-i'); if (i != null) st.svcs[+i][e.target.getAttribute('data-f')] = e.target.value; };
     $('fSvcs').onclick = function (e) { var i = e.target.getAttribute('data-del'); if (i != null) { st.svcs.splice(+i, 1); if (!st.svcs.length) st.svcs.push({ name: '', price: '' }); drawSvcs(); } };
     $('fAddSvc').onclick = function () { if (st.svcs.length < 30) { st.svcs.push({ name: '', price: '' }); drawSvcs(); } };
-    $('fWalls').onclick = function (e) { var w = e.target.getAttribute('data-w'); if (w) { st.wall = w; drawWalls(); } };
-    root.addEventListener('change', async function (e) {
-      if (e.target.id !== 'fWallFile' && e.target.id !== 'fPicFile') return;
-      var f = e.target.files && e.target.files[0]; if (!f) return;
+    $('fHopt').onclick = function (e) { var s = e.target.getAttribute('data-h'); if (s) { st.header.style = s; drawHeader(); } };
+    $('fHpanel').onclick = function (e) {
+      var p = e.target.getAttribute('data-p'), c = e.target.getAttribute('data-sw');
+      if (p) { st.header.pattern = p; drawHeader(); }
+      if (c) { if (st.header.pattern === 'solid' || st._next !== 2) { st.header.c1 = c; st._next = 2; } else { st.header.c2 = c; st._next = 1; } drawHeader(); }
+    };
+    $('fHpanel').oninput = function (e) { if (e.target.id === 'fC1') st.header.c1 = e.target.value; if (e.target.id === 'fC2') st.header.c2 = e.target.value; var hv = headerOf({ header: st.header, kind: st.kind }); $('fHprev').style.background = hv.css; };
+    $('fName').addEventListener('input', function () { if (!st.logo) { drawLogo(); var l = $('fHprev').querySelector('.lg'); if (l) l.textContent = initials($('fName').value || 'Your Shop'); } });
+    $('fLogo').onclick = function (e) { if (e.target.id === 'fLogoRm') { st.logo = null; drawLogo(); drawHeader(); } };
+    host.addEventListener('change', async function (e) {
+      var id = e.target.id; if (['fHFile', 'fPicFile', 'fLogoFile'].indexOf(id) < 0) return;
+      var file = e.target.files && e.target.files[0]; if (!file) return;
       var me = (await sb.auth.getUser()).data.user; if (!me) return;
       $('fMsg').className = 'bz-msg'; $('fMsg').textContent = 'Uploading…';
       try {
-        var p = await upload(me.id, f);
-        if (e.target.id === 'fWallFile') { st.wall = p; drawWalls(); } else { st.photos.push(p); drawPics(); }
+        var p = await upload(me.id, file, id === 'fLogoFile' ? 600 : 1600);
+        if (id === 'fHFile') { st.header.photo = p; st.header.style = 'own'; drawHeader(); }
+        else if (id === 'fLogoFile') { st.logo = p; drawLogo(); drawHeader(); }
+        else { st.photos.push(p); drawPics(); }
         $('fMsg').textContent = '';
-      } catch (err) { $('fMsg').className = 'bz-msg bad'; $('fMsg').textContent = 'That photo didn\'t upload. Try a JPG or PNG photo.'; }
+      } catch (err) { $('fMsg').className = 'bz-msg bad'; $('fMsg').textContent = 'That photo didn’t upload. Try a JPG or PNG photo.'; }
     });
     $('fPics').onclick = function (e) { var i = e.target.getAttribute('data-rm'); if (i != null) { st.photos.splice(+i, 1); drawPics(); } };
     $('fSave').onclick = async function () {
-      var name = $('fName').value.trim(), phone = $('fPhone').value.trim();
-      var msg = $('fMsg'); msg.className = 'bz-msg bad';
+      var name = $('fName').value.trim(), phone = $('fPhone').value.trim(), msg = $('fMsg');
+      msg.className = 'bz-msg bad';
       if (name.length < 2) { msg.textContent = 'Please type your business name.'; return; }
       if ($('fCity').value.trim().length < 2) { msg.textContent = 'Please type your city and state.'; return; }
-      if (!/\d{7,}/.test(phone.replace(/\D/g, ''))) { msg.textContent = 'Please type a phone number we can call to confirm you\'re the owner.'; return; }
+      if (!/\d{7,}/.test(phone.replace(/\D/g, ''))) { msg.textContent = 'Please type a phone number we can call to confirm you’re the owner.'; return; }
+      var since = parseInt($('fSince').value, 10);
+      if ($('fSince').value && !(since >= 1900 && since <= new Date().getFullYear())) { msg.textContent = 'Please type the year you started, like 2014.'; return; }
+      var hs = st.header, header = { style: hs.style === 'legacy' ? 'legacy' : hs.style };
+      if (hs.style === 'color') { header.pattern = hs.pattern; header.c1 = hs.c1; header.c2 = hs.c2; }
+      if (hs.style === 'own') { if (!hs.photo) { msg.textContent = 'Choose a photo for your header, or pick another header option.'; return; } header.photo = hs.photo; }
       var row = { name: name, kind: st.kind, address: $('fAddr').value.trim() || null, city: $('fCity').value.trim(), phone: phone, website: $('fWeb').value.trim() || null,
-        hours: $('fHours').value.trim() || null, about: $('fAbout').value.trim() || null, offer: $('fOffer').value.trim() || null, wallpaper: st.wall, photos: st.photos };
-      var svcs = st.svcs.map(function (s) { var n = String(s.name || '').trim(); var pr = String(s.price || '').replace(/[^\d.]/g, ''); return n ? { name: n, price_from: pr ? Number(pr) : null } : null; }).filter(Boolean);
+        hours: $('fHours').value.trim() || null, about: $('fAbout').value.trim() || null, offer: $('fOffer').value.trim() || null, photos: st.photos, header: header, logo: st.logo,
+        legal_name: $('fLegal').value.trim() || null, state: $('fRegState').value.trim() || null, control_no: $('fCtrl').value.trim() || null, owner_role: $('fRole').value, since_year: since || null };
+      var list = st.svcs.map(function (s) { var n = String(s.name || '').trim(); var pr = String(s.price || '').replace(/[^\d.]/g, ''); return n ? { name: n, price_from: pr ? Number(pr) : null } : null; }).filter(Boolean);
       $('fSave').disabled = true; msg.className = 'bz-msg'; msg.textContent = 'Saving…';
-      try { await onSave(row, svcs); } catch (err) { msg.className = 'bz-msg bad'; msg.textContent = (err && err.message && /up to 3/.test(err.message)) ? 'You can have up to 3 business pages.' : 'That didn\'t save. Please try again.'; }
+      try { await onSave(row, list); } catch (err) { msg.className = 'bz-msg bad'; msg.textContent = (err && err.message && /up to 3/.test(err.message)) ? 'You can have up to 3 business pages.' : 'That didn’t save. Please try again.'; }
       $('fSave').disabled = false;
     };
   }
@@ -120,19 +287,20 @@
     sb.auth.getSession().then(function (r) {
       var u = r.data.session && r.data.session.user;
       if (u) {
+        if (mode === 'edit') { next(u); return; }
         box.innerHTML = '<div class="bz-sec">Signed in as <b>' + esc(u.email) + '</b>. <a href="#" id="aOut">Not you?</a></div><div class="bz-row"><button class="bz-btn" id="aGo">Continue</button></div>';
         box.querySelector('#aGo').onclick = function () { next(u); };
         box.querySelector('#aOut').onclick = function (e) { e.preventDefault(); sb.auth.signOut().then(function () { account(next); }); };
         return;
       }
-      var tab = 'join';
+      var tab = mode === 'edit' ? 'login' : 'join';
       function draw() {
         box.innerHTML = '<div class="bz-tabs"><button type="button" data-tab="join" class="' + (tab === 'join' ? 'on' : '') + '">Create account</button><button type="button" data-tab="login" class="' + (tab === 'login' ? 'on' : '') + '">Log in</button></div>' +
           '<p class="lead" style="font-size:15px">' + (tab === 'join' ? 'Your page belongs to this account. Use an email you check.' : 'Use the email and password of your Carvessa account.') + '</p>' +
           '<label class="bz-f"><span>Email</span><input id="aEmail" type="email" autocomplete="email" inputmode="email"></label>' +
           '<label class="bz-f"><span>Password' + (tab === 'join' ? ' (8 or more characters)' : '') + '</span><input id="aPw" type="password" autocomplete="' + (tab === 'join' ? 'new-password' : 'current-password') + '"></label>' +
           '<div class="bz-row"><button class="bz-btn" id="aDo">' + (tab === 'join' ? 'Create account' : 'Log in') + '</button></div><div class="bz-msg" id="aMsg" role="status"></div>';
-        box.querySelector('.bz-tabs').onclick = function (e) { var t = e.target.getAttribute("data-tab"); if (t) { tab = t; draw(); } };
+        box.querySelector('.bz-tabs').onclick = function (e) { var t = e.target.getAttribute('data-tab'); if (t) { tab = t; draw(); } };
         box.querySelector('#aDo').onclick = async function () {
           var em = box.querySelector('#aEmail').value.trim().toLowerCase(), pw = box.querySelector('#aPw').value, m = box.querySelector('#aMsg');
           m.className = 'bz-msg bad';
@@ -140,7 +308,7 @@
           if (pw.length < 8) { m.textContent = 'Your password needs 8 or more characters.'; return; }
           m.className = 'bz-msg'; m.textContent = tab === 'join' ? 'Creating your account…' : 'Logging in…';
           var r = tab === 'join' ? await sb.auth.signUp({ email: em, password: pw, options: { emailRedirectTo: location.origin + location.pathname } }) : await sb.auth.signInWithPassword({ email: em, password: pw });
-          if (r.error) { m.className = 'bz-msg bad'; m.textContent = /registered|exists/i.test(r.error.message) ? 'That email already has an account. Tap Log in.' : /invalid/i.test(r.error.message) ? 'Email or password is wrong.' : 'That didn\'t work. Please try again.'; return; }
+          if (r.error) { m.className = 'bz-msg bad'; m.textContent = /registered|exists/i.test(r.error.message) ? 'That email already has an account. Tap Log in.' : /invalid/i.test(r.error.message) ? 'Email or password is wrong.' : 'That didn’t work. Please try again.'; return; }
           if (!r.data.session) { m.className = 'bz-msg good'; m.textContent = 'Almost done: we sent you an email. Tap the link in it, then come back to this page and log in.'; return; }
           next(r.data.session.user);
         };
@@ -157,40 +325,151 @@
     var c1 = root.querySelector('#ck1'), c2 = root.querySelector('#ck2'), go1 = root.querySelector('#go1');
     var upd = function () { go1.disabled = !(c1.checked && c2.checked); };
     c1.onchange = upd; c2.onchange = upd; upd();
-    go1.onclick = function () { agreedAt = new Date().toISOString(); show(1); account(function () { show(2); var pk = q.get('kind'), pre = { name: (q.get('name') || '').slice(0, 80), offer: (q.get('offer') || '').slice(0, 120), kind: KINDS.some(function (k) { return k[0] === pk; }) ? pk : undefined };
-      form(pre, [], async function (row, svcs) {
-      row.agreed_at = agreedAt; row.terms_version = C.terms; row.source = (q.get('src') || 'website').slice(0, 60);
-      var r = await sb.from('businesses').insert(row).select('id, slug').single(); if (r.error) throw r.error;
-      await saveServices(r.data.id, svcs);
-      root.querySelector('#bzDoneLink').href = '/shops/?b=' + encodeURIComponent(r.data.slug);
-      show(3);
-    }); }); };
+    go1.onclick = function () {
+      agreedAt = new Date().toISOString(); show(1);
+      account(function () {
+        show(2);
+        var pk = q.get('kind'), pre = { name: (q.get('name') || '').slice(0, 80), offer: (q.get('offer') || '').slice(0, 120), kind: KINDS.some(function (k) { return k[0] === pk; }) ? pk : undefined };
+        form(pre, [], async function (row, svcs) {
+          row.agreed_at = agreedAt; row.terms_version = C.terms; row.source = (q.get('src') || 'website').slice(0, 60);
+          row.hq_look = 'racing';
+          var r = await sb.from('businesses').insert(row).select('id, slug').single(); if (r.error) throw r.error;
+          await saveServices(r.data.id, svcs);
+          root.querySelector('#bzDoneLink').href = '/shops/?b=' + encodeURIComponent(r.data.slug);
+          show(3);
+        });
+      });
+    };
     return;
   }
 
-  // ---------- Edit: your pages ----------
+  // ---------- Business HQ: the owner's private dashboard ----------
   if (mode === 'edit') {
     var STATUS = { pending: 'Waiting for our check', live: 'Live', hidden: 'Hidden', rejected: 'Not approved', blocked: 'Blocked' };
-    var list = root.querySelector('#bzList'), area = root.querySelector('#bzEditArea');
+    var NAV = [['overview', 'Overview', 'Lap report'], ['page', 'My page', 'Garage setup'], ['posts', 'Posts', 'Bulletin'], ['sales', 'Sales', 'From Carvessa'], ['reviews', 'Reviews', 'From the stands'], ['messages', 'Messages', 'Team radio'], ['account', 'Account', 'Look and settings']];
     account(async function (u) {
       root.querySelector('#bzAcct').hidden = true;
-      var r = await sb.from('businesses').select('*').eq('owner', u.id).order('created_at');
+      var r = await sb.from('businesses').select(MINE).eq('owner', u.id).order('created_at');
       var pages = r.data || [];
-      if (!pages.length) { list.innerHTML = '<div class="bz-sec">You don\'t have a business page yet. <a href="/business/join/">Create your free page</a></div>'; return; }
-      list.innerHTML = pages.map(function (b, i) { return '<div class="it"><div><b>' + esc(b.name) + '</b><br><span class="bz-pill ' + esc(b.status) + '">' + (STATUS[b.status] || b.status) + '</span></div><div class="bz-row" style="margin:0"><a class="bz-btn soft" href="/shops/?b=' + encodeURIComponent(b.slug) + '">View</a><button class="bz-btn" data-e="' + i + '">Edit</button></div></div>'; }).join('');
-      list.onclick = async function (e) {
-        var i = e.target.getAttribute('data-e'); if (i == null) return;
-        var b = pages[+i], s = await sb.from('business_services').select('*').eq('business_id', b.id).order('sort');
-        area.hidden = false; area.querySelector('h2').textContent = 'Edit ' + b.name;
-        form(b, s.data || [], async function (row, svcs) {
-          var x = await sb.from('businesses').update(row).eq('id', b.id).select('status').single(); if (x.error) throw x.error;
-          await saveServices(b.id, svcs);
-          var m = root.querySelector('#fMsg'); m.className = 'bz-msg good';
-          m.textContent = x.data.status === 'pending' && b.status === 'live' ? 'Saved. You changed your name, address or phone, so we\'ll check it again before it shows.' : 'Saved.';
-          b.status = x.data.status;
-        });
-        area.scrollIntoView({ behavior: 'smooth' });
-      };
+      if (!pages.length) { root.querySelector('#bzAcct').hidden = false; root.querySelector('#bzAcct').innerHTML = '<div class="bz-sec">Signed in as <b>' + esc(u.email) + '</b>. You don’t have a business page yet. <a href="/business/join/">Create your free page</a></div>'; return; }
+      var cur = pages[0], tab = 'overview';
+      var shell = document.createElement('div'); shell.className = 'hq'; root.innerHTML = ''; root.appendChild(shell); root.classList.add('hq-wrap');
+      function look() { var l = cur.hq_look || 'racing'; shell.setAttribute('data-look', LOOKS.some(function (x) { return x[0] === l; }) ? l : 'racing'); }
+      function frame() {
+        look();
+        shell.innerHTML = '<aside class="hq-side"><div class="hq-brand"><i class="hq-flag"></i><span>CAR<b>V</b>essa</span></div><div class="hq-sub">BUSINESS HQ</div>' +
+          (pages.length > 1 ? '<select class="hq-pick" id="hqPick" aria-label="Your pages">' + pages.map(function (p, i) { return '<option value="' + i + '"' + (p === cur ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select>' : '') +
+          '<div class="hq-biz"><b>' + esc(cur.name) + '</b><small>' + esc(kindName(cur.kind)) + '</small><span class="hq-st ' + esc(cur.status) + '">' + (STATUS[cur.status] || cur.status) + '</span></div>' +
+          '<nav class="hq-nav">' + NAV.map(function (n) { return '<button type="button" data-tab="' + n[0] + '" class="' + (tab === n[0] ? 'on' : '') + '">' + n[1] + '<small>' + n[2] + '</small></button>'; }).join('') + '</nav>' +
+          '<a class="hq-link" href="/shops/?b=' + encodeURIComponent(cur.slug) + '" target="_blank" rel="noopener">View my public page ↗</a><button type="button" class="hq-link" id="hqOut">Log out</button></aside>' +
+          '<main class="hq-main"><div class="hq-band"></div><div id="hqBody"></div></main>';
+        shell.querySelector('.hq-nav').onclick = function (e) { var b = e.target.closest('button[data-tab]'); if (b) { tab = b.getAttribute('data-tab'); frame(); } };
+        shell.querySelector('#hqOut').onclick = function () { sb.auth.signOut().then(function () { location.reload(); }); };
+        var pk = shell.querySelector('#hqPick'); if (pk) pk.onchange = function () { cur = pages[+pk.value]; tab = 'overview'; frame(); };
+        ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: soon, messages: soon, account: settings })[tab](shell.querySelector('#hqBody'));
+        var y = shell.getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
+      }
+      function head(k, title, badge) { return '<small class="hq-k">' + k + '</small><h2 class="hq-h">' + title + (badge ? ' <em>' + badge + '</em>' : '') + '</h2>'; }
+      async function overview(el) {
+        var since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+        var [s, ps, sl] = await Promise.all([
+          sb.from('business_stats').select('kind, n, day').eq('business_id', cur.id).gte('day', since),
+          sb.from('business_posts').select('title, until').eq('business_id', cur.id).order('created_at', { ascending: false }).limit(1),
+          sb.from('business_sales').select('amount').eq('business_id', cur.id).gte('day', since)
+        ]);
+        var t = { view: 0, call: 0, directions: 0, website: 0 }; (s.data || []).forEach(function (x) { t[x.kind] = (t[x.kind] || 0) + x.n; });
+        var sales = sl.data || [], total = sales.reduce(function (a, x) { return a + (Number(x.amount) || 0); }, 0);
+        var svc = await sb.from('business_services').select('id', { count: 'exact', head: true }).eq('business_id', cur.id);
+        var todo = [];
+        if (cur.status === 'pending') todo.push(['Answer our call or text', 'We confirm you’re the owner, then your page goes live.']);
+        if (!cur.hours) todo.push(['Add your hours', 'Drivers check if you’re open before they come.']);
+        if (!(svc.count > 0)) todo.push(['Add services and prices', 'Pages with prices get more calls.']);
+        if (!(cur.photos || []).length) todo.push(['Add a photo', 'Your shop, your work or your team.']);
+        if (!cur.offer) todo.push(['Add one offer', 'Like “Free tire check”. It shows at the top of your page.']);
+        if (!(ps.data || []).length) todo.push(['Post a special or news', 'Tell drivers what’s new this week.']);
+        el.innerHTML = head('LAP REPORT · LAST 30 DAYS', esc(cur.name), STATUS[cur.status] || cur.status) +
+          (cur.status !== 'live' ? '<div class="hq-note">' + (cur.status === 'pending' ? 'Your page is waiting for our check. Only you can see it. We’ll call or text you at ' + esc(cur.phone || 'your number') + ' to confirm you’re the owner.' : 'Your page isn’t showing to drivers right now. Questions? Write to hello@carvessa.app.') + '</div>' : '') +
+          '<div class="hq-laps">' + [['VIEWS', t.view], ['CALLS', t.call], ['DIRECTIONS', t.directions], ['WEBSITE', t.website]].map(function (x) { return '<div><small>' + x[0] + '</small><b>' + x[1] + '</b></div>'; }).join('') + '</div>' +
+          (cur.status !== 'live' ? '<p class="hq-fine">Counts start when your page is live. Your own visits never count.</p>' : '<p class="hq-fine">Counts only, never names. Your own visits never count.</p>') +
+          '<div class="hq-two"><div class="hq-card"><h4>PIT STOP · TO DO</h4>' + (todo.length ? todo.slice(0, 5).map(function (x, i) { return '<div class="hq-pit"><b>' + String(i + 1).padStart(2, '0') + '</b><div>' + x[0] + '<small>' + x[1] + '</small></div></div>'; }).join('') : '<p>All set. Nice work.</p>') + '</div>' +
+          '<div class="hq-card"><h4>SALES FROM CARVESSA</h4><div class="hq-big">' + money(total || 0) + '</div><small>' + sales.length + ' customer' + (sales.length === 1 ? '' : 's') + ' you marked in the last 30 days · you reported</small><div class="bz-row"><button type="button" class="bz-btn bz-small" data-go="sales">Mark a customer</button></div></div></div>' +
+          '<div class="hq-card"><h4>YOUR PLAN</h4>Free during our launch. Your page, reviews and messages stay free. We’ll tell you in writing before any paid option, and you can always say no.</div>';
+        el.onclick = function (e) { var g = e.target.getAttribute('data-go'); if (g) { tab = g; frame(); } };
+      }
+      async function myPage(el) {
+        el.innerHTML = head('GARAGE SETUP', 'My page') + '<p class="hq-fine">Changing your name, address or phone sends your page to us for a quick check.</p><div id="hqForm"></div>';
+        var s = await sb.from('business_services').select('*').eq('business_id', cur.id).order('sort');
+        form(cur, s.data || [], async function (row, svcs) {
+          var x = await sb.from('businesses').update(row).eq('id', cur.id).select(MINE).single(); if (x.error) throw x.error;
+          await saveServices(cur.id, svcs);
+          var was = cur.status; Object.assign(cur, x.data);
+          var m = el.querySelector('#fMsg'); m.className = 'bz-msg good';
+          m.textContent = cur.status === 'pending' && was === 'live' ? 'Saved. You changed your name, address or phone, so we’ll check it again before it shows.' : 'Saved. Box box!';
+          shell.querySelector('.hq-biz b').textContent = cur.name;
+        }, el.querySelector('#hqForm'));
+      }
+      async function posts(el) {
+        var r = await sb.from('business_posts').select('*').eq('business_id', cur.id).order('created_at', { ascending: false });
+        var list = r.data || [], KN = { special: 'Special', news: 'News', event: 'Event', hours: 'Hours change' }, kind = 'special';
+        el.innerHTML = head('BULLETIN BOARD', 'Posts') + '<p class="hq-fine">Specials, news, events or hours changes show on your page.' + (cur.status !== 'live' ? ' Drivers see them once your page is live.' : '') + '</p>' +
+          '<div class="hq-card"><div class="bz-chips" id="pK">' + Object.keys(KN).map(function (k) { return '<button type="button" data-k="' + k + '" class="' + (k === kind ? 'on' : '') + '">' + KN[k] + '</button>'; }).join('') + '</div>' +
+          '<label class="bz-f"><span>Title</span><input id="pT" maxlength="80" placeholder="Winter tire check: free this week"></label><label class="bz-f"><span>Details (optional)</span><textarea id="pB" maxlength="300" placeholder="Cold nights drop tire pressure. Stop by for a free check, no appointment."></textarea></label>' +
+          '<label class="bz-f"><span>Show until (optional)</span><input id="pU" type="date"></label><div class="bz-row"><button type="button" class="bz-btn" id="pGo">Post it</button></div><div class="bz-msg" id="pM" role="status"></div></div>' +
+          '<div id="pL">' + (list.length ? list.map(function (p) { var old = p.until && p.until < new Date().toISOString().slice(0, 10); return '<div class="hq-post' + (old ? ' old' : '') + '"><span class="hq-tag">' + (KN[p.kind] || 'Post') + '</span><b>' + esc(p.title) + '</b>' + (p.body ? '<p>' + esc(p.body) + '</p>' : '') + '<small>' + (p.until ? (old ? 'Ended ' : 'Until ') + esc(p.until) : 'No end date') + '</small><button type="button" class="bz-btn red bz-small" data-del="' + p.id + '">Delete</button></div>'; }).join('') : '<p class="hq-fine">No posts yet.</p>') + '</div>';
+        el.querySelector('#pK').onclick = function (e) { var k = e.target.getAttribute('data-k'); if (k) { kind = k; [].forEach.call(this.children, function (b) { b.className = b.getAttribute('data-k') === k ? 'on' : ''; }); } };
+        el.querySelector('#pGo').onclick = async function () {
+          var t = el.querySelector('#pT').value.trim(), m = el.querySelector('#pM'); m.className = 'bz-msg bad';
+          if (t.length < 2) { m.textContent = 'Please type a title.'; return; }
+          var x = await sb.from('business_posts').insert({ business_id: cur.id, kind: kind, title: t, body: el.querySelector('#pB').value.trim() || null, until: el.querySelector('#pU').value || null });
+          if (x.error) { m.textContent = /20 posts/.test(x.error.message) ? 'You can keep up to 20 posts. Delete an old one first.' : 'That didn’t post. Please try again.'; return; }
+          posts(el);
+        };
+        el.querySelector('#pL').onclick = async function (e) { var id = e.target.getAttribute('data-del'); if (id && confirm('Delete this post?')) { await sb.from('business_posts').delete().eq('id', id); posts(el); } };
+      }
+      async function sales(el) {
+        var r = await sb.from('business_sales').select('*').eq('business_id', cur.id).order('day', { ascending: false }).limit(100);
+        var list = r.data || [], month = new Date().toISOString().slice(0, 7);
+        var mon = list.filter(function (x) { return String(x.day).slice(0, 7) === month; }), sum = mon.reduce(function (a, x) { return a + (Number(x.amount) || 0); }, 0);
+        var withAmt = mon.filter(function (x) { return x.amount != null; });
+        el.innerHTML = head('SALES FROM CARVESSA · ' + new Date().toLocaleString('en-US', { month: 'long' }).toUpperCase(), money(sum) || '$0', 'you reported') +
+          '<div class="hq-laps"><div><small>CUSTOMERS FROM CARVESSA</small><b>' + mon.length + '</b></div><div><small>AVERAGE TICKET</small><b>' + (withAmt.length ? money(Math.round(sum / withAmt.length)) : '–') + '</b></div><div><small>WHAT CARVESSA COST YOU</small><b>$0</b></div></div>' +
+          '<div class="hq-card"><h4>MARK A CUSTOMER WHO CAME FROM CARVESSA</h4><div class="bz-two"><label class="bz-f"><span>Amount (optional)</span><input id="sA" inputmode="decimal" placeholder="$140"></label><label class="bz-f"><span>What for (optional)</span><input id="sN" maxlength="120" placeholder="Brake pads"></label></div><div class="bz-row"><button type="button" class="bz-btn" id="sGo">✓ Became a customer</button></div><div class="bz-msg" id="sM" role="status"></div><p class="hq-fine">Only you see this. We never see your register. It’s how you know Carvessa is worth it.</p></div>' +
+          '<div id="sL">' + list.map(function (x) { return '<div class="hq-row"><span>' + esc(x.day) + '</span><span>' + esc(x.note || 'Customer') + '</span><b>' + (x.amount != null ? money(x.amount) : '–') + '</b><button type="button" class="bz-btn red bz-small" data-del="' + x.id + '" aria-label="Delete">✕</button></div>'; }).join('') + '</div>';
+        el.querySelector('#sGo').onclick = async function () {
+          var a = el.querySelector('#sA').value.replace(/[^\d.]/g, ''), m = el.querySelector('#sM');
+          var x = await sb.from('business_sales').insert({ business_id: cur.id, amount: a ? Number(a) : null, note: el.querySelector('#sN').value.trim() || null });
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save. Please try again.'; return; }
+          sales(el);
+        };
+        el.querySelector('#sL').onclick = async function (e) { var id = e.target.getAttribute('data-del'); if (id && confirm('Delete this sale?')) { await sb.from('business_sales').delete().eq('id', id); sales(el); } };
+      }
+      function soon(el) {
+        var rv = tab === 'reviews';
+        el.innerHTML = head(rv ? 'FROM THE STANDS' : 'TEAM RADIO', rv ? 'Reviews' : 'Messages', 'Coming next') +
+          '<div class="hq-card">' + (rv ? 'Reviews from Carvessa members, with photos, are coming next. You’ll reply in public and can report a review that breaks our <a href="/business/review-rules/" target="_blank">Review Rules</a>. Nobody can buy or hide reviews.' : 'Drivers will message you right here, with their car and their mechanic note from Carvessa’s help. Their phone and email stay private unless they share them. Quote requests come here too.') + '</div>';
+      }
+      function settings(el) {
+        var sug = SUGGEST[cur.kind];
+        el.innerHTML = head('ACCOUNT', 'Look and settings') +
+          '<div class="hq-card"><h4>PICK HOW BUSINESS HQ LOOKS</h4><p class="hq-fine">Only changes what you see here. Your public page keeps its own header and logo.</p><div class="hq-looks">' +
+          LOOKS.map(function (l) { return '<button type="button" data-l="' + l[0] + '" class="' + ((cur.hq_look || 'racing') === l[0] ? 'on' : '') + '"><span class="sp"><i style="background:' + l[3] + '"></i><i style="background:' + l[4] + '"></i><i style="background:' + l[5] + '"></i><i style="background:' + l[6] + '"></i></span><b>' + l[1] + '</b><small>' + (l[0] === 'racing' ? 'Default' : l[0] === sug ? 'Suggested for you' : l[2]) + '</small></button>'; }).join('') + '</div><div class="bz-msg" id="lM" role="status"></div></div>' +
+          '<div class="hq-card"><h4>LOGIN</h4>Signed in as <b>' + esc(u.email) + '</b>.<div class="bz-row"><a class="bz-btn soft bz-small" href="/business/terms/" target="_blank">Partner Terms</a><a class="bz-btn soft bz-small" href="mailto:hello@carvessa.app?subject=' + encodeURIComponent('Question about ' + cur.name) + '">Ask Carvessa a question</a></div><p class="hq-fine">You agreed to the Partner Terms version ' + esc(cur.terms_version || '') + (cur.agreed_at ? ' on ' + esc(new Date(cur.agreed_at).toLocaleDateString('en-US')) : '') + '.</p></div>' +
+          '<div class="hq-card hq-red"><h4>RED FLAG ZONE</h4><b>Delete this page</b><p class="hq-fine">Removes your page, services, posts and sales. Type DELETE to confirm.</p><div class="bz-two"><label class="bz-f"><span>Type DELETE</span><input id="dT" autocomplete="off"></label><div class="bz-row" style="align-self:end"><button type="button" class="bz-btn red" id="dGo">Delete page</button></div></div><div class="bz-msg" id="dM" role="status"></div><p class="hq-fine">Want to hide your page for a while instead? Write to hello@carvessa.app.</p></div>';
+        el.querySelector('.hq-looks').onclick = async function (e) {
+          var b = e.target.closest('button[data-l]'); if (!b) return;
+          var l = b.getAttribute('data-l'), x = await sb.from('businesses').update({ hq_look: l }).eq('id', cur.id);
+          if (x.error) { el.querySelector('#lM').className = 'bz-msg bad'; el.querySelector('#lM').textContent = 'That didn’t save.'; return; }
+          cur.hq_look = l; frame();
+        };
+        el.querySelector('#dGo').onclick = async function () {
+          var m = el.querySelector('#dM'); m.className = 'bz-msg bad';
+          if (el.querySelector('#dT').value.trim() !== 'DELETE') { m.textContent = 'Type DELETE in capital letters to confirm.'; return; }
+          var x = await sb.from('businesses').delete().eq('id', cur.id);
+          if (x.error) { m.textContent = 'That didn’t work. Please write to hello@carvessa.app.'; return; }
+          location.reload();
+        };
+      }
+      frame();
     });
     return;
   }
@@ -199,26 +478,40 @@
   if (mode === 'shop') {
     (async function () {
       var slug = q.get('b') || '';
-      var r = slug ? await sb.from('businesses').select('*').eq('slug', slug).maybeSingle() : { data: null };
+      var r = slug ? await sb.from('businesses').select(PUB).eq('slug', slug).maybeSingle() : { data: null };
       var b = r.data;
-      if (!b) { root.innerHTML = '<div class="bz"><h1>This page isn\'t available</h1><p class="lead">It may be waiting for our check, or the link is wrong.</p><a class="bz-btn" href="/partners/">For businesses</a></div>'; return; }
-      var s = await sb.from('business_services').select('name, price_from, note').eq('business_id', b.id).order('sort');
-      var svcs = s.data || [];
+      if (!b) { root.innerHTML = '<div class="bz"><h1>This page isn’t available</h1><p class="lead">It may be waiting for our check, or the link is wrong.</p><a class="bz-btn" href="/partners/">For businesses</a></div>'; return; }
+      var [s, ps] = await Promise.all([
+        sb.from('business_services').select('name, price_from, note').eq('business_id', b.id).order('sort'),
+        sb.from('business_posts').select('kind, title, body, until').eq('business_id', b.id).order('created_at', { ascending: false }).limit(3)
+      ]);
+      var svcs = s.data || [], today = new Date().toISOString().slice(0, 10);
+      var posts = (ps.data || []).filter(function (p) { return !p.until || p.until >= today; });
+      var info = KINFO[b.kind] || KINFO.other, hv = headerOf(b);
       document.title = b.name + ' · Carvessa';
+      var count = function (k) { if (b.status === 'live') sb.rpc('business_count', { b: b.id, k: k }).then(function () {}, function () {}); };
+      count('view');
       var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([b.name, b.address, b.city].filter(Boolean).join(', '));
       var tel = (b.phone || '').replace(/[^\d+]/g, '');
+      var web = b.website ? (/^https?:/i.test(b.website) ? b.website : 'https://' + b.website) : '';
+      var callBtn = tel ? '<a class="bz-btn" data-c="call" href="tel:' + esc(tel) + '">' + (b.kind === 'tow' ? 'Call now' : 'Call') + '</a>' : '';
+      var dirBtn = '<a class="bz-btn soft" data-c="directions" href="' + maps + '" target="_blank" rel="noopener">Directions</a>';
+      var KP = { special: 'Special', news: 'News', event: 'Event', hours: 'Hours change' };
       root.innerHTML =
-        '<div class="shop-cover" style="background:' + wallCss(b.wallpaper) + '"><div class="shop-logo" aria-hidden="true">' + esc(initials(b.name)) + '</div></div>' +
-        (b.status !== 'live' ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you\'re the owner (we\'ll call or text you).</div>' : '') +
-        '<div class="shop-head"><h1>' + esc(b.name) + '</h1><div class="k">' + esc(kindName(b.kind)) + ' · ' + esc(b.city || 'Atlanta') + '</div>' + (b.status === 'live' ? '<span class="shop-badge">✓ Verified by Carvessa</span>' : '') + '</div>' +
+        '<div class="shop-cover" style="background:' + hv.css + '">' + logoHtml(b, 'shop-logo') + (hv.credit ? '<a class="shop-credit" href="' + esc(hv.credit[1]) + '" target="_blank" rel="noopener nofollow">Photo: ' + esc(hv.credit[0]) + ' · CC BY</a>' : '') + '</div>' +
+        (b.status !== 'live' ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you’re the owner (we’ll call or text you).</div>' : '') +
+        '<div class="shop-head"><h1>' + esc(b.name) + '</h1><div class="k">' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</div>' + (b.status === 'live' ? '<span class="shop-badge">✓ Verified by Carvessa</span>' : '') + '</div>' +
+        '<div class="bz-row shop-cta">' + (info.first === 'directions' ? dirBtn + callBtn : callBtn + dirBtn) + (web ? '<a class="bz-btn soft" data-c="website" href="' + esc(web) + '" target="_blank" rel="noopener nofollow">Website</a>' : '') + '</div>' +
         (b.offer ? '<div class="shop-card shop-offer"><h2>' + esc(b.offer) + '</h2>Show this page at the counter.</div>' : '') +
-        (svcs.length ? '<div class="shop-card"><h2>Services and prices</h2>' + svcs.map(function (x) { return '<div class="shop-svc"><span>' + esc(x.name) + '</span><b>' + (x.price_from != null ? 'from ' + money(x.price_from) : 'Ask') + '</b></div>'; }).join('') + '<div class="shop-note">Prices set by the business. Ask for a written quote.</div></div>' : '') +
+        posts.map(function (p) { return '<div class="shop-card shop-post"><span class="hq-tag">' + (KP[p.kind] || 'News') + '</span><h2>' + esc(p.title) + '</h2>' + (p.body ? esc(p.body) : '') + (p.until ? '<div class="shop-note">Until ' + esc(new Date(p.until + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</div>' : '') + '</div>'; }).join('') +
+        (svcs.length ? '<div class="shop-card"><h2>' + info.svc + '</h2>' + svcs.map(function (x) { return '<div class="shop-svc"><span>' + esc(x.name) + '</span><b>' + (x.price_from != null ? 'from ' + money(x.price_from) : 'Ask') + '</b></div>'; }).join('') + '<div class="shop-note">' + (b.kind === 'credit_union' ? 'Set by the credit union. Not an offer from Carvessa.' : 'Prices set by the business. Ask for a written quote.') + '</div></div>' : '') +
+        (info.tip ? '<div class="shop-card shop-tip"><h2>' + info.tip[0] + '</h2>' + info.tip[1] + '</div>' : '') +
         (b.about ? '<div class="shop-card"><h2>About</h2>' + esc(b.about) + '</div>' : '') +
         ((b.photos || []).length ? '<div class="shop-card"><h2>Photos</h2><div class="shop-pics">' + b.photos.map(function (p, i) { return '<img src="' + photoUrl(p) + '" alt="' + esc(b.name) + ' photo ' + (i + 1) + '" loading="lazy">'; }).join('') + '</div></div>' : '') +
-        '<div class="shop-card"><div class="shop-kv">' + (b.address ? '<span>Address</span><div>' + esc(b.address) + ', ' + esc(b.city || '') + '</div>' : '') + (b.phone ? '<span>Phone</span><div>' + esc(b.phone) + '</div>' : '') + (b.hours ? '<span>Hours</span><div>' + esc(b.hours) + '</div>' : '') + (b.website ? '<span>Website</span><div><a href="' + esc(/^https?:/i.test(b.website) ? b.website : 'https://' + b.website) + '" rel="noopener nofollow" target="_blank">' + esc(b.website.replace(/^https?:\/\//i, '')) + '</a></div>' : '') + '</div>' +
-        '<div class="bz-row">' + (tel ? '<a class="bz-btn" href="tel:' + esc(tel) + '">Call</a>' : '') + '<a class="bz-btn soft" href="' + maps + '" target="_blank" rel="noopener">Directions</a></div></div>' +
+        '<div class="shop-card"><div class="shop-kv">' + (b.address ? '<span>Address</span><div>' + esc(b.address) + (b.city ? ', ' + esc(b.city) : '') + '</div>' : '') + (b.phone ? '<span>Phone</span><div>' + esc(b.phone) + '</div>' : '') + (b.hours ? '<span>Hours</span><div>' + esc(b.hours) + '</div>' : '') + '</div></div>' +
         '<div class="shop-card"><h2>Reviews</h2>Reviews from Carvessa members are coming soon.</div>' +
-        '<p class="shop-note" style="margin-top:14px">Carvessa doesn\'t rank businesses by who pays. Paid spots in the app are always labeled. Is this your business? <a href="/business/edit/">Edit your page</a></p>';
+        '<p class="shop-note" style="margin-top:14px">Carvessa doesn’t rank businesses by who pays. Paid spots in the app are always labeled. Is this your business? <a href="/business/edit/">Open Business HQ</a></p>';
+      root.addEventListener('click', function (e) { var a = e.target.closest('[data-c]'); if (a) count(a.getAttribute('data-c')); });
     })();
   }
 })();
