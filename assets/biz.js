@@ -426,8 +426,8 @@
         return;
       }
       var tab = mode === 'join' ? 'join' : 'login';
-      // Google works where Supabase allows the return link (the /business/ pages today).
-      var googleOk = /^\/business\//.test(location.pathname);
+      // Google works where Supabase allows the return link (/business/, /shops/ and /messages/, added Nov 19).
+      var googleOk = /^\/(business|shops|messages)\//.test(location.pathname);
       function google() {
         sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname + location.search } });
       }
