@@ -154,3 +154,8 @@
 .ch-side b{display:block;font-size:14px}.ch-side small{display:block;color:#5A6575;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hq .ch-side button{background:var(--card);color:var(--ink);border-color:var(--line)}.hq .ch-side button.on{border-color:var(--acc)}.hq .ch-side small{color:var(--mut)}
 .hq-badge{display:inline-block;margin-left:6px;background:#E63B2E;color:#fff;font-size:11px;font-weight:800;border-radius:99px;padding:1px 7px;vertical-align:middle}
+/* Login extras (Nov 19, 2026): Google + forgot password */
+.bz-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:50px;border-radius:14px;border:1.5px solid #D6DDE8;background:#fff;color:#10151B;font:inherit;font-weight:800;font-size:16px;cursor:pointer;margin:6px 0 4px}
+.bz-google:hover{background:#F4F6FA}
+.bz-or{display:flex;align-items:center;gap:10px;color:#5A6575;font-size:13px;font-weight:700;margin:10px 0 2px}.bz-or:before,.bz-or:after{content:"";flex:1;height:1px;background:#DFE6F1}.bz-or span{text-align:center}
+.bz-link{font:inherit;font-weight:800;font-size:15px;color:#1F5FBF;background:none;border:0;cursor:pointer;padding:8px 4px;text-decoration:underline}

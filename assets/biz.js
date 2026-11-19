@@ -426,12 +426,56 @@
         return;
       }
       var tab = mode === 'join' ? 'join' : 'login';
+      // Google works where Supabase allows the return link (the /business/ pages today).
+      var googleOk = /^\/business\//.test(location.pathname);
+      function google() {
+        sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname + location.search } });
+      }
+      // Forgot password: a 6-digit code by email, then a new password (same as the app).
+      function reset(email) {
+        box.innerHTML = '<h3 style="margin:4px 0">Reset your password</h3><p class="lead" style="font-size:15px">We’ll email you a 6-digit code.</p>' +
+          '<label class="bz-f"><span>Email</span><input id="rsE" type="email" autocomplete="email" inputmode="email" value="' + esc(email || '') + '"></label>' +
+          '<div class="bz-row"><button class="bz-btn" id="rsGo">Send me a code</button><button type="button" class="bz-btn soft" id="rsBack">Back to log in</button></div><div class="bz-msg" id="rsM" role="status"></div>';
+        box.querySelector('#rsBack').onclick = function () { tab = 'login'; draw(); };
+        box.querySelector('#rsGo').onclick = async function () {
+          var em = box.querySelector('#rsE').value.trim().toLowerCase(), m = box.querySelector('#rsM'); m.className = 'bz-msg bad';
+          if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(em)) { m.textContent = 'Please type your email.'; return; }
+          m.className = 'bz-msg'; m.textContent = 'Sending…';
+          var r = await sb.auth.resetPasswordForEmail(em);
+          if (r.error && /rate|seconds|limit/i.test(r.error.message)) { m.className = 'bz-msg bad'; m.textContent = 'Please wait a minute before asking for another code.'; return; }
+          code(em);
+        };
+      }
+      function code(em) {
+        box.innerHTML = '<h3 style="margin:4px 0">Check your email</h3><p class="lead" style="font-size:15px">If <b>' + esc(em) + '</b> has a Carvessa account, we sent a 6-digit code. It can take a minute. Check spam too.</p>' +
+          '<label class="bz-f"><span>6-digit code</span><input id="rsC" inputmode="numeric" autocomplete="one-time-code" maxlength="6" style="letter-spacing:6px;font-size:22px;font-weight:800"></label>' +
+          '<label class="bz-f"><span>New password (8 or more characters)</span><input id="rsP" type="password" autocomplete="new-password"></label>' +
+          '<label class="bz-ck" style="font-weight:600"><input type="checkbox" id="rsS"><span>Show password</span></label>' +
+          '<div class="bz-row"><button class="bz-btn" id="rsOk">Save new password</button><button type="button" class="bz-btn soft" id="rsAgain">Send a new code</button></div><div class="bz-msg" id="rsM" role="status"></div>';
+        box.querySelector('#rsS').onchange = function () { box.querySelector('#rsP').type = this.checked ? 'text' : 'password'; };
+        box.querySelector('#rsAgain').onclick = function () { reset(em); };
+        box.querySelector('#rsOk').onclick = async function () {
+          var c = box.querySelector('#rsC').value.replace(/\D/g, ''), pw = box.querySelector('#rsP').value, m = box.querySelector('#rsM'); m.className = 'bz-msg bad';
+          if (c.length !== 6) { m.textContent = 'Type the 6-digit code from the email.'; return; }
+          if (pw.length < 8) { m.textContent = 'Your new password needs 8 or more characters.'; return; }
+          m.className = 'bz-msg'; m.textContent = 'Checking…';
+          var v = await sb.auth.verifyOtp({ email: em, token: c, type: 'recovery' });
+          if (v.error) { m.className = 'bz-msg bad'; m.textContent = 'That code didn’t work or expired. Tap “Send a new code”.'; return; }
+          var u2 = await sb.auth.updateUser({ password: pw });
+          if (u2.error) { m.className = 'bz-msg bad'; m.textContent = /different|same/i.test(u2.error.message) ? 'Pick a password you haven’t used before.' : 'That didn’t save. Please try again.'; return; }
+          m.className = 'bz-msg good'; m.textContent = 'Password changed. You’re logged in.';
+          setTimeout(function () { next(v.data.user || u2.data.user); }, 700);
+        };
+      }
       function draw() {
         box.innerHTML = '<div class="bz-tabs"><button type="button" data-tab="join" class="' + (tab === 'join' ? 'on' : '') + '">Create account</button><button type="button" data-tab="login" class="' + (tab === 'login' ? 'on' : '') + '">Log in</button></div>' +
           '<p class="lead" style="font-size:15px">' + (tab === 'join' ? 'Your page belongs to this account. Use an email you check.' : 'Use the email and password of your Carvessa account.') + '</p>' +
+          (googleOk ? '<button type="button" class="bz-google" id="aG"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.3.8-4.7l-7.8-6C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.2-8.5 2.2-6.3 0-11.6-4.1-13.5-9.8l-7.8 6C6.6 42.6 14.6 48 24 48z"/></svg>Continue with Google</button><div class="bz-or"><span>or use your email (Gmail, Yahoo, Outlook, any email)</span></div>' : '') +
           '<label class="bz-f"><span>Email</span><input id="aEmail" type="email" autocomplete="email" inputmode="email"></label>' +
           '<label class="bz-f"><span>Password' + (tab === 'join' ? ' (8 or more characters)' : '') + '</span><input id="aPw" type="password" autocomplete="' + (tab === 'join' ? 'new-password' : 'current-password') + '"></label>' +
-          '<div class="bz-row"><button class="bz-btn" id="aDo">' + (tab === 'join' ? 'Create account' : 'Log in') + '</button></div><div class="bz-msg" id="aMsg" role="status"></div>';
+          '<div class="bz-row"><button class="bz-btn" id="aDo">' + (tab === 'join' ? 'Create account' : 'Log in') + '</button>' + (tab === 'login' ? '<button type="button" class="bz-link" id="aForgot">Forgot password?</button>' : '') + '</div><div class="bz-msg" id="aMsg" role="status"></div>';
+        if (box.querySelector('#aG')) box.querySelector('#aG').onclick = google;
+        if (box.querySelector('#aForgot')) box.querySelector('#aForgot').onclick = function () { reset(box.querySelector('#aEmail').value.trim()); };
         box.querySelector('.bz-tabs').onclick = function (e) { var t = e.target.getAttribute('data-tab'); if (t) { tab = t; draw(); } };
         box.querySelector('#aDo').onclick = async function () {
           var em = box.querySelector('#aEmail').value.trim().toLowerCase(), pw = box.querySelector('#aPw').value, m = box.querySelector('#aMsg');
