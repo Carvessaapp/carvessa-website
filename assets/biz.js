@@ -333,13 +333,93 @@
     };
   }
 
+
+  // ---------- Messages + quote requests (step 4): one chat thread, used by drivers and by the business ----------
+  var QUOTE_KINDS = { repair: 1, tires: 1, body: 1, detail: 1, tow: 1, insurance: 1, other: 1 };
+  var when = function (d) { var t = new Date(d), n = new Date(); return t.toDateString() === n.toDateString() ? t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : t.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); };
+  function chatThread(host, chat, asBusiness, title) {
+    var st = { photos: [], timer: null, seen: 0 };
+    host.innerHTML = '<div class="ch"><div class="ch-head"><b>' + esc(title) + '</b>' + (chat.kind === 'quote' ? '<span class="hq-tag">Quote request</span>' : '') + '</div>' +
+      (chat.kind === 'quote' || chat.car ? '<div class="ch-quote">' + (chat.car ? '<b>' + esc(chat.car) + '</b>' : '') + (chat.miles != null ? ' · ' + Number(chat.miles).toLocaleString('en-US') + ' mi' : '') + (chat.topic ? '<div>' + esc(chat.topic) + '</div>' : '') + '</div>' : '') +
+      '<div class="ch-list" aria-live="polite"></div>' +
+      (chat.status === 'blocked' && !asBusiness ? '<div class="bz-msg bad">This business isn’t taking messages from you.</div>' :
+      '<div class="ch-pics"></div>' + (asBusiness && chat.kind === 'quote' ? '<div class="ch-price"><label>Price $<input id="chP" inputmode="decimal" placeholder="129"></label><input id="chPN" maxlength="120" placeholder="What it covers / when (e.g. Today before 4 PM)"></div>' : '') +
+      '<div class="ch-box"><label class="ch-add" aria-label="Add a photo">+<input type="file" accept="image/*" id="chF" hidden></label><textarea id="chT" maxlength="1000" rows="2" placeholder="' + (asBusiness ? 'Write a reply…' : 'Write a message…') + '"></textarea><button type="button" class="bz-btn" id="chGo">Send</button></div>' +
+      '<p class="rv-fine">' + (asBusiness ? 'The driver’s phone and email stay private unless they share them.' : 'Only your first name shows. Don’t share card numbers or passwords.') + '</p>') +
+      '<div class="bz-msg" id="chM" role="status"></div></div>';
+    var $ = function (s) { return host.querySelector(s); };
+    async function load() {
+      var r = await sb.from('biz_messages').select('*').eq('chat_id', chat.id).order('created_at').limit(300);
+      var list = r.data || []; if (list.length === st.seen && st.seen) return; st.seen = list.length;
+      $('.ch-list').innerHTML = list.length ? list.map(function (m) {
+        var mine = m.from_business === asBusiness;
+        return '<div class="ch-m ' + (mine ? 'me' : 'them') + '">' + (m.price != null ? '<div class="ch-pr">Price: ' + money(m.price) + (m.price_note ? ' · ' + esc(m.price_note) : '') + '<small>Set by the business. Ask for a written quote.</small></div>' : '') + (m.body ? '<div>' + esc(m.body).replace(/\n/g, '<br>') + '</div>' : '') +
+          ((m.photos || []).length ? '<div class="rv-pics">' + m.photos.map(function (p) { return '<a href="' + photoUrl(p) + '" target="_blank" rel="noopener"><img src="' + photoUrl(p) + '" alt="Photo" loading="lazy"></a>'; }).join('') + '</div>' : '') + '<small>' + when(m.created_at) + '</small></div>';
+      }).join('') : '<p class="rv-fine">No messages yet.</p>';
+      var L = $('.ch-list'); L.scrollTop = L.scrollHeight;
+      sb.from('biz_chats').update(asBusiness ? { biz_seen_at: new Date().toISOString() } : { driver_seen_at: new Date().toISOString() }).eq('id', chat.id).then(function () {});
+    }
+    function drawPics() { var b = $('.ch-pics'); if (b) b.innerHTML = st.photos.map(function (p, i) { return '<span class="p"><img src="' + photoUrl(p) + '" alt=""><button type="button" data-rm="' + i + '" aria-label="Remove">✕</button></span>'; }).join(''); }
+    load();
+    st.timer = setInterval(function () { if (!document.body.contains(host.querySelector('.ch'))) { clearInterval(st.timer); return; } if (!document.hidden) load(); }, 12000);
+    if (!$('#chGo')) return;
+    host.querySelector('.ch-pics').onclick = function (e) { var i = e.target.getAttribute('data-rm'); if (i != null) { st.photos.splice(+i, 1); drawPics(); } };
+    $('#chF').onchange = async function (e) {
+      var f = e.target.files && e.target.files[0]; if (!f || st.photos.length >= 3) return;
+      var me = (await sb.auth.getUser()).data.user; if (!me) return;
+      $('#chM').className = 'bz-msg'; $('#chM').textContent = 'Uploading…';
+      try { st.photos.push(await upload(me.id, f, 1400)); drawPics(); $('#chM').textContent = ''; } catch (err) { $('#chM').className = 'bz-msg bad'; $('#chM').textContent = 'That photo didn’t upload.'; }
+      e.target.value = '';
+    };
+    $('#chGo').onclick = async function () {
+      var body = $('#chT').value.trim(), pr = $('#chP') ? $('#chP').value.replace(/[^\d.]/g, '') : '', m = $('#chM');
+      if (!body && !pr && !st.photos.length) return;
+      var row = { chat_id: chat.id, body: body || null, photos: st.photos };
+      if (pr) { row.price = Number(pr); row.price_note = $('#chPN').value.trim() || null; }
+      $('#chGo').disabled = true;
+      var x = await sb.from('biz_messages').insert(row); $('#chGo').disabled = false;
+      if (x.error) { m.className = 'bz-msg bad'; m.textContent = /lot of messages/.test(x.error.message) ? 'You’re sending a lot of messages. Please wait a few minutes.' : /isn.t taking/.test(x.error.message) ? 'This business isn’t taking messages from you.' : 'That didn’t send. Please try again.'; return; }
+      $('#chT').value = ''; if ($('#chP')) { $('#chP').value = ''; $('#chPN').value = ''; } st.photos = []; drawPics(); m.textContent = ''; st.seen = 0; load();
+    };
+  }
+  // A driver starts a chat or a quote request with one business.
+  function startChat(host, b, kind, onOpen) {
+    var st = { photos: [] }, q = kind === 'quote';
+    host.innerHTML = '<div class="rv-form"><h3>' + (q ? 'Get a quote from ' : 'Message ') + esc(b.name) + '</h3><p class="rv-fine">' + (q ? 'Tell them about your car and the problem. They answer with a price here.' : 'They answer right here. Only your first name shows.') + '</p>' +
+      (q ? '<div class="bz-two"><label class="bz-f"><span>Your car</span><input id="sCar" maxlength="80" placeholder="2016 Toyota Corolla"></label><label class="bz-f"><span>Miles (optional)</span><input id="sMi" inputmode="numeric" placeholder="84,000"></label></div>' : '') +
+      '<label class="bz-f"><span>' + (q ? 'What’s going on?' : 'Your message') + '</span><textarea id="sB" maxlength="1000" placeholder="' + (q ? 'Tire light is on, air looks fine (35 PSI). Light stays steady.' : 'Hi! Are you open Saturday?') + '"></textarea><small>' + (q ? 'Used Carvessa’s car help? Paste your “What do I tell the mechanic?” note here.' : 'Don’t share card numbers or passwords.') + '</small></label>' +
+      (q ? '<div class="bz-f"><span>Photos (optional, up to 3)</span><div class="bz-pics" id="sP"></div></div>' : '') +
+      '<div class="bz-row"><button type="button" class="bz-btn" id="sGo">' + (q ? 'Send quote request' : 'Send') + '</button><button type="button" class="bz-btn soft" id="sX">Cancel</button></div><div class="bz-msg" id="sM" role="status"></div></div>';
+    var $ = function (s) { return host.querySelector(s); };
+    function drawP() { if ($('#sP')) $('#sP').innerHTML = st.photos.map(function (p, i) { return '<div class="p"><img src="' + photoUrl(p) + '" alt=""><button type="button" data-rm="' + i + '" aria-label="Remove">✕</button></div>'; }).join('') + (st.photos.length < 3 ? '<label aria-label="Add a photo">+<input type="file" accept="image/*" id="sF" hidden></label>' : ''); }
+    drawP();
+    if ($('#sP')) $('#sP').onclick = function (e) { var i = e.target.getAttribute('data-rm'); if (i != null) { st.photos.splice(+i, 1); drawP(); } };
+    host.addEventListener('change', async function (e) {
+      if (e.target.id !== 'sF') return; var f = e.target.files && e.target.files[0]; if (!f) return;
+      var me = (await sb.auth.getUser()).data.user; if (!me) return;
+      try { st.photos.push(await upload(me.id, f, 1400)); drawP(); } catch (err) { $('#sM').className = 'bz-msg bad'; $('#sM').textContent = 'That photo didn’t upload.'; }
+    });
+    $('#sX').onclick = function () { host.innerHTML = ''; };
+    $('#sGo').onclick = async function () {
+      var body = $('#sB').value.trim(), m = $('#sM'); m.className = 'bz-msg bad';
+      if (q && !$('#sCar').value.trim()) { m.textContent = 'Please type your car (year, make, model).'; return; }
+      if (body.length < 2) { m.textContent = q ? 'Please tell them what’s going on.' : 'Please type your message.'; return; }
+      $('#sGo').disabled = true; m.className = 'bz-msg'; m.textContent = 'Sending…';
+      var c = await sb.from('biz_chats').insert({ business_id: b.id, kind: kind, car: q ? $('#sCar').value.trim() : null, miles: q && $('#sMi').value ? parseInt($('#sMi').value.replace(/\D/g, ''), 10) || null : null, topic: q ? body.slice(0, 120) : null }).select('*').single();
+      if (c.error) { $('#sGo').disabled = false; m.className = 'bz-msg bad'; m.textContent = /own business/.test(c.error.message) ? 'You can’t message your own business.' : /Too many/.test(c.error.message) ? 'Too many new chats today. Please try again tomorrow.' : /isn.t taking/.test(c.error.message) ? 'This business isn’t taking messages yet.' : 'That didn’t send. Please try again.'; return; }
+      var x = await sb.from('biz_messages').insert({ chat_id: c.data.id, body: body, photos: st.photos });
+      if (x.error) { $('#sGo').disabled = false; m.className = 'bz-msg bad'; m.textContent = 'That didn’t send. Please try again.'; return; }
+      onOpen(c.data);
+    };
+  }
+
   // ---------- Sign in / create account ----------
   function account(next, boxEl) {
     var box = boxEl || root.querySelector('#bzAcct');
     sb.auth.getSession().then(function (r) {
       var u = r.data.session && r.data.session.user;
       if (u) {
-        if (mode === 'edit') { next(u); return; }
+        if (mode === 'edit' || mode === 'inbox') { next(u); return; }
         box.innerHTML = '<div class="bz-sec">Signed in as <b>' + esc(u.email) + '</b>. <a href="#" id="aOut">Not you?</a></div><div class="bz-row"><button class="bz-btn" id="aGo">Continue</button></div>';
         box.querySelector('#aGo').onclick = function () { next(u); };
         box.querySelector('#aOut').onclick = function (e) { e.preventDefault(); sb.auth.signOut().then(function () { account(next, boxEl); }); };
@@ -412,13 +492,14 @@
         shell.innerHTML = '<aside class="hq-side"><div class="hq-brand"><i class="hq-flag"></i><span>CAR<b>V</b>essa</span></div><div class="hq-sub">BUSINESS HQ</div>' +
           (pages.length > 1 ? '<select class="hq-pick" id="hqPick" aria-label="Your pages">' + pages.map(function (p, i) { return '<option value="' + i + '"' + (p === cur ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select>' : '') +
           '<div class="hq-biz"><b>' + esc(cur.name) + '</b><small>' + esc(kindName(cur.kind)) + '</small><span class="hq-st ' + esc(cur.status) + '">' + (STATUS[cur.status] || cur.status) + '</span></div>' +
-          '<nav class="hq-nav">' + NAV.map(function (n) { return '<button type="button" data-tab="' + n[0] + '" class="' + (tab === n[0] ? 'on' : '') + '">' + n[1] + '<small>' + n[2] + '</small></button>'; }).join('') + '</nav>' +
+          '<nav class="hq-nav">' + NAV.map(function (n) { return '<button type="button" data-tab="' + n[0] + '" class="' + (tab === n[0] ? 'on' : '') + '">' + n[1] + (n[0] === 'messages' ? '<span class="hq-badge" id="hqMsgN" hidden></span>' : '') + '<small>' + n[2] + '</small></button>'; }).join('') + '</nav>' +
           '<a class="hq-link" href="/shops/?b=' + encodeURIComponent(cur.slug) + '" target="_blank" rel="noopener">View my public page ↗</a><button type="button" class="hq-link" id="hqOut">Log out</button></aside>' +
           '<main class="hq-main"><div class="hq-band"></div><div id="hqBody"></div></main>';
         shell.querySelector('.hq-nav').onclick = function (e) { var b = e.target.closest('button[data-tab]'); if (b) { tab = b.getAttribute('data-tab'); frame(); } };
         shell.querySelector('#hqOut').onclick = function () { sb.auth.signOut().then(function () { location.reload(); }); };
         var pk = shell.querySelector('#hqPick'); if (pk) pk.onchange = function () { cur = pages[+pk.value]; tab = 'overview'; frame(); };
-        ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, messages: soon, account: settings })[tab](shell.querySelector('#hqBody'));
+        sb.from('biz_chats').select('last_at, biz_seen_at').eq('business_id', cur.id).limit(200).then(function (r) { var n = (r.data || []).filter(function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; }).length, bd = shell.querySelector('#hqMsgN'); if (bd && n) { bd.hidden = false; bd.textContent = n; } });
+        ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, messages: messages, account: settings })[tab](shell.querySelector('#hqBody'));
         var y = shell.getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
       }
       function head(k, title, badge) { return '<small class="hq-k">' + k + '</small><h2 class="hq-h">' + title + (badge ? ' <em>' + badge + '</em>' : '') + '</h2>'; }
@@ -433,7 +514,10 @@
         var sales = sl.data || [], total = sales.reduce(function (a, x) { return a + (Number(x.amount) || 0); }, 0);
         var svc = await sb.from('business_services').select('id', { count: 'exact', head: true }).eq('business_id', cur.id);
         var rvs = await sb.from('business_reviews').select('id', { count: 'exact', head: true }).eq('business_id', cur.id).eq('status', 'visible').is('reply', null);
+        var chs = await sb.from('biz_chats').select('last_at, biz_seen_at').eq('business_id', cur.id).limit(200);
+        var newMsg = (chs.data || []).filter(function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; }).length;
         var todo = [];
+        if (newMsg) todo.push(['Answer ' + newMsg + ' message' + (newMsg > 1 ? 's' : ''), 'Drivers are waiting on you.', 'messages']);
         if (rvs.count > 0) todo.push(['Reply to ' + rvs.count + ' review' + (rvs.count > 1 ? 's' : ''), 'A short thank-you shows drivers you care.', 'reviews']);
         if (cur.status === 'pending') todo.push(['Answer our call or text', 'We confirm you’re the owner, then your page goes live.']);
         if (!cur.hours) todo.push(['Add your hours', 'Drivers check if you’re open before they come.']);
@@ -528,6 +612,30 @@
           reviews(el, filter);
         };
       }
+
+      async function messages(el, openId) {
+        var r = await sb.from('biz_chats').select('*').eq('business_id', cur.id).order('last_at', { ascending: false }).limit(100);
+        var chats = r.data || [], unread = function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; };
+        el.innerHTML = head('TEAM RADIO', 'Messages', chats.filter(unread).length ? chats.filter(unread).length + ' new' : '') +
+          '<p class="hq-fine">Drivers who wrote to you from Carvessa. Quote requests come with their car and problem. Answer fast: the first good answer often wins the job.</p>' +
+          (chats.length ? '<div class="ch-wrap"><div class="ch-side">' + chats.map(function (c) { return '<button type="button" data-chat="' + c.id + '" class="' + (c.id === openId ? 'on ' : '') + (unread(c) ? 'new' : '') + '"><b>' + esc(c.driver_name) + (c.car ? ' · ' + esc(c.car) : '') + '</b><small>' + (c.kind === 'quote' ? 'Quote · ' : '') + esc(c.topic || 'Message') + '</small><small>' + when(c.last_at) + (c.status !== 'open' ? ' · ' + c.status : '') + '</small></button>'; }).join('') + '</div><div class="ch-main" id="chMain"><p class="hq-fine">Pick a chat.</p></div></div>'
+          : '<div class="hq-card">No messages yet. When your page is live, drivers can message you or ask for a quote from it.</div>');
+        function open(id) {
+          var c = chats.filter(function (x) { return x.id === id; })[0]; if (!c) return;
+          [].forEach.call(el.querySelectorAll('[data-chat]'), function (b) { b.classList.toggle('on', b.getAttribute('data-chat') === id); if (b.getAttribute('data-chat') === id) b.classList.remove('new'); });
+          var left = el.querySelectorAll('[data-chat].new').length, bd = shell.querySelector('#hqMsgN'), hm = el.querySelector('.hq-h em');
+          if (bd) { bd.hidden = !left; bd.textContent = left; } if (hm) hm.textContent = left ? left + ' new' : 'all read';
+          var main = el.querySelector('#chMain'); main.innerHTML = '<div id="chT1"></div><div class="bz-row">' + (c.status === 'open' ? '<button type="button" class="bz-btn soft bz-small" data-st="closed">Mark done</button>' : '<button type="button" class="bz-btn soft bz-small" data-st="open">Reopen</button>') + (c.status !== 'blocked' ? '<button type="button" class="bz-btn red bz-small" data-st="blocked">Block this driver</button>' : '') + '</div>';
+          chatThread(main.querySelector('#chT1'), c, true, c.driver_name + (c.car ? ' · ' + c.car : ''));
+          main.onclick = async function (e) {
+            var v = e.target.getAttribute('data-st'); if (!v) return;
+            if (v === 'blocked' && !confirm('Block this driver? They won’t be able to message you.')) return;
+            await sb.from('biz_chats').update({ status: v }).eq('id', c.id); messages(el, c.id);
+          };
+        }
+        el.onclick = function (e) { var b = e.target.closest('[data-chat]'); if (b) open(b.getAttribute('data-chat')); };
+        if (openId) open(openId);
+      }
       function soon(el) {
         var rv = tab === 'reviews';
         el.innerHTML = head(rv ? 'FROM THE STANDS' : 'TEAM RADIO', rv ? 'Reviews' : 'Messages', 'Coming next') +
@@ -555,6 +663,27 @@
         };
       }
       frame();
+    });
+    return;
+  }
+
+
+  // ---------- My messages (drivers) ----------
+  if (mode === 'inbox') {
+    account(async function (u) {
+      root.querySelector('#bzAcct').innerHTML = '<p class="rv-fine">Signed in as <b>' + esc(u.email) + '</b>.</p>';
+      var r = await sb.from('biz_chats').select('*, businesses(name, slug)').eq('driver', u.id).order('last_at', { ascending: false }).limit(100);
+      var chats = r.data || [], list = root.querySelector('#bzInbox');
+      if (!chats.length) { list.innerHTML = '<div class="bz-sec">No messages yet. Open a business page on Carvessa and tap Message or Get a quote.</div>'; return; }
+      var unread = function (c) { return c.last_at > c.driver_seen_at; };
+      list.innerHTML = '<div class="ch-wrap"><div class="ch-side">' + chats.map(function (c) { var n = (c.businesses && c.businesses.name) || 'Business'; return '<button type="button" data-chat="' + c.id + '" class="' + (unread(c) ? 'new' : '') + '"><b>' + esc(n) + '</b><small>' + (c.kind === 'quote' ? 'Quote · ' : '') + esc(c.car || c.topic || 'Message') + '</small><small>' + when(c.last_at) + '</small></button>'; }).join('') + '</div><div class="ch-main" id="chMain"><p class="rv-fine">Pick a chat.</p></div></div>';
+      list.onclick = function (e) {
+        var b = e.target.closest('[data-chat]'); if (!b) return;
+        var c = chats.filter(function (x) { return x.id === b.getAttribute('data-chat'); })[0];
+        [].forEach.call(list.querySelectorAll('[data-chat]'), function (x) { x.classList.toggle('on', x === b); }); b.classList.remove('new');
+        var main = list.querySelector('#chMain'); main.innerHTML = '<div id="chT1"></div>' + (c.businesses ? '<p class="rv-fine"><a href="/shops/?b=' + encodeURIComponent(c.businesses.slug) + '">Open their page ›</a></p>' : '');
+        chatThread(main.querySelector('#chT1'), c, false, (c.businesses && c.businesses.name) || 'Business');
+      };
     });
     return;
   }
@@ -591,6 +720,7 @@
         (b.status !== 'live' ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you’re the owner (we’ll call or text you).</div>' : '') +
         '<div class="shop-head"><h1>' + esc(b.name) + '</h1><div class="k">' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</div>' + (b.status === 'live' ? '<span class="shop-badge">✓ Verified by Carvessa</span>' : '') + (reviews.length ? '<a class="shop-rating" href="#reviews">' + starRow(Math.round(avg)) + ' <b>' + avg.toFixed(1) + '</b> · ' + reviews.length + ' review' + (reviews.length > 1 ? 's' : '') + '</a>' : '') + '</div>' +
         '<div class="bz-row shop-cta">' + (info.first === 'directions' ? dirBtn + callBtn : callBtn + dirBtn) + (web ? '<a class="bz-btn soft" data-c="website" href="' + esc(web) + '" target="_blank" rel="noopener nofollow">Website</a>' : '') + '</div>' +
+        (b.status === 'live' && !isOwner ? '<div class="bz-row shop-cta">' + (QUOTE_KINDS[b.kind] ? '<button type="button" class="bz-btn" data-chat-kind="quote">Get a quote</button>' : '') + '<button type="button" class="bz-btn soft" data-chat-kind="message">' + (b.kind === 'dealer' ? 'Ask about a car' : b.kind === 'credit_union' || b.kind === 'insurance' ? 'Ask a question' : 'Message') + '</button></div><div id="chBox"></div>' : '') +
         (b.offer ? '<div class="shop-card shop-offer"><h2>' + esc(b.offer) + '</h2>Show this page at the counter.</div>' : '') +
         posts.map(function (p) { return '<div class="shop-card shop-post"><span class="hq-tag">' + (KP[p.kind] || 'News') + '</span><h2>' + esc(p.title) + '</h2>' + (p.body ? esc(p.body) : '') + (p.until ? '<div class="shop-note">Until ' + esc(new Date(p.until + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</div>' : '') + '</div>'; }).join('') +
         (svcs.length ? '<div class="shop-card"><h2>' + info.svc + '</h2>' + svcs.map(function (x) { return '<div class="shop-svc"><span>' + esc(x.name) + '</span><b>' + (x.price_from != null ? 'from ' + money(x.price_from) : 'Ask') + '</b></div>'; }).join('') + '<div class="shop-note">' + (b.kind === 'credit_union' ? 'Set by the credit union. Not an offer from Carvessa.' : 'Prices set by the business. Ask for a written quote.') + '</div></div>' : '') +
@@ -616,6 +746,17 @@
           account(function (u2) { then(u2); }, host.querySelector('.rv-acct'));
         });
       }
+      root.addEventListener('click', function (e) {
+        var k = e.target.getAttribute('data-chat-kind'); if (!k) return;
+        var box = root.querySelector('#chBox');
+        signedIn(box, async function (u) {
+          if (u.id === b.owner) { box.innerHTML = '<div class="bz-msg bad">You can’t message your own business.</div>'; return; }
+          var open = (await sb.from('biz_chats').select('*').eq('business_id', b.id).eq('driver', u.id).neq('status', 'blocked').order('last_at', { ascending: false }).limit(1)).data;
+          var show = function (c) { chatThread(box, c, false, b.name); var a = document.createElement('p'); a.className = 'rv-fine'; a.innerHTML = '<a href="/messages/">See all my messages ›</a>'; box.appendChild(a); };
+          if (open && open.length && k === 'message') show(open[0]); else startChat(box, b, k, show);
+          box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
       var wr = root.querySelector('#rvWrite');
       if (wr) wr.onclick = function () {
         var box = root.querySelector('#rvBox');
