@@ -133,7 +133,7 @@
           if (inp.value.trim() !== v) return;
           box.innerHTML = '<div class="bz-sug-h">Is this you? Tap to fill your details</div>' + hits.map(function (f, i) {
             var p = f.properties; return '<button type="button" data-i="' + i + '"><b>' + esc(p.name) + '</b><small>' + esc([[p.housenumber, p.street].filter(Boolean).join(' '), p.city, STATES[(p.state || '').toLowerCase()] || p.state].filter(Boolean).join(', ')) + '</small></button>';
-          }).join('') + '<div class="bz-sug-f">' + (hits.length ? 'Not listed? Keep typing and fill it in yourself.' : 'No match on the map. Just fill it in yourself.') + ' Search by OpenStreetMap.</div>';
+          }).join('') + '<div class="bz-sug-f">' + (hits.length ? 'Not listed? Keep typing and fill it in yourself.' : 'No match on the map. Just fill it in yourself.') + ' Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>.</div>';
           box.hidden = false;
           box.onclick = async function (e) {
             var btn = e.target.closest('button[data-i]'); if (!btn) return;
@@ -226,7 +226,7 @@
       if (info.kind) { st.kind = info.kind; drawKinds(); n++; }
       if (!$('fRegState').value && /, GA$/.test(info.city || '')) $('fRegState').value = 'Georgia';
       $('fFound').hidden = false;
-      $('fFound').textContent = n ? '✓ We filled in ' + n + ' thing' + (n > 1 ? 's' : '') + ' from the public map. Check them and fix anything that’s off.' : 'Found you on the map, but there were no extra details. Please fill in the rest.';
+      $('fFound').textContent = n ? '✓ We filled in ' + n + ' thing' + (n > 1 ? 's' : '') + ' from OpenStreetMap (© OpenStreetMap contributors). Check them and fix anything that’s off.' : 'Found you on the map, but there were no extra details. Please fill in the rest.';
       drawHeader(); drawLogo();
     });
     $('fKind').onclick = function (e) { var k = e.target.getAttribute('data-k'); if (k) { st.kind = k; drawKinds(); drawHeader(); } };
