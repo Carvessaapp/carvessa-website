@@ -41,7 +41,7 @@
   };
   // Business HQ looks (picture 278). #1 is the default.
   var LOOKS = [
-    ['racing', 'Carvessa Racing', 'Today’s design', '#0F1B33', '#F4F6FA', '#1F5FBF', '#E63B2E'],
+    ['racing', 'Carvessa Clean', 'The new default', '#0F1B33', '#F4F6FA', '#1F5FBF', '#E63B2E'],
     ['garage', 'Garage Night', 'Dark garage, gold trim', '#0E0F12', '#16181C', '#E8C985', '#FF8A5B'],
     ['cluster', 'Dashboard Cluster', 'Glowing dials', '#06080B', '#0B1118', '#5BC0FF', '#FFB547'],
     ['pit', 'Pit Wall', 'Black, white, racing red', '#111111', '#FFFFFF', '#111111', '#E63B2E'],
@@ -54,7 +54,7 @@
   ];
   var SUGGEST = { credit_union: 'cu', insurance: 'shield', dealer: 'lot', repair: 'workshop', body: 'workshop', tires: 'tread' };
   var PUB = 'id, owner, slug, name, kind, address, city, state, phone, website, hours, about, offer, wallpaper, photos, logo, header, status, founding, created_at, updated_at';
-  var MINE = PUB + ', legal_name, control_no, owner_role, since_year, hq_look, notify_email';
+  var MINE = PUB + ', lat, lon, legal_name, control_no, owner_role, since_year, hq_look, notify_email';
   var STATES = { alabama: 'AL', alaska: 'AK', arizona: 'AZ', arkansas: 'AR', california: 'CA', colorado: 'CO', connecticut: 'CT', delaware: 'DE', 'district of columbia': 'DC', florida: 'FL', georgia: 'GA', hawaii: 'HI', idaho: 'ID', illinois: 'IL', indiana: 'IN', iowa: 'IA', kansas: 'KS', kentucky: 'KY', louisiana: 'LA', maine: 'ME', maryland: 'MD', massachusetts: 'MA', michigan: 'MI', minnesota: 'MN', mississippi: 'MS', missouri: 'MO', montana: 'MT', nebraska: 'NE', nevada: 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', ohio: 'OH', oklahoma: 'OK', oregon: 'OR', pennsylvania: 'PA', 'rhode island': 'RI', 'south carolina': 'SC', 'south dakota': 'SD', tennessee: 'TN', texas: 'TX', utah: 'UT', vermont: 'VT', virginia: 'VA', washington: 'WA', 'west virginia': 'WV', wisconsin: 'WI', wyoming: 'WY' };
 
   var kindName = function (k) { for (var i = 0; i < KINDS.length; i++) if (KINDS[i][0] === k) return KINDS[i][1]; return 'Business'; };
@@ -84,6 +84,136 @@
   function logoHtml(b, cls) {
     return b.logo ? '<div class="' + cls + '"><img src="' + photoUrl(b.logo) + '" alt=""></div>' : '<div class="' + cls + '" aria-hidden="true">' + esc(initials(b.name)) + '</div>';
   }
+
+  // ---------- Line icons (picture 283; no emoji) ----------
+  var ICONS = {
+    home: '<path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/>', msg: '<path d="M4 5h16v11H8l-4 4z"/>', star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+    wrench: '<path d="M14 6a4 4 0 0 0 5 5l-9 9-3-3 9-9a4 4 0 0 1-2-2z"/>', post: '<path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/>', cash: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="3"/>',
+    gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>', eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    phone: '<path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 6a2 2 0 0 1 2-2z"/>', pin: '<path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+    bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>', globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+    chev: '<path d="M9 6l6 6-6 6"/>', check: '<path d="M5 12l5 5 9-10"/>', tag: '<path d="M3 12l9-9h8v8l-9 9z"/><circle cx="16" cy="8" r="1.5"/>', share: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8 11l8-4M8 13l8 4"/>',
+    snow: '<path d="M12 2v20M4 6l16 12M20 6L4 18"/>', gift: '<rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12M12 9c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>', flag: '<path d="M5 21V4h11l-2 4 2 4H5"/>', bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>', plus: '<path d="M12 5v14M5 12h14"/>',
+    qr: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/>', heart: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
+    down: '<path d="M12 4v12M6 10l6 6 6-6M4 20h16"/>', copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/>', print: '<path d="M6 9V3h12v6M6 18H4v-7h16v7h-2"/><rect x="6" y="14" width="12" height="7"/>', moon: '<path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/>', out: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>'
+  };
+  var icon = function (n, s) { return '<svg class="ic" width="' + (s || 20) + '" height="' + (s || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[n] || '') + '</svg>'; };
+  var shortDay = function (d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
+  var today = function () { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  var addDays = function (n) { var d = new Date(Date.now() + n * 864e5); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+
+  // ---------- Deals (picture 284): templates, the deal card, the share kit ----------
+  var TPL = {
+    price: { name: 'Price special', k: 'PRICE SPECIAL', ic: 'wrench', bg: ['#1F5FBF', '#0F2F6B'], price: 1, title: 'Oil change', body: 'Up to 5 qt conventional. Most cars.' },
+    sale: { name: 'Sale', k: 'SALE', ic: 'tag', bg: ['#D9342A', '#A51B2A'], title: '20% off brakes', body: 'All brake jobs this week.' },
+    free: { name: 'Free check', k: 'FREE CHECK', ic: 'check', bg: ['#1D7A46', '#0E4E2C'], title: 'Free tire check', body: 'Pressure, tread and a sensor look. No cost, no catch.' },
+    season: { name: 'Seasonal', k: 'SEASON', ic: 'snow', bg: ['#2F6FB5', '#16407A'], title: 'Winter ready', body: 'Battery test, wipers and tire pressure in one stop.' },
+    bundle: { name: 'Bundle', k: 'BUNDLE', ic: 'gift', bg: ['#6E3FA8', '#3D1F6B'], price: 1, title: 'Oil change + tire rotation', body: 'Both for one price.' },
+    new_customer: { name: 'New customer', k: 'NEW CUSTOMERS', ic: 'user', bg: ['#0F1B33', '#2A3A5C'], title: '$15 off your first visit', body: 'Show your code at the counter.', who: 'new' },
+    holiday: { name: 'Holiday', k: 'HOLIDAY', ic: 'flag', bg: ['#D2552C', '#A8380B'], title: 'Holiday weekend sale', body: 'Open Friday to Sunday.' },
+    new_service: { name: 'New service', k: 'NEW', ic: 'bolt', bg: ['#8A6A2C', '#5E4718'], title: 'Now doing EV service', body: 'Tires, brakes and A/C on electric cars.', news: 1 },
+    news: { name: 'News', k: 'NEWS', ic: 'post', bg: ['#2B3A55', '#4E5F7E'], title: 'Open Sundays starting this week', body: '', news: 1 }
+  };
+  // Per kind of business: better starting words for a few templates.
+  var TPL_KIND = {
+    tires: { price: ['Tire rotation', 'All 4 tires, pressure set.'], sale: ['$40 off a set of 4 tires', 'Mounting and balancing included.'] },
+    dealer: { price: ['Oil change at our service desk', 'Most cars.'], sale: ['Weekend sale event', 'Ask for the out-the-door price in writing.'], free: ['Free trade-in appraisal', 'Bring your car, get a written number.'], new_customer: ['First-time buyer welcome', 'We explain every line of the paperwork.'] },
+    body: { price: ['Small dent repair', 'From one panel, no paint.'], free: ['Free estimate from photos', 'Send 3 photos, get a written estimate.'] },
+    detail: { price: ['Full detail', 'Inside and out.'], sale: ['20% off interior detail', 'This week only.'] },
+    tow: { price: ['Local tow', 'Up to 5 miles.'], free: ['Free jump start for members', 'In our service area.'] },
+    credit_union: { free: ['Free car loan check-up', 'Bring your current loan, we take a look.'], news: ['New branch hours', ''] },
+    insurance: { free: ['Free quote review', 'Bring your current policy, we compare it.'], season: ['Winter driving check-up', 'Make sure your coverage fits.'] }
+  };
+  var LENDING = /\b(apr|a\.p\.r|interest|financ\w*|per month|\/\s*mo\b|monthly|down payment|\d+\s*%\s*(off\s+)?(rate|apr))\b/i;
+  var tplOf = function (p) { return TPL[p.template] || (p.kind === 'special' ? TPL.price : TPL.news); };
+  var endText = function (p) { return p.until ? 'Ends ' + shortDay(p.until) : 'No end date'; };
+  function dealCard(p, b, cls) {
+    var t = tplOf(p);
+    return '<div class="dl ' + (cls || '') + '" style="background:linear-gradient(150deg,' + t.bg[0] + ',' + t.bg[1] + ')"><div class="dl-k">' + icon(t.ic, 14) + t.k + (p.who === 'new' ? ' · NEW CUSTOMERS' : '') + '</div>' +
+      '<h3>' + esc(p.title || t.title) + '</h3>' + (p.price != null && p.price !== '' ? '<div class="dl-p">' + money(p.price) + '</div>' : '') + (p.body ? '<p>' + esc(p.body) + '</p>' : '') + (p.fine ? '<small class="dl-fine">' + esc(p.fine) + '</small>' : '') +
+      '<div class="dl-ft">' + logoHtml(b, 'dl-lo') + '<span>' + esc(b.name) + '</span><em>' + endText(p) + '</em></div></div>';
+  }
+  // Share kit: a square post, a story, a flyer with a QR code, and text to copy. Every link goes to the Carvessa page.
+  function dealUrl(p, b) { return 'https://carvessa.app/shops/?b=' + encodeURIComponent(b.slug) + '&deal=' + p.id; }
+  function dealText(p, b) { return b.name + ': ' + p.title + (p.price != null ? ' · ' + money(p.price) : '') + (p.until ? ' · until ' + shortDay(p.until) : '') + '.' + (p.body ? ' ' + p.body : '') + ' See it on Carvessa: ' + dealUrl(p, b); }
+  function wrapText(g, text, x, y, maxW, lh, maxLines) {
+    var words = String(text || '').split(/\s+/), line = '', n = 0;
+    for (var i = 0; i < words.length; i++) {
+      var tryL = line ? line + ' ' + words[i] : words[i];
+      if (g.measureText(tryL).width > maxW && line) { g.fillText(line, x, y); y += lh; n++; line = words[i]; if (n >= maxLines - 1) { var rest = words.slice(i).join(' '); while (g.measureText(rest + '…').width > maxW && rest.length) rest = rest.slice(0, -1); g.fillText(rest + (rest.length < words.slice(i).join(' ').length ? '…' : ''), x, y); return y + lh; } }
+      else line = tryL;
+    }
+    if (line) { g.fillText(line, x, y); y += lh; }
+    return y;
+  }
+  async function drawDeal(p, b, w, h) {
+    try { await Promise.all([document.fonts.load('800 60px Manrope'), document.fonts.load('700 30px Manrope')]); } catch (e) { /* system font is fine */ }
+    var t = tplOf(p), c = document.createElement('canvas'); c.width = w; c.height = h;
+    var g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, w * 0.6, h); gr.addColorStop(0, t.bg[0]); gr.addColorStop(1, t.bg[1]);
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    var pad = w * 0.08, y = h > w ? h * 0.14 : pad + 40;
+    g.fillStyle = 'rgba(255,255,255,.85)'; g.font = '800 ' + Math.round(w * 0.03) + 'px Manrope, sans-serif'; g.fillText(t.k.split('').join(String.fromCharCode(8202)), pad, y);
+    y += w * 0.1; g.fillStyle = '#fff'; g.font = '800 ' + Math.round(w * 0.085) + 'px Manrope, sans-serif';
+    y = wrapText(g, p.title, pad, y, w - pad * 2, w * 0.095, 3);
+    if (p.price != null) { g.font = '800 ' + Math.round(w * 0.13) + 'px Manrope, sans-serif'; y += w * 0.06; g.fillText(money(p.price), pad, y); y += w * 0.05; }
+    if (p.body) { g.font = '700 ' + Math.round(w * 0.038) + 'px Manrope, sans-serif'; g.fillStyle = 'rgba(255,255,255,.9)'; y += w * 0.03; y = wrapText(g, p.body, pad, y, w - pad * 2, w * 0.05, 3); }
+    // Footer: name, end date, Carvessa
+    var fy = h - pad - w * 0.06;
+    g.fillStyle = '#fff'; g.font = '800 ' + Math.round(w * 0.042) + 'px Manrope, sans-serif'; g.fillText(b.name, pad, fy);
+    g.font = '700 ' + Math.round(w * 0.032) + 'px Manrope, sans-serif'; g.fillStyle = 'rgba(255,255,255,.85)';
+    g.fillText(endText(p) + '  ·  Find us on Carvessa', pad, fy + w * 0.055);
+    return c;
+  }
+  function shareKit(host, p, b) {
+    var url = dealUrl(p, b);
+    host.innerHTML = '<div class="hq-card sk-card"><h4>SHARE IT</h4><p class="hq-fine">Every share links to your Carvessa page, so your customers find you there, follow you and get your next deal.</p><div class="sk">' +
+      '<button type="button" class="sk-b" data-sk="post">' + icon('down') + '<b>Post picture</b><small>Instagram, Facebook</small></button>' +
+      '<button type="button" class="sk-b" data-sk="story">' + icon('down') + '<b>Story picture</b><small>Stories, WhatsApp status</small></button>' +
+      '<a class="sk-b" href="/business/flyer/?p=' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener">' + icon('print') + '<b>Flyer with QR</b><small>Counter, window</small></a>' +
+      '<button type="button" class="sk-b" data-sk="copy">' + icon('copy') + '<b>Copy text</b><small>Google, texts</small></button>' +
+      (navigator.share ? '<button type="button" class="sk-b" data-sk="share">' + icon('share') + '<b>Share…</b><small>Any app</small></button>' : '') +
+      '</div><div class="bz-msg" role="status"></div></div>';
+    var m = host.querySelector('.bz-msg');
+    host.querySelector('.sk').onclick = async function (e) {
+      var k = e.target.closest('[data-sk]'); if (!k) return; k = k.getAttribute('data-sk');
+      if (k === 'copy') { try { await navigator.clipboard.writeText(dealText(p, b)); m.className = 'bz-msg good'; m.textContent = 'Copied. Paste it in Google, a text or a post.'; } catch (err) { prompt('Copy this text:', dealText(p, b)); } return; }
+      if (k === 'share') { try { await navigator.share({ title: b.name, text: dealText(p, b), url: url }); } catch (err) { /* closed */ } return; }
+      var c = await drawDeal(p, b, 1080, k === 'story' ? 1920 : 1080);
+      c.toBlob(async function (blob) {
+        var name = (b.slug + '-' + (k === 'story' ? 'story' : 'post') + '.png');
+        var file = new File([blob], name, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] }) && /Mobi|Android|iPhone/i.test(navigator.userAgent)) { try { await navigator.share({ files: [file], text: dealText(p, b) }); return; } catch (err) { /* fall back to download */ } }
+        var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+        m.className = 'bz-msg good'; m.textContent = 'Saved the picture. Add the link ' + url.replace('https://', '') + ' when you post it.';
+      }, 'image/png');
+    };
+  }
+
+  // ---------- Follow a business (picture 285) ----------
+  function followSheet(host, b, f, onChange) {
+    var row = function (k, t, s) { return '<label class="fw-row"><span>' + t + '<small>' + s + '</small></span><input type="checkbox" class="fw-sw" data-k="' + k + '"' + (f[k] ? ' checked' : '') + '></label>'; };
+    host.innerHTML = '<div class="fw-sheet" role="dialog" aria-label="Follow settings"><div class="fw-ok">' + icon('check', 16) + ' You follow ' + esc(b.name) + '</div><h3>What should we tell you?</h3>' +
+      row('deals', 'New deals and specials', 'Price specials, sales, free checks') + row('news', 'News from the shop', 'New service, holiday hours') +
+      row('push', 'Phone alert', 'In the Carvessa app, signed in with this account') + row('email', 'Email too', 'One email, never more than 1 a week per shop') +
+      '<p class="rv-fine">At most 2 phone alerts a week from one shop, and none from 9 PM to 8 AM. The shop sees how many people follow it, never who.</p>' +
+      '<div class="bz-row"><button type="button" class="bz-btn" data-fw="done">Done</button><button type="button" class="bz-btn soft" data-fw="mute">Mute 30 days</button><button type="button" class="bz-btn red" data-fw="unfollow">Unfollow</button></div><div class="bz-msg" role="status"></div><p class="rv-fine"><a href="/following/">All shops I follow ›</a></p></div>';
+    var m = host.querySelector('.bz-msg');
+    host.querySelector('.fw-sheet').onchange = async function (e) {
+      var k = e.target.getAttribute('data-k'); if (!k) return;
+      var v = e.target.checked, up = {}; up[k] = v;
+      var x = await sb.from('business_follows').update(up).eq('business_id', b.id).eq('user_id', f.user_id);
+      if (x.error) { e.target.checked = !v; m.className = 'bz-msg bad'; m.textContent = 'That didn’t save. Please try again.'; return; }
+      f[k] = v; m.className = 'bz-msg good'; m.textContent = 'Saved.';
+    };
+    host.querySelector('.fw-sheet').onclick = async function (e) {
+      var a = e.target.getAttribute('data-fw'); if (!a) return;
+      if (a === 'done') { host.innerHTML = ''; onChange(f); return; }
+      if (a === 'mute') { var until = new Date(Date.now() + 30 * 864e5).toISOString(); await sb.from('business_follows').update({ muted_until: until }).eq('business_id', b.id).eq('user_id', f.user_id); f.muted_until = until; m.className = 'bz-msg good'; m.textContent = 'Muted for 30 days. Their deals still show on their page.'; return; }
+      if (a === 'unfollow') { await sb.from('business_follows').delete().eq('business_id', b.id).eq('user_id', f.user_id); host.innerHTML = ''; onChange(null); }
+    };
+  }
+
 
   // Photo → smaller JPEG (max 1600 px) so it stays well under the 3 MB limit.
   function shrink(file, max) {
@@ -137,8 +267,8 @@
           box.hidden = false;
           box.onclick = async function (e) {
             var btn = e.target.closest('button[data-i]'); if (!btn) return;
-            var p = hits[+btn.getAttribute('data-i')].properties; box.hidden = true; st.picked = p.name;
-            var info = { name: p.name, address: [p.housenumber, p.street].filter(Boolean).join(' '), city: [p.city || p.county, STATES[(p.state || '').toLowerCase()] || p.state].filter(Boolean).join(', '), kind: OSMKIND[p.osm_value] };
+            var hit = hits[+btn.getAttribute('data-i')], p = hit.properties, gc = (hit.geometry && hit.geometry.coordinates) || []; box.hidden = true; st.picked = p.name;
+            var info = { name: p.name, address: [p.housenumber, p.street].filter(Boolean).join(' '), city: [p.city || p.county, STATES[(p.state || '').toLowerCase()] || p.state].filter(Boolean).join(', '), kind: OSMKIND[p.osm_value], lat: gc[1], lon: gc[0] };
             if (info.kind === 'credit_union' && !/credit union|\bcu\b|federal/i.test(p.name)) info.kind = undefined;
             try {
               var t = { N: 'N', W: 'W', R: 'R' }[p.osm_type];
@@ -225,6 +355,7 @@
       $('fName').value = info.name; n += put('fAddr', info.address) + put('fCity', info.city) + put('fPhone', info.phone) + put('fWeb', info.website) + put('fHours', info.hours);
       if (info.kind) { st.kind = info.kind; drawKinds(); n++; }
       if (!$('fRegState').value && /, GA$/.test(info.city || '')) $('fRegState').value = 'Georgia';
+      if (info.lat != null) st.spot = { lat: info.lat, lon: info.lon, key: [$('fAddr').value.trim(), $('fCity').value.trim()].join('|') };
       $('fFound').hidden = false;
       $('fFound').textContent = n ? '✓ We filled in ' + n + ' thing' + (n > 1 ? 's' : '') + ' from OpenStreetMap (© OpenStreetMap contributors). Check them and fix anything that’s off.' : 'Found you on the map, but there were no extra details. Please fill in the rest.';
       drawHeader(); drawLogo();
@@ -270,6 +401,12 @@
       var row = { name: name, kind: st.kind, address: $('fAddr').value.trim() || null, city: $('fCity').value.trim(), phone: phone, website: $('fWeb').value.trim() || null,
         hours: $('fHours').value.trim() || null, about: $('fAbout').value.trim() || null, offer: $('fOffer').value.trim() || null, photos: st.photos, header: header, logo: st.logo,
         legal_name: $('fLegal').value.trim() || null, state: $('fRegState').value.trim() || null, control_no: $('fCtrl').value.trim() || null, owner_role: $('fRole').value, since_year: since || null };
+      // Map spot for "Deals near you": from the name search, else look the address up (OpenStreetMap).
+      var addrKey = [row.address || '', row.city].join('|');
+      if (st.spot && st.spot.key === addrKey) { row.lat = st.spot.lat; row.lon = st.spot.lon; }
+      else if (addrKey !== [b.address || '', b.city || ''].join('|') || b.lat == null) {
+        try { var gq = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=' + encodeURIComponent([row.address, row.city].filter(Boolean).join(', '))); var gj = (await gq.json())[0]; if (gj) { row.lat = +gj.lat; row.lon = +gj.lon; } } catch (err) { /* the spot is a bonus */ }
+      }
       var list = st.svcs.map(function (s) { var n = String(s.name || '').trim(); var pr = String(s.price || '').replace(/[^\d.]/g, ''); return n ? { name: n, price_from: pr ? Number(pr) : null } : null; }).filter(Boolean);
       $('fSave').disabled = true; msg.className = 'bz-msg'; msg.textContent = 'Saving…';
       try { await onSave(row, list); } catch (err) { msg.className = 'bz-msg bad'; msg.textContent = (err && err.message && /up to 3/.test(err.message)) ? 'You can have up to 3 business pages.' : 'That didn’t save. Please try again.'; }
@@ -522,7 +659,7 @@
   // ---------- Business HQ: the owner's private dashboard ----------
   if (mode === 'edit') {
     var STATUS = { pending: 'Waiting for our check', live: 'Live', hidden: 'Hidden', rejected: 'Not approved', blocked: 'Blocked' };
-    var NAV = [['overview', 'Overview', 'Lap report'], ['page', 'My page', 'Garage setup'], ['posts', 'Posts', 'Bulletin'], ['sales', 'Sales', 'From Carvessa'], ['reviews', 'Reviews', 'From the stands'], ['messages', 'Messages', 'Team radio'], ['account', 'Account', 'Look and settings']];
+    var NAV = [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['posts', 'Deals and posts', 'tag'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear']];
     account(async function (u) {
       root.querySelector('#bzAcct').hidden = true;
       var r = await sb.from('businesses').select(MINE).eq('owner', u.id).order('created_at');
@@ -531,82 +668,212 @@
       var cur = pages[0], tab = 'overview';
       var shell = document.createElement('div'); shell.className = 'hq'; root.innerHTML = ''; root.appendChild(shell); root.classList.add('hq-wrap');
       function look() { var l = cur.hq_look || 'racing'; shell.setAttribute('data-look', LOOKS.some(function (x) { return x[0] === l; }) ? l : 'racing'); }
-      function frame() {
+      var counts = { msg: 0, rev: 0 };
+      function go(t, extra) { tab = t; frame(extra); }
+      function frame(extra) {
         look();
-        shell.innerHTML = '<aside class="hq-side"><div class="hq-brand"><i class="hq-flag"></i><span>CAR<b>V</b>essa</span></div><div class="hq-sub">BUSINESS HQ</div>' +
-          (pages.length > 1 ? '<select class="hq-pick" id="hqPick" aria-label="Your pages">' + pages.map(function (p, i) { return '<option value="' + i + '"' + (p === cur ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select>' : '') +
-          '<div class="hq-biz"><b>' + esc(cur.name) + '</b><small>' + esc(kindName(cur.kind)) + '</small><span class="hq-st ' + esc(cur.status) + '">' + (STATUS[cur.status] || cur.status) + '</span></div>' +
-          '<nav class="hq-nav">' + NAV.map(function (n) { return '<button type="button" data-tab="' + n[0] + '" class="' + (tab === n[0] ? 'on' : '') + '">' + n[1] + (n[0] === 'messages' ? '<span class="hq-badge" id="hqMsgN" hidden></span>' : '') + '<small>' + n[2] + '</small></button>'; }).join('') + '</nav>' +
-          '<a class="hq-link" href="/shops/?b=' + encodeURIComponent(cur.slug) + '" target="_blank" rel="noopener">View my public page ↗</a><button type="button" class="hq-link" id="hqOut">Log out</button></aside>' +
-          '<main class="hq-main"><div class="hq-band"></div><div id="hqBody"></div></main>';
-        shell.querySelector('.hq-nav').onclick = function (e) { var b = e.target.closest('button[data-tab]'); if (b) { tab = b.getAttribute('data-tab'); frame(); } };
+        var badge = function (k) { var n = k === 'messages' ? counts.msg : k === 'reviews' ? counts.rev : 0; return '<span class="hq-badge" data-b="' + k + '"' + (n ? '' : ' hidden') + '>' + (n || '') + '</span>'; };
+        var pub = '/shops/?b=' + encodeURIComponent(cur.slug);
+        shell.innerHTML = '<header class="hq-top"><a class="hq-logo" href="/business/edit/" aria-label="Business HQ home">CAR<i>V</i>essa <span>BUSINESS HQ</span></a>' +
+          (pages.length > 1 ? '<select class="hq-pick" id="hqPick" aria-label="Your pages">' + pages.map(function (p, i) { return '<option value="' + i + '"' + (p === cur ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select>' : '<a class="hq-pick" href="' + pub + '" target="_blank" rel="noopener">' + esc(cur.name) + icon('chev', 14) + '</a>') +
+          '<div class="hq-tr"><button type="button" class="hq-bell" id="hqBell" aria-label="What needs you">' + icon('bell') + '<em id="hqBellN" hidden></em></button>' +
+          '<button type="button" class="hq-me" id="hqMe" aria-label="Account menu" aria-expanded="false">' + esc(initials(cur.name).slice(0, 1)) + '</button>' +
+          '<div class="hq-menu" id="hqMenu" hidden><a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a><button type="button" data-go="account">' + icon('gear', 18) + 'Settings</button><button type="button" id="hqOut">' + icon('out', 18) + 'Log out</button></div></div></header>' +
+          '<div class="hq-body"><aside class="hq-side"><nav class="hq-nav" aria-label="Business HQ">' + NAV.map(function (n) { return '<button type="button" data-tab="' + n[0] + '" class="' + (tab === n[0] ? 'on' : '') + '"' + (tab === n[0] ? ' aria-current="page"' : '') + '>' + icon(n[2], 18) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
+          '<div class="hq-status"><span class="hq-st ' + esc(cur.status) + '">' + (STATUS[cur.status] || cur.status) + '</span><small>' + esc(kindName(cur.kind)) + '</small></div>' +
+          '<div class="hq-pro"><b>Pro coming later</b><small>Business network and deeper reports. Your page stays free.</small></div></aside>' +
+          '<main class="hq-main" id="hqBody"></main></div>' +
+          '<nav class="hq-tabs" aria-label="Business HQ">' + [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['posts', 'Deals', 'tag'], ['reviews', 'Reviews', 'star'], ['more', 'More', 'gear']].map(function (n) { var on = n[0] === tab || (n[0] === 'more' && ['page', 'sales', 'account'].indexOf(tab) >= 0); return '<button type="button" data-tab="' + n[0] + '" class="' + (on ? 'on' : '') + '">' + icon(n[2], 20) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
+          '<div class="hq-more" id="hqMore" hidden>' + [['page', 'My page', 'wrench'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear']].map(function (n) { return '<button type="button" data-tab="' + n[0] + '">' + icon(n[2], 18) + n[1] + '</button>'; }).join('') + '<a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a></div>';
+        var navClick = function (e) {
+          var b = e.target.closest('[data-tab],[data-go]'); if (!b) return;
+          var t = b.getAttribute('data-tab') || b.getAttribute('data-go');
+          if (t === 'more') { var mo = shell.querySelector('#hqMore'); mo.hidden = !mo.hidden; return; }
+          go(t);
+        };
+        shell.querySelector('.hq-nav').onclick = navClick; shell.querySelector('.hq-tabs').onclick = navClick; shell.querySelector('#hqMore').onclick = navClick; shell.querySelector('#hqMenu').onclick = navClick;
         shell.querySelector('#hqOut').onclick = function () { sb.auth.signOut().then(function () { location.reload(); }); };
-        var pk = shell.querySelector('#hqPick'); if (pk) pk.onchange = function () { cur = pages[+pk.value]; tab = 'overview'; frame(); };
-        sb.from('biz_chats').select('last_at, biz_seen_at').eq('business_id', cur.id).limit(200).then(function (r) { var n = (r.data || []).filter(function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; }).length, bd = shell.querySelector('#hqMsgN'); if (bd && n) { bd.hidden = false; bd.textContent = n; } });
-        ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, messages: messages, account: settings })[tab](shell.querySelector('#hqBody'));
+        var me = shell.querySelector('#hqMe'), menu = shell.querySelector('#hqMenu');
+        me.onclick = function () { menu.hidden = !menu.hidden; me.setAttribute('aria-expanded', String(!menu.hidden)); };
+        shell.querySelector('#hqBell').onclick = function () { go(counts.msg ? 'messages' : counts.rev ? 'reviews' : 'overview'); };
+        var pk = shell.querySelector('#hqPick'); if (pk && pk.tagName === 'SELECT') pk.onchange = function () { cur = pages[+pk.value]; tab = 'overview'; frame(); };
+        Promise.all([
+          sb.from('biz_chats').select('last_at, biz_seen_at').eq('business_id', cur.id).limit(200),
+          sb.from('business_reviews').select('id', { count: 'exact', head: true }).eq('business_id', cur.id).eq('status', 'visible').is('reply', null)
+        ]).then(function (r) {
+          counts.msg = (r[0].data || []).filter(function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; }).length; counts.rev = r[1].count || 0;
+          [].forEach.call(shell.querySelectorAll('[data-b]'), function (el) { var n = el.getAttribute('data-b') === 'messages' ? counts.msg : el.getAttribute('data-b') === 'reviews' ? counts.rev : 0; el.hidden = !n; el.textContent = n || ''; });
+          var bn = shell.querySelector('#hqBellN'), n = counts.msg + counts.rev; bn.hidden = !n; bn.textContent = n;
+        });
+        var body = shell.querySelector('#hqBody');
+        if (tab === 'messages') messages(body, extra); else ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, account: settings })[tab](body, extra);
         var y = shell.getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
       }
       function head(k, title, badge) { return '<small class="hq-k">' + k + '</small><h2 class="hq-h">' + title + (badge ? ' <em>' + badge + '</em>' : '') + '</h2>'; }
-      async function overview(el) {
-        var since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
-        var [s, ps, sl] = await Promise.all([
-          sb.from('business_stats').select('kind, n, day').eq('business_id', cur.id).gte('day', since),
-          sb.from('business_posts').select('title, until').eq('business_id', cur.id).order('created_at', { ascending: false }).limit(1),
-          sb.from('business_sales').select('amount').eq('business_id', cur.id).gte('day', since)
-        ]);
-        var t = { view: 0, call: 0, directions: 0, website: 0 }; (s.data || []).forEach(function (x) { t[x.kind] = (t[x.kind] || 0) + x.n; });
-        var sales = sl.data || [], total = sales.reduce(function (a, x) { return a + (Number(x.amount) || 0); }, 0);
-        var svc = await sb.from('business_services').select('id', { count: 'exact', head: true }).eq('business_id', cur.id);
-        var rvs = await sb.from('business_reviews').select('id', { count: 'exact', head: true }).eq('business_id', cur.id).eq('status', 'visible').is('reply', null);
-        var chs = await sb.from('biz_chats').select('last_at, biz_seen_at').eq('business_id', cur.id).limit(200);
-        var newMsg = (chs.data || []).filter(function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; }).length;
-        var todo = [];
-        if (newMsg) todo.push(['Answer ' + newMsg + ' message' + (newMsg > 1 ? 's' : ''), 'Drivers are waiting on you.', 'messages']);
-        if (rvs.count > 0) todo.push(['Reply to ' + rvs.count + ' review' + (rvs.count > 1 ? 's' : ''), 'A short thank-you shows drivers you care.', 'reviews']);
-        if (cur.status === 'pending') todo.push(['Answer our call or text', 'We confirm you’re the owner, then your page goes live.']);
-        if (!cur.hours) todo.push(['Add your hours', 'Drivers check if you’re open before they come.']);
-        if (!(svc.count > 0)) todo.push(['Add services and prices', 'Pages with prices get more calls.']);
-        if (!(cur.photos || []).length) todo.push(['Add a photo', 'Your shop, your work or your team.']);
-        if (!cur.offer) todo.push(['Add one offer', 'Like “Free tire check”. It shows at the top of your page.']);
-        if (!(ps.data || []).length) todo.push(['Post a special or news', 'Tell drivers what’s new this week.']);
-        el.innerHTML = head('LAP REPORT · LAST 30 DAYS', esc(cur.name), STATUS[cur.status] || cur.status) +
-          (cur.status !== 'live' ? '<div class="hq-note">' + (cur.status === 'pending' ? 'Your page is waiting for our check. Only you can see it. We’ll call or text you at ' + esc(cur.phone || 'your number') + ' to confirm you’re the owner.' : 'Your page isn’t showing to drivers right now. Questions? Write to hello@carvessa.app.') + '</div>' : '') +
-          '<div class="hq-laps">' + [['VIEWS', t.view], ['CALLS', t.call], ['DIRECTIONS', t.directions], ['WEBSITE', t.website]].map(function (x) { return '<div><small>' + x[0] + '</small><b>' + x[1] + '</b></div>'; }).join('') + '</div>' +
-          (cur.status !== 'live' ? '<p class="hq-fine">Counts start when your page is live. Your own visits never count.</p>' : '<p class="hq-fine">Counts only, never names. Your own visits never count.</p>') +
-          '<div class="hq-two"><div class="hq-card"><h4>PIT STOP · TO DO</h4>' + (todo.length ? todo.slice(0, 5).map(function (x, i) { return '<div class="hq-pit"' + (x[2] ? ' data-go="' + x[2] + '" style="cursor:pointer"' : '') + '><b>' + String(i + 1).padStart(2, '0') + '</b><div>' + x[0] + '<small>' + x[1] + '</small></div></div>'; }).join('') : '<p>All set. Nice work.</p>') + '</div>' +
-          '<div class="hq-card"><h4>SALES FROM CARVESSA</h4><div class="hq-big">' + money(total || 0) + '</div><small>' + sales.length + ' customer' + (sales.length === 1 ? '' : 's') + ' you marked in the last 30 days · you reported</small><div class="bz-row"><button type="button" class="bz-btn bz-small" data-go="sales">Mark a customer</button></div></div></div>' +
-          '<div class="hq-card"><h4>YOUR PLAN</h4>Free during our launch. Your page, reviews and messages stay free. We’ll tell you in writing before any paid option, and you can always say no.</div>';
-        el.onclick = function (e) { var t = e.target.closest('[data-go]'); if (t) { tab = t.getAttribute('data-go'); frame(); } };
+      var sparkline = function (pts) {
+        var m = Math.max.apply(null, pts.concat([1])), w = 100;
+        return '<svg class="hq-spark" viewBox="0 0 ' + w + ' 30" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="2.2" vector-effect="non-scaling-stroke" points="' + pts.map(function (v, i) { return (i * w / Math.max(1, pts.length - 1)).toFixed(1) + ',' + (28 - 24 * v / m).toFixed(1); }).join(' ') + '"/></svg>';
+      };
+      var CITY = '<svg class="hq-city" viewBox="0 0 400 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0 90V60h20V40h14v20h12V30h18v30h10V50h16v40h12V45h20v45h8V35h22v55h10V55h16v35h14V25h20v65h10V50h18v40h12V40h24v50h16V58h20v32z" fill="rgba(255,255,255,.08)"/></svg>';
+      async function sharePage() {
+        var url = 'https://carvessa.app/shops/?b=' + encodeURIComponent(cur.slug);
+        if (navigator.share) { try { await navigator.share({ title: cur.name, text: cur.name + ' on Carvessa', url: url }); return; } catch (e) { return; } }
+        try { await navigator.clipboard.writeText(url); alert('Link copied: ' + url); } catch (e) { prompt('Copy your page link:', url); }
       }
-      async function myPage(el) {
-        el.innerHTML = head('GARAGE SETUP', 'My page') + '<p class="hq-fine">Changing your name, address or phone sends your page to us for a quick check.</p><div id="hqForm"></div>';
+      async function overview(el) {
+        el.innerHTML = '<div class="hq-load">Loading…</div>';
+        var since = addDays(-29), days = []; for (var i = 29; i >= 0; i--) days.push(addDays(-i));
+        var [s, ps, sl, svc, rvs, chs, fol, rv] = await Promise.all([
+          sb.from('business_stats').select('kind, n, day').eq('business_id', cur.id).gte('day', since),
+          sb.from('business_posts').select('id, kind').eq('business_id', cur.id).limit(50),
+          sb.from('business_sales').select('amount, day').eq('business_id', cur.id).gte('day', since),
+          sb.from('business_services').select('id', { count: 'exact', head: true }).eq('business_id', cur.id),
+          sb.from('business_reviews').select('id', { count: 'exact', head: true }).eq('business_id', cur.id).eq('status', 'visible').is('reply', null),
+          sb.from('biz_chats').select('id, driver_name, car, topic, kind, last_at, biz_seen_at').eq('business_id', cur.id).order('last_at', { ascending: false }).limit(50),
+          sb.rpc('business_followers', { b: cur.id }),
+          sb.from('business_reviews').select('stars').eq('business_id', cur.id).eq('status', 'visible')
+        ]);
+        var t = { view: 0, call: 0, directions: 0, website: 0 }, per = { view: {}, call: {}, directions: {}, sales: {} };
+        (s.data || []).forEach(function (x) { t[x.kind] = (t[x.kind] || 0) + x.n; if (per[x.kind]) per[x.kind][x.day] = (per[x.kind][x.day] || 0) + x.n; });
+        var sales = sl.data || [], total = sales.reduce(function (a, x) { per.sales[x.day] = (per.sales[x.day] || 0) + (Number(x.amount) || 0); return a + (Number(x.amount) || 0); }, 0);
+        var chats = chs.data || [], newMsg = chats.filter(function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; }).length;
+        var stars = (rv.data || []).map(function (x) { return x.stars; }), avg = stars.length ? stars.reduce(function (a, x) { return a + x; }, 0) / stars.length : 0;
+        var hasSpecial = (ps.data || []).some(function (p) { return p.kind === 'special'; });
+        var hr = new Date().getHours(), hello = hr < 12 ? 'GOOD MORNING' : hr < 17 ? 'GOOD AFTERNOON' : 'GOOD EVENING';
+        var checks = [['Add your hours', !!cur.hours, 'fHours'], ['Add services and prices', svc.count > 0, 'fSvcLab'], ['Add a logo', !!cur.logo, 'fLogo'], ['Add 3 photos', (cur.photos || []).length >= 3, 'fPics'], ['Say what makes you different', !!cur.about, 'fAbout'], ['Post your first special', hasSpecial, 'posts']];
+        var done = checks.filter(function (c) { return c[1]; }).length, pct = Math.round(done / checks.length * 100);
+        var KPI = [['view', 'eye', 'Views', t.view, 'Drivers who opened your page'], ['call', 'phone', 'Calls', t.call, 'Taps on Call'], ['directions', 'pin', 'Directions', t.directions, 'Taps on Directions'], ['sales', 'cash', 'Sales you marked', money(total || 0), sales.length + ' customer' + (sales.length === 1 ? '' : 's')]];
+        el.innerHTML =
+          '<section class="hq-hero"><div><small>' + hello + '</small><h2>' + esc(cur.name) + '</h2><div class="hq-chips"><span class="hq-c ' + (cur.status === 'live' ? 'live' : 'wait') + '">' + (cur.status === 'live' ? '● Live' : STATUS[cur.status] || cur.status) + '</span>' + (cur.status === 'live' ? '<span class="hq-c">Verified by Carvessa</span>' : '') + (stars.length ? '<span class="hq-c">' + avg.toFixed(1) + ' stars · ' + stars.length + ' review' + (stars.length > 1 ? 's' : '') + '</span>' : '') + '<span class="hq-c">' + (fol.data || 0) + ' follower' + (fol.data === 1 ? '' : 's') + '</span></div></div>' +
+          '<div class="hq-hb"><a class="hq-w" href="/shops/?b=' + encodeURIComponent(cur.slug) + '" target="_blank" rel="noopener">' + icon('globe', 16) + 'View my page</a><button type="button" class="hq-w ghost" id="hqShare">' + icon('share', 16) + 'Share my page</button></div>' + CITY + '</section>' +
+          (cur.status !== 'live' ? '<div class="hq-note">' + (cur.status === 'pending' ? 'Your page is waiting for our check. Only you can see it. We’ll call or text you at ' + esc(cur.phone || 'your number') + ' to confirm you’re the owner. Counts start when it’s live.' : 'Your page isn’t showing to drivers right now. Questions? Write to hello@carvessa.app.') + '</div>' : '') +
+          '<div class="hq-kpis">' + KPI.map(function (k) { return '<button type="button" class="hq-kpi" data-kpi="' + k[0] + '"><span class="kh">' + icon(k[1], 18) + k[2] + icon('chev', 16) + '</span><b>' + k[3] + '</b><small>' + (k[0] === 'sales' ? k[4] : 'last 30 days') + '</small>' + sparkline(days.map(function (d) { return per[k[0]][d] || 0; })) + '</button>'; }).join('') + '</div>' +
+          '<div id="hqKpiD"></div>' +
+          '<h3 class="hq-sec">Quick actions</h3><div class="hq-qas">' +
+            [['messages', 'msg', 'blue', 'Answer messages', newMsg ? newMsg + ' waiting for you' : 'All caught up', newMsg], ['posts', 'tag', 'green', 'Post a special', 'Your followers get an alert', 0], ['page:fSvcLab', 'wrench', 'orange', 'Edit services and prices', svc.count ? svc.count + ' service' + (svc.count > 1 ? 's' : '') : 'Add your first one', 0], ['reviews', 'star', 'gold', 'Reply to reviews', rvs.count ? rvs.count + ' need' + (rvs.count > 1 ? '' : 's') + ' a reply' : 'All replied', rvs.count]].map(function (q) {
+              return '<button type="button" class="hq-qa" data-go="' + q[0] + '"><span class="qi ' + q[2] + '">' + icon(q[1], 22) + '</span><b>' + q[3] + '</b><small>' + q[4] + '</small>' + (q[5] ? '<em>' + q[5] + '</em>' : '') + '</button>';
+            }).join('') + '</div>' +
+          '<div class="hq-two"><div class="hq-card"><div class="hq-ch"><b>Latest messages</b><button type="button" class="hq-lk" data-go="messages">See all</button></div>' +
+            (chats.length ? chats.slice(0, 4).map(function (c) { var un = !c.biz_seen_at || c.last_at > c.biz_seen_at; return '<button type="button" class="hq-mrow' + (un ? ' new' : '') + '" data-chat="' + c.id + '"><span class="av">' + esc((c.driver_name || '?')[0]) + '</span><span class="tx"><b>' + esc(c.driver_name || 'Driver') + (c.car ? ' · ' + esc(c.car) : '') + '</b><small>' + (c.kind === 'quote' ? 'Quote · ' : '') + esc(c.topic || 'Message') + '</small></span><span class="tm">' + when(c.last_at) + '</span>' + icon('chev', 16) + '</button>'; }).join('') : '<p class="hq-fine">No messages yet. When drivers tap Message or Get a quote on your page, it shows up here.</p>') + '</div>' +
+          '<div class="hq-card"><div class="hq-ch"><b>Make your page great</b><span class="hq-pct">' + pct + '%</span></div><div class="hq-prog"><i style="width:' + pct + '%"></i></div>' +
+            checks.map(function (c) { return c[1] ? '<div class="hq-ck done"><i>' + icon('check', 12) + '</i>' + c[0] + '</div>' : '<button type="button" class="hq-ck" data-go="' + (c[2] === 'posts' ? 'posts' : 'page:' + c[2]) + '"><i></i>' + c[0] + icon('chev', 14) + '</button>'; }).join('') + '</div></div>' +
+          '<div class="hq-card"><b>Your plan</b><p class="hq-fine" style="margin:4px 0 0">Free during our launch. Your page, deals, reviews and messages stay free. We’ll tell you in writing before any paid option, and you can always say no.</p></div>';
+        el.querySelector('#hqShare').onclick = sharePage;
+        el.onclick = function (e) {
+          var c = e.target.closest('[data-chat]'); if (c) { go('messages', c.getAttribute('data-chat')); return; }
+          var k = e.target.closest('[data-kpi]');
+          if (k) {
+            var key = k.getAttribute('data-kpi'); if (key === 'sales') { go('sales'); return; }
+            var d = el.querySelector('#hqKpiD'), m = Math.max.apply(null, days.map(function (x) { return per[key][x] || 0; }).concat([1]));
+            if (d.getAttribute('data-k') === key) { d.innerHTML = ''; d.removeAttribute('data-k'); return; }
+            d.setAttribute('data-k', key);
+            d.innerHTML = '<div class="hq-card"><div class="hq-ch"><b>' + ({ view: 'Views', call: 'Calls', directions: 'Directions' })[key] + ' · last 30 days</b><button type="button" class="hq-lk" data-close>Close</button></div><div class="hq-bars">' + days.map(function (x) { var v = per[key][x] || 0; return '<i title="' + shortDay(x) + ': ' + v + '" style="height:' + Math.max(3, Math.round(v / m * 100)) + '%"></i>'; }).join('') + '</div><div class="hq-bx"><span>' + shortDay(days[0]) + '</span><span>Today</span></div><p class="hq-fine">Counts only, never names. Your own visits never count.</p></div>';
+            return;
+          }
+          if (e.target.closest('[data-close]')) { var d2 = el.querySelector('#hqKpiD'); d2.innerHTML = ''; d2.removeAttribute('data-k'); return; }
+          var g = e.target.closest('[data-go]'); if (!g) return;
+          var v = g.getAttribute('data-go').split(':'); go(v[0], v[1]);
+        };
+      }
+      async function myPage(el, focus) {
+        el.innerHTML = head('MY PAGE', 'What drivers see') + '<p class="hq-fine">Changing your name, address or phone sends your page to us for a quick check.</p><div id="hqForm"></div>';
         var s = await sb.from('business_services').select('*').eq('business_id', cur.id).order('sort');
         form(cur, s.data || [], async function (row, svcs) {
           var x = await sb.from('businesses').update(row).eq('id', cur.id).select(MINE).single(); if (x.error) throw x.error;
           await saveServices(cur.id, svcs);
           var was = cur.status; Object.assign(cur, x.data);
           var m = el.querySelector('#fMsg'); m.className = 'bz-msg good';
-          m.textContent = cur.status === 'pending' && was === 'live' ? 'Saved. You changed your name, address or phone, so we’ll check it again before it shows.' : 'Saved. Box box!';
-          shell.querySelector('.hq-biz b').textContent = cur.name;
+          m.textContent = cur.status === 'pending' && was === 'live' ? 'Saved. You changed your name, address or phone, so we’ll check it again before it shows.' : 'Saved.';
+          var pkEl = shell.querySelector('a.hq-pick'); if (pkEl) pkEl.firstChild.textContent = cur.name;
         }, el.querySelector('#hqForm'));
+        if (focus) setTimeout(function () { var f = el.querySelector('#' + focus); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (f.focus && /INPUT|TEXTAREA/.test(f.tagName)) f.focus(); } }, 200);
       }
-      async function posts(el) {
-        var r = await sb.from('business_posts').select('*').eq('business_id', cur.id).order('created_at', { ascending: false });
-        var list = r.data || [], KN = { special: 'Special', news: 'News', event: 'Event', hours: 'Hours change' }, kind = 'special';
-        el.innerHTML = head('BULLETIN BOARD', 'Posts') + '<p class="hq-fine">Specials, news, events or hours changes show on your page.' + (cur.status !== 'live' ? ' Drivers see them once your page is live.' : '') + '</p>' +
-          '<div class="hq-card"><div class="bz-chips" id="pK">' + Object.keys(KN).map(function (k) { return '<button type="button" data-k="' + k + '" class="' + (k === kind ? 'on' : '') + '">' + KN[k] + '</button>'; }).join('') + '</div>' +
-          '<label class="bz-f"><span>Title</span><input id="pT" maxlength="80" placeholder="Winter tire check: free this week"></label><label class="bz-f"><span>Details (optional)</span><textarea id="pB" maxlength="300" placeholder="Cold nights drop tire pressure. Stop by for a free check, no appointment."></textarea></label>' +
-          '<label class="bz-f"><span>Show until (optional)</span><input id="pU" type="date"></label><div class="bz-row"><button type="button" class="bz-btn" id="pGo">Post it</button></div><div class="bz-msg" id="pM" role="status"></div></div>' +
-          '<div id="pL">' + (list.length ? list.map(function (p) { var old = p.until && p.until < new Date().toISOString().slice(0, 10); return '<div class="hq-post' + (old ? ' old' : '') + '"><span class="hq-tag">' + (KN[p.kind] || 'Post') + '</span><b>' + esc(p.title) + '</b>' + (p.body ? '<p>' + esc(p.body) + '</p>' : '') + '<small>' + (p.until ? (old ? 'Ended ' : 'Until ') + esc(p.until) : 'No end date') + '</small><button type="button" class="bz-btn red bz-small" data-del="' + p.id + '">Delete</button></div>'; }).join('') : '<p class="hq-fine">No posts yet.</p>') + '</div>';
-        el.querySelector('#pK').onclick = function (e) { var k = e.target.getAttribute('data-k'); if (k) { kind = k; [].forEach.call(this.children, function (b) { b.className = b.getAttribute('data-k') === k ? 'on' : ''; }); } };
-        el.querySelector('#pGo').onclick = async function () {
-          var t = el.querySelector('#pT').value.trim(), m = el.querySelector('#pM'); m.className = 'bz-msg bad';
-          if (t.length < 2) { m.textContent = 'Please type a title.'; return; }
-          var x = await sb.from('business_posts').insert({ business_id: cur.id, kind: kind, title: t, body: el.querySelector('#pB').value.trim() || null, until: el.querySelector('#pU').value || null });
-          if (x.error) { m.textContent = /20 posts/.test(x.error.message) ? 'You can keep up to 20 posts. Delete an old one first.' : 'That didn’t post. Please try again.'; return; }
-          posts(el);
+      async function posts(el, justPosted) {
+        var [r, cd, fol] = await Promise.all([
+          sb.from('business_posts').select('*').eq('business_id', cur.id).order('created_at', { ascending: false }),
+          sb.from('deal_codes').select('post_id, used_at').eq('business_id', cur.id).limit(5000),
+          sb.rpc('business_followers', { b: cur.id })
+        ]);
+        var list = r.data || [], nFol = fol.data || 0, codes = {};
+        (cd.data || []).forEach(function (c) { var x = codes[c.post_id] = codes[c.post_id] || { given: 0, used: 0 }; x.given++; if (c.used_at) x.used++; });
+        var ex = TPL_KIND[cur.kind] || {}, lend = cur.kind === 'dealer' || cur.kind === 'credit_union';
+        var st = { tpl: 'price' };
+        var startWords = function (k) { var t = TPL[k], o = ex[k]; return { title: o ? o[0] : t.title, body: o ? o[1] : t.body }; };
+        el.innerHTML = head('DEALS AND POSTS', 'Post a special') +
+          '<p class="hq-fine">Pick a template, change the words, post. It shows on your page, in “Deals near you” in the app, and your followers get an alert.' + (cur.status !== 'live' ? ' Drivers see it once your page is live.' : '') + '</p>' +
+          '<div id="pDone"></div>' +
+          '<div class="hq-card"><h4>CHECK A COUNTER CODE</h4><div class="cc-row"><input id="ccIn" maxlength="14" placeholder="TONY-4821" autocapitalize="characters" aria-label="Counter code"><button type="button" class="bz-btn" id="ccGo">Mark used</button></div><div class="bz-msg" id="ccM" role="status"></div><p class="hq-fine">A driver shows a code on their phone. Type it here so you know the customer came from Carvessa.</p></div>' +
+          '<div class="pe"><div class="pe-l"><div class="tpl-grid" id="pTpl">' + Object.keys(TPL).map(function (k) { var t = TPL[k]; return '<button type="button" data-tpl="' + k + '" class="tpl-b' + (k === st.tpl ? ' on' : '') + '" style="--a:' + t.bg[0] + ';--b:' + t.bg[1] + '">' + icon(t.ic, 16) + '<span>' + t.name + '</span></button>'; }).join('') + '</div>' +
+          '<label class="bz-f"><span>What is it?</span><input id="pT" maxlength="80"></label>' +
+          '<div class="bz-two"><label class="bz-f" id="pPw"><span>Your price (optional)</span><input id="pP" inputmode="decimal" placeholder="$39.99"></label><label class="bz-f"><span>Ends on</span><input id="pU" type="date" min="' + today() + '" max="' + addDays(365) + '"></label></div>' +
+          '<label class="bz-f"><span>Details (optional)</span><textarea id="pB" maxlength="300"></textarea></label>' +
+          '<label class="bz-f"><span>Small print (optional)</span><input id="pF" maxlength="160" placeholder="Most cars. One per customer."></label>' +
+          '<div class="bz-f"><span>Who can use it</span><div class="bz-chips" id="pW"><button type="button" data-w="everyone" class="on">Everyone</button><button type="button" data-w="new">New customers</button></div></div>' +
+          '<label class="bz-ck"><input type="checkbox" id="pC" checked><span>Give drivers a counter code (so you see who came from Carvessa)</span></label>' +
+          '<label class="bz-ck"><input type="checkbox" id="pA" checked><span>Tell my followers (' + nFol + ' follower' + (nFol === 1 ? '' : 's') + ')</span></label>' +
+          (lend ? '<p class="hq-warn">No loan or payment terms in deals (rates, APR, monthly payments, down payments). Federal ad rules need full details for those.</p>' : '') +
+          '<p class="hq-fine">Real prices only. Say “was $X” only if you really charged it. Posted at night? Phone alerts wait until 8 AM.</p>' +
+          '<div class="bz-row"><button type="button" class="bz-btn" id="pGo">' + (nFol ? 'Post it and tell my followers' : 'Post it') + '</button></div><div class="bz-msg" id="pM" role="status"></div></div>' +
+          '<div class="pe-r"><small class="hq-k">PREVIEW</small><div id="pPrev"></div><p class="hq-fine">This is how drivers see it on your page and in the app.</p></div></div>' +
+          '<h3 class="hq-sec">Your deals and posts</h3><div id="pL">' + (list.length ? list.map(function (p) {
+            var old = p.until && p.until < today(), c = codes[p.id] || { given: 0, used: 0 };
+            return '<div class="pr' + (old ? ' old' : '') + '"><div class="pr-card">' + dealCard(p, cur, 'sm') + '</div><div class="pr-info"><b>' + esc(p.title) + '</b><small>' + (old ? 'Ended ' + shortDay(p.until) : p.until ? 'Ends ' + shortDay(p.until) : 'No end date') + ' · posted ' + shortDay(p.created_at.slice(0, 10)) + '</small>' +
+              '<div class="pr-n"><span><b>' + (p.alerted || 0) + '</b>followers alerted</span>' + (p.codes ? '<span><b>' + c.given + '</b>codes given</span><span><b>' + c.used + '</b>used at the counter</span>' : '') + '</div>' +
+              '<div class="bz-row">' + (old ? '' : '<button type="button" class="bz-btn soft bz-small" data-share="' + p.id + '">' + icon('share', 16) + 'Share</button>') + '<button type="button" class="bz-btn red bz-small" data-del="' + p.id + '">Delete</button></div><div class="pr-sk"></div></div></div>';
+          }).join('') : '<p class="hq-fine">No deals yet. Your first one takes about 30 seconds.</p>') + '</div>';
+        var $ = function (id) { return el.querySelector('#' + id); };
+        function fill(k) {
+          st.tpl = k; var t = TPL[k], w = startWords(k);
+          $('pT').value = w.title; $('pB').value = w.body; $('pP').value = ''; $('pPw').hidden = !t.price && k !== 'new_customer' && k !== 'sale';
+          $('pT').placeholder = w.title; $('pU').value = t.news ? '' : addDays(14);
+          setWho(t.who || 'everyone'); $('pC').checked = !t.news; $('pC').disabled = !!t.news;
+          [].forEach.call($('pTpl').children, function (b) { b.classList.toggle('on', b.getAttribute('data-tpl') === k); });
+          prev();
+        }
+        function setWho(w) { st.who = w; [].forEach.call($('pW').children, function (b) { b.className = b.getAttribute('data-w') === w ? 'on' : ''; }); }
+        function row() {
+          var pr = $('pP').value.replace(/[^\d.]/g, '');
+          return { business_id: cur.id, kind: TPL[st.tpl].news ? 'news' : 'special', template: st.tpl, title: $('pT').value.trim(), body: $('pB').value.trim() || null, price: pr ? Number(pr) : null, fine: $('pF').value.trim() || null, who: st.who, until: $('pU').value || null, codes: $('pC').checked && !TPL[st.tpl].news, alert: $('pA').checked };
+        }
+        function prev() { var p = row(); p.title = p.title || TPL[st.tpl].title; $('pPrev').innerHTML = dealCard(p, cur); }
+        fill('price');
+        $('pTpl').onclick = function (e) { var b = e.target.closest('[data-tpl]'); if (b) fill(b.getAttribute('data-tpl')); };
+        $('pW').onclick = function (e) { var w = e.target.getAttribute('data-w'); if (w) { setWho(w); prev(); } };
+        el.querySelector('.pe-l').addEventListener('input', prev);
+        $('pGo').onclick = async function () {
+          var p = row(), m = $('pM'); m.className = 'bz-msg bad';
+          if (p.title.length < 2) { m.textContent = 'Please say what the deal is.'; return; }
+          if (p.kind === 'special' && !p.until) { m.textContent = 'Every deal needs an end date.'; return; }
+          if (lend && LENDING.test([p.title, p.body, p.fine].join(' '))) { m.textContent = 'Please take out loan or payment words (rate, APR, monthly, down payment, financing). Federal ad rules need full details for those.'; return; }
+          $('pGo').disabled = true; m.className = 'bz-msg'; m.textContent = 'Posting…';
+          var x = await sb.from('business_posts').insert(p).select('*').single();
+          $('pGo').disabled = false;
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = /20 posts/.test(x.error.message) ? 'You can keep up to 20 live posts. Delete an old one first.' : /5 posts a day/.test(x.error.message) ? 'You can post up to 5 times a day.' : 'That didn’t post. Please try again.'; return; }
+          posts(el, x.data);
         };
-        el.querySelector('#pL').onclick = async function (e) { var id = e.target.getAttribute('data-del'); if (id && confirm('Delete this post?')) { await sb.from('business_posts').delete().eq('id', id); posts(el); } };
+        $('ccGo').onclick = async function () {
+          var c = $('ccIn').value.trim(), m = $('ccM'); m.className = 'bz-msg bad';
+          if (c.length < 4) { m.textContent = 'Type the code from the driver’s phone.'; return; }
+          var x = await sb.rpc('deal_code_use', { b: cur.id, c: c });
+          if (x.error) { m.textContent = 'That didn’t work. Please try again.'; return; }
+          var d = x.data;
+          if (d.ok) { m.className = 'bz-msg good'; m.textContent = '✓ Good code for “' + d.title + '”. Marked used.' + (d.expired ? ' Note: this deal has ended, so it’s your call.' : ''); $('ccIn').value = ''; }
+          else m.textContent = d.why === 'used' ? 'This code was already used on ' + new Date(d.used_at).toLocaleDateString('en-US') + ' (“' + d.title + '”).' : 'We can’t find that code. Check the letters and numbers.';
+        };
+        $('pL').onclick = async function (e) {
+          var id = e.target.closest('[data-del]'); id = id && id.getAttribute('data-del');
+          if (id && confirm('Delete this post? Codes already given stop working.')) { await sb.from('business_posts').delete().eq('id', id); posts(el); return; }
+          var sh = e.target.closest('[data-share]'); if (!sh) return;
+          var p = list.filter(function (x) { return x.id === sh.getAttribute('data-share'); })[0];
+          shareKit(sh.closest('.pr-info').querySelector('.pr-sk'), p, cur);
+        };
+        if (justPosted) {
+          var d = $('pDone');
+          d.innerHTML = '<div class="hq-card good"><b>Posted!</b><p class="hq-fine" style="margin:4px 0 0" id="pDn">' + (justPosted.alert && nFol ? 'Sending alerts to your followers…' : cur.status === 'live' ? 'It’s on your page and in “Deals near you”.' : 'Drivers see it once your page is live.') + '</p></div><div id="pDk"></div>';
+          shareKit(d.querySelector('#pDk'), justPosted, cur);
+          if (justPosted.alert && nFol) setTimeout(async function () { var a = await sb.from('business_posts').select('alerted').eq('id', justPosted.id).single(); var n = (a.data && a.data.alerted) || 0; var t = d.querySelector('#pDn'); if (t) t.textContent = n ? n + ' follower' + (n > 1 ? 's' : '') + ' get an alert (phone alerts wait until 8 AM at night). It’s also on your page and in “Deals near you”.' : 'None of your followers asked for this kind of alert. It’s on your page and in “Deals near you”.'; }, 1500);
+          d.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
       async function sales(el) {
         var r = await sb.from('business_sales').select('*').eq('business_id', cur.id).order('day', { ascending: false }).limit(100);
@@ -738,23 +1005,84 @@
     return;
   }
 
-  // ---------- Public page ----------
+  // ---------- Shops I follow (drivers) + one-tap stop links from follower emails ----------
+  if (mode === 'following') {
+    var box = root.querySelector('#bzFol');
+    if (q.get('stop') && q.get('u') && q.get('t')) {
+      box.innerHTML = '<div class="bz-sec">One moment…</div>';
+      fetch(C.url + '/functions/v1/biz-alerts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stop: q.get('stop') === 'unfollow' ? 'unfollow' : 'email', u: q.get('u'), b: q.get('b'), t: q.get('t') }) })
+        .then(function (r) { return r.json(); }).then(function (d) {
+          box.innerHTML = d.ok ? '<div class="bz-sec"><h3>Done</h3>' + (q.get('stop') === 'unfollow' ? 'You don’t follow ' + esc(d.name) + ' anymore.' : 'No more emails from ' + esc(d.name) + '. You still follow them in the app.') + '</div><div class="bz-row"><a class="bz-btn soft" href="/following/">See all shops I follow</a></div>' : '<div class="bz-sec">' + esc(d.why || 'This link is not valid') + '. Log in below to change your settings.</div>';
+        }).catch(function () { box.innerHTML = '<div class="bz-sec">That didn’t work. Please try again.</div>'; });
+      return;
+    }
+    account(async function (u) {
+      root.querySelector('#bzAcct').innerHTML = '<p class="rv-fine">Signed in as <b>' + esc(u.email) + '</b>.</p>';
+      var r = await sb.from('business_follows').select('*, businesses(id, name, slug, kind, city, logo)').eq('user_id', u.id).order('created_at', { ascending: false });
+      var list = (r.data || []).filter(function (f) { return f.businesses; }), alerts = (u.user_metadata && u.user_metadata.alerts) || {};
+      var ids = list.map(function (f) { return f.business_id; });
+      var dl = ids.length ? (await sb.from('business_posts').select('id, business_id, kind, template, title, body, price, fine, who, until, codes, created_at').in('business_id', ids).order('created_at', { ascending: false }).limit(20)).data || [] : [];
+      var by = {}; list.forEach(function (f) { by[f.business_id] = f.businesses; });
+      var sum = function (f) { var muted = f.muted_until && f.muted_until > new Date().toISOString(); return muted ? 'Muted until ' + new Date(f.muted_until).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : [f.deals ? 'Deals' : null, f.news ? 'news' : null].filter(Boolean).join(' + ') + ' · ' + [f.push ? 'phone' : null, f.email ? 'email' : null].filter(Boolean).join(' + ') || 'In the app only'; };
+      function draw() {
+        box.innerHTML = (list.length ? '<div class="fl-list">' + list.map(function (f, i) { var b = f.businesses; return '<div class="fl-it"><div class="fl-row">' + logoHtml(b, 'fl-lo') + '<div class="fl-tx"><a href="/shops/?b=' + encodeURIComponent(b.slug) + '"><b>' + esc(b.name) + '</b></a><small>' + esc(sum(f)) + '</small></div><button type="button" class="bz-btn soft bz-small" data-i="' + i + '">' + icon('bell', 16) + 'Settings</button></div><div class="fl-sheet"></div></div>'; }).join('') + '</div>' : '<div class="bz-sec">You don’t follow any shops yet. Open a shop page on Carvessa and tap Follow to get its deals first.</div>') +
+          '<div class="bz-sec"><h3>Quiet hours</h3><label class="bz-ck" style="margin:6px 0"><input type="checkbox" id="flQ"' + (alerts.quiet !== false ? ' checked' : '') + '><span>No phone alerts from shops between 9 PM and 8 AM (Atlanta time)</span></label><div class="bz-msg" id="flM" role="status"></div><p class="rv-fine">Safety recalls still show in the app.</p></div>' +
+          (dl.length ? '<h2 style="margin:20px 0 8px">Latest from shops you follow</h2><div class="fl-deals">' + dl.filter(function (p) { return !p.until || p.until >= today(); }).map(function (p) { var b = by[p.business_id]; return '<a class="fl-deal" href="/shops/?b=' + encodeURIComponent(b.slug) + '&deal=' + p.id + '">' + dealCard(p, b, 'sm') + '</a>'; }).join('') + '</div>' : '');
+        box.onclick = function (e) {
+          var b = e.target.closest('[data-i]'); if (!b) return;
+          var f = list[+b.getAttribute('data-i')], host = b.closest('.fl-it').querySelector('.fl-sheet');
+          if (host.innerHTML) { host.innerHTML = ''; return; }
+          followSheet(host, f.businesses, f, function (nf) { if (!nf) list.splice(list.indexOf(f), 1); draw(); });
+        };
+        box.querySelector('#flQ').onchange = async function () {
+          var v = this.checked, a = Object.assign({}, alerts, { quiet: v }), x = await sb.auth.updateUser({ data: { alerts: a } }), m = box.querySelector('#flM');
+          if (x.error) { this.checked = !v; m.className = 'bz-msg bad'; m.textContent = 'That didn’t save.'; return; }
+          alerts = a; m.className = 'bz-msg good'; m.textContent = v ? 'Quiet hours are on.' : 'Quiet hours are off.';
+        };
+      }
+      draw();
+    });
+    return;
+  }
+
+  // ---------- Printable flyer with a QR code (share kit, picture 284) ----------
+  if (mode === 'flyer') {
+    (async function () {
+      var p = (await sb.from('business_posts').select('*').eq('id', q.get('p') || '').maybeSingle()).data;
+      var b = p && (await sb.from('businesses').select(PUB).eq('id', p.business_id).maybeSingle()).data;
+      if (!p || !b) { root.innerHTML = '<div class="bz"><h1>This flyer isn’t available</h1><p class="lead">Log in to Business HQ first, or the deal has ended.</p><a class="bz-btn" href="/business/edit/">Open Business HQ</a></div>'; return; }
+      var url = dealUrl(p, b), qr = window.qrcode ? window.qrcode(0, 'M') : null;
+      if (qr) { qr.addData(url); qr.make(); }
+      var t = tplOf(p);
+      root.innerHTML = '<div class="fy-tools"><button type="button" class="bz-btn" onclick="window.print()">' + icon('print', 18) + 'Print</button><a class="bz-btn soft" href="/business/edit/">Back to Business HQ</a><p class="rv-fine">Letter size. Put it at the counter or in the window.</p></div>' +
+        '<div class="fy"><div class="fy-band" style="background:linear-gradient(150deg,' + t.bg[0] + ',' + t.bg[1] + ')"><div class="dl-k">' + icon(t.ic, 16) + t.k + '</div><h1>' + esc(p.title) + '</h1>' + (p.price != null ? '<div class="fy-p">' + money(p.price) + '</div>' : '') + (p.body ? '<p>' + esc(p.body) + '</p>' : '') + '</div>' +
+        '<div class="fy-b"><div class="fy-who"><b>' + esc(b.name) + '</b><span>' + esc([b.address, b.city].filter(Boolean).join(', ')) + '</span><span>' + endText(p) + (p.who === 'new' ? ' · New customers' : '') + '</span>' + (p.fine ? '<small>' + esc(p.fine) + '</small>' : '') + '</div>' +
+        '<div class="fy-qr">' + (qr ? qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true }) : '') + '<b>Scan for the deal and directions</b></div></div>' +
+        '<div class="fy-foot"><span class="fy-logo">CAR<i>V</i>essa</span><span>Car trouble? Free help in English and Spanish.</span><span>carvessa.app/shops/?b=' + esc(b.slug) + '</span></div></div>';
+    })();
+    return;
+  }
+
+  // ---------- Public page (picture 283 look, 284 deals, 285 follow) ----------
   if (mode === 'shop') {
     (async function () {
       var slug = q.get('b') || '';
       var r = slug ? await sb.from('businesses').select(PUB).eq('slug', slug).maybeSingle() : { data: null };
       var b = r.data;
       if (!b) { root.innerHTML = '<div class="bz"><h1>This page isn’t available</h1><p class="lead">It may be waiting for our check, or the link is wrong.</p><a class="bz-btn" href="/partners/">For businesses</a></div>'; return; }
-      var [s, ps, rv, me] = await Promise.all([
+      var [s, ps, rv, me, fc] = await Promise.all([
         sb.from('business_services').select('name, price_from, note').eq('business_id', b.id).order('sort'),
-        sb.from('business_posts').select('kind, title, body, until').eq('business_id', b.id).order('created_at', { ascending: false }).limit(3),
+        sb.from('business_posts').select('id, kind, template, title, body, price, fine, who, until, codes, created_at').eq('business_id', b.id).order('created_at', { ascending: false }).limit(20),
         sb.rpc('business_reviews_public', { b: b.id }),
-        sb.auth.getSession()
+        sb.auth.getSession(),
+        sb.rpc('business_followers', { b: b.id })
       ]);
       var reviews = rv.data || [], user = me.data.session && me.data.session.user, isOwner = user && user.id === b.owner;
       var avg = reviews.length ? reviews.reduce(function (a, x) { return a + x.stars; }, 0) / reviews.length : 0;
-      var svcs = s.data || [], today = new Date().toISOString().slice(0, 10);
-      var posts = (ps.data || []).filter(function (p) { return !p.until || p.until >= today; });
+      var svcs = s.data || [], posts = (ps.data || []).filter(function (p) { return !p.until || p.until >= today(); });
+      var deals = posts.filter(function (p) { return p.kind === 'special'; }), news = posts.filter(function (p) { return p.kind !== 'special'; });
+      var nFol = fc.data || 0, myFollow = null;
+      if (user && !isOwner) myFollow = (await sb.from('business_follows').select('*').eq('business_id', b.id).eq('user_id', user.id).maybeSingle()).data;
       var info = KINFO[b.kind] || KINFO.other, hv = headerOf(b);
       document.title = b.name + ' · Carvessa';
       var count = function (k) { if (b.status === 'live') sb.rpc('business_count', { b: b.id, k: k }).then(function () {}, function () {}); };
@@ -762,42 +1090,104 @@
       var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([b.name, b.address, b.city].filter(Boolean).join(', '));
       var tel = (b.phone || '').replace(/[^\d+]/g, '');
       var web = b.website ? (/^https?:/i.test(b.website) ? b.website : 'https://' + b.website) : '';
-      var callBtn = tel ? '<a class="bz-btn" data-c="call" href="tel:' + esc(tel) + '">' + (b.kind === 'tow' ? 'Call now' : 'Call') + '</a>' : '';
-      var dirBtn = '<a class="bz-btn soft" data-c="directions" href="' + maps + '" target="_blank" rel="noopener">Directions</a>';
+      var live = b.status === 'live', talk = live && !isOwner;
+      var msgWord = b.kind === 'dealer' ? 'Ask about a car' : b.kind === 'credit_union' || b.kind === 'insurance' ? 'Ask a question' : 'Message';
+      var bars = [5, 4, 3, 2, 1].map(function (n) { var c = reviews.filter(function (x) { return x.stars === n; }).length; return '<div><span>' + n + '</span><i><em style="width:' + (reviews.length ? Math.round(c / reviews.length * 100) : 0) + '%"></em></i><small>' + c + '</small></div>'; }).join('');
+      var followBtn = function () { return myFollow ? '<button type="button" class="sp-btn soft" data-follow>' + icon('check', 16) + 'Following</button>' : '<button type="button" class="sp-btn" data-follow>' + icon('plus', 16) + 'Follow</button>'; };
+      var dealHtml = function (p) { return '<div class="sp-deal" id="deal-' + p.id + '">' + dealCard(p, b) + '<div class="bz-row">' + (p.codes && talk ? '<button type="button" class="sp-btn" data-code="' + p.id + '">' + icon('qr', 16) + 'Get my counter code</button>' : '') + '<button type="button" class="sp-btn soft" data-dshare="' + p.id + '">' + icon('share', 16) + 'Share</button></div><div class="sp-code"></div></div>'; };
       var KP = { special: 'Special', news: 'News', event: 'Event', hours: 'Hours change' };
+      var tabsList = [['ov', 'Overview'], deals.length ? ['deals', 'Deals · ' + deals.length] : null, svcs.length ? ['svc', 'Services'] : null, ['reviews', 'Reviews'], (b.photos || []).length ? ['photos', 'Photos'] : null].filter(Boolean);
       root.innerHTML =
-        '<div class="shop-cover" style="background:' + hv.css + '">' + logoHtml(b, 'shop-logo') + (hv.credit ? '<a class="shop-credit" href="' + esc(hv.credit[1]) + '" target="_blank" rel="noopener nofollow">Photo: ' + esc(hv.credit[0]) + ' · CC BY</a>' : '') + '</div>' +
-        (b.status !== 'live' ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you’re the owner (we’ll call or text you).</div>' : '') +
-        '<div class="shop-head"><h1>' + esc(b.name) + '</h1><div class="k">' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</div>' + (b.status === 'live' ? '<span class="shop-badge">✓ Verified by Carvessa</span>' : '') + (reviews.length ? '<a class="shop-rating" href="#reviews">' + starRow(Math.round(avg)) + ' <b>' + avg.toFixed(1) + '</b> · ' + reviews.length + ' review' + (reviews.length > 1 ? 's' : '') + '</a>' : '') + '</div>' +
-        '<div class="bz-row shop-cta">' + (info.first === 'directions' ? dirBtn + callBtn : callBtn + dirBtn) + (web ? '<a class="bz-btn soft" data-c="website" href="' + esc(web) + '" target="_blank" rel="noopener nofollow">Website</a>' : '') + '</div>' +
-        (b.status === 'live' && !isOwner ? '<div class="bz-row shop-cta">' + (QUOTE_KINDS[b.kind] ? '<button type="button" class="bz-btn" data-chat-kind="quote">Get a quote</button>' : '') + '<button type="button" class="bz-btn soft" data-chat-kind="message">' + (b.kind === 'dealer' ? 'Ask about a car' : b.kind === 'credit_union' || b.kind === 'insurance' ? 'Ask a question' : 'Message') + '</button></div><div id="chBox"></div>' : '') +
-        (b.offer ? '<div class="shop-card shop-offer"><h2>' + esc(b.offer) + '</h2>Show this page at the counter.</div>' : '') +
-        posts.map(function (p) { return '<div class="shop-card shop-post"><span class="hq-tag">' + (KP[p.kind] || 'News') + '</span><h2>' + esc(p.title) + '</h2>' + (p.body ? esc(p.body) : '') + (p.until ? '<div class="shop-note">Until ' + esc(new Date(p.until + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</div>' : '') + '</div>'; }).join('') +
-        (svcs.length ? '<div class="shop-card"><h2>' + info.svc + '</h2>' + svcs.map(function (x) { return '<div class="shop-svc"><span>' + esc(x.name) + '</span><b>' + (x.price_from != null ? 'from ' + money(x.price_from) : 'Ask') + '</b></div>'; }).join('') + '<div class="shop-note">' + (b.kind === 'credit_union' ? 'Set by the credit union. Not an offer from Carvessa.' : 'Prices set by the business. Ask for a written quote.') + '</div></div>' : '') +
-        (info.tip ? '<div class="shop-card shop-tip"><h2>' + info.tip[0] + '</h2>' + info.tip[1] + '</div>' : '') +
-        (b.about ? '<div class="shop-card"><h2>About</h2>' + esc(b.about) + '</div>' : '') +
-        ((b.photos || []).length ? '<div class="shop-card"><h2>Photos</h2><div class="shop-pics">' + b.photos.map(function (p, i) { return '<img src="' + photoUrl(p) + '" alt="' + esc(b.name) + ' photo ' + (i + 1) + '" loading="lazy">'; }).join('') + '</div></div>' : '') +
-        '<div class="shop-card"><div class="shop-kv">' + (b.address ? '<span>Address</span><div>' + esc(b.address) + (b.city ? ', ' + esc(b.city) : '') + '</div>' : '') + (b.phone ? '<span>Phone</span><div>' + esc(b.phone) + '</div>' : '') + (b.hours ? '<span>Hours</span><div>' + esc(b.hours) + '</div>' : '') + '</div></div>' +
-        '<div class="shop-card" id="reviews"><h2>Reviews' + (reviews.length ? ' <span class="rv-sum">★ ' + avg.toFixed(1) + ' · ' + reviews.length + '</span>' : '') + '</h2><p class="rv-fine">From Carvessa members. Only first names show. <a href="/business/review-rules/" target="_blank">Review Rules</a></p>' +
-          (b.status === 'live' && !isOwner ? '<div class="bz-row" style="margin:6px 0 10px"><button type="button" class="bz-btn bz-small" id="rvWrite">Write a review</button></div><div id="rvBox"></div>' : '') +
+        '<div class="sp-hero" style="background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(0,0,0,.62)),' + hv.css.replace(/"/g, "'") + '"><div class="sp-id">' + logoHtml(b, 'sp-lo') + '<div><h1>' + esc(b.name) + '</h1><span>' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</span></div></div>' + (hv.credit ? '<a class="shop-credit" href="' + esc(hv.credit[1]) + '" target="_blank" rel="noopener nofollow">Photo: ' + esc(hv.credit[0]) + ' · CC BY</a>' : '') + '</div>' +
+        (!live ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you’re the owner (we’ll call or text you).</div>' : '') +
+        '<div class="sp-acts">' + (talk ? followBtn() + (QUOTE_KINDS[b.kind] ? '<button type="button" class="sp-btn soft" data-chat-kind="quote">' + icon('msg', 16) + 'Get a quote</button>' : '<button type="button" class="sp-btn soft" data-chat-kind="message">' + icon('msg', 16) + msgWord + '</button>') : '') + '<button type="button" class="sp-btn soft" id="spShare" aria-label="Share this page">' + icon('share', 16) + '<span class="sp-hide">Share</span></button></div>' +
+        (live ? '<p class="sp-fol" id="spFol">' + nFol + ' driver' + (nFol === 1 ? '' : 's') + ' follow' + (nFol === 1 ? 's' : '') + ' this shop' + (myFollow ? ' · you get their deals first' : ' · follow to get their deals first') + '</p>' : '') +
+        '<div class="sp-chips">' + (live ? '<span class="v">' + icon('check', 14) + 'Verified by Carvessa</span>' : '') + (reviews.length ? '<a href="#reviews">' + starRow(Math.round(avg)) + ' ' + avg.toFixed(1) + ' (' + reviews.length + ')</a>' : '') + (b.hours ? '<span>' + icon('home', 14) + esc(b.hours.length > 38 ? b.hours.slice(0, 36) + '…' : b.hours) + '</span>' : '') + '</div>' +
+        '<div id="fwBox"></div><div id="chBox"></div>' +
+        '<nav class="sp-tabs" aria-label="Sections">' + tabsList.map(function (t, i) { return '<a href="#' + t[0] + '" class="' + (i === 0 ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</nav>' +
+        '<section id="ov">' +
+          (b.offer ? '<div class="sp-offer"><small>OFFER</small><b>' + esc(b.offer) + '</b><span>Show this page at the counter</span></div>' : '') +
+          (deals[0] ? '<a class="sp-offer deal" href="#deal-' + deals[0].id + '"><small>' + tplOf(deals[0]).k + ' · ' + endText(deals[0]).toUpperCase() + '</small><b>' + esc(deals[0].title) + (deals[0].price != null ? ' · ' + money(deals[0].price) : '') + '</b><span>' + (deals[0].codes ? 'Get your counter code below' : 'See the deal below') + '</span></a>' : '') +
+          news.map(function (p) { return '<div class="shop-card shop-post"><span class="hq-tag">' + (KP[p.kind] || 'News') + '</span><h2>' + esc(p.title) + '</h2>' + (p.body ? esc(p.body) : '') + (p.until ? '<div class="shop-note">Until ' + shortDay(p.until) + '</div>' : '') + '</div>'; }).join('') +
+          (info.tip ? '<div class="shop-card shop-tip"><h2>' + info.tip[0] + '</h2>' + info.tip[1] + '</div>' : '') +
+          (b.about ? '<div class="shop-card"><h2>About</h2>' + esc(b.about) + '</div>' : '') +
+          '<div class="shop-card"><div class="shop-kv">' + (b.address ? '<span>Address</span><div>' + esc(b.address) + (b.city ? ', ' + esc(b.city) : '') + ' · <a href="' + maps + '" target="_blank" rel="noopener" data-c="directions">Directions</a></div>' : '') + (b.phone ? '<span>Phone</span><div><a href="tel:' + esc(tel) + '" data-c="call">' + esc(b.phone) + '</a></div>' : '') + (b.hours ? '<span>Hours</span><div>' + esc(b.hours) + '</div>' : '') + (web ? '<span>Website</span><div><a href="' + esc(web) + '" target="_blank" rel="noopener nofollow" data-c="website">' + esc(b.website.replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</a></div>' : '') + '</div></div>' +
+        '</section>' +
+        (deals.length ? '<section id="deals"><h2 class="sp-h">Deals</h2>' + deals.map(dealHtml).join('') + '<p class="shop-note">Deals are set by the business. Ask for a written quote.</p></section>' : '') +
+        (svcs.length ? '<section id="svc"><div class="shop-card"><h2>' + info.svc + '</h2>' + svcs.map(function (x) { return '<div class="shop-svc"><span>' + esc(x.name) + '</span><b>' + (x.price_from != null ? 'from ' + money(x.price_from) : 'Ask') + '</b></div>'; }).join('') + '<div class="shop-note">' + (b.kind === 'credit_union' ? 'Set by the credit union. Not an offer from Carvessa.' : 'Prices set by the business. Ask for a written quote.') + '</div></div></section>' : '') +
+        '<section id="reviews"><div class="shop-card"><h2>Reviews' + (reviews.length ? ' <span class="rv-sum">' + avg.toFixed(1) + ' · ' + reviews.length + '</span>' : '') + '</h2>' + (reviews.length ? '<div class="sp-bars">' + bars + '</div>' : '') + '<p class="rv-fine">From Carvessa members. Only first names show. <a href="/business/review-rules/" target="_blank">Review Rules</a></p>' +
+          (talk ? '<div class="bz-row" style="margin:6px 0 10px"><button type="button" class="bz-btn bz-small" id="rvWrite">Write a review</button></div><div id="rvBox"></div>' : '') +
           (reviews.length ? reviews.slice(0, 20).map(function (x) {
             return '<div class="rv-item" data-id="' + x.id + '"><div class="rv-top">' + starRow(x.stars) + '<b>' + esc(x.first_name) + '</b><small>' + ago(x.created_at) + '</small></div>' + (x.body ? '<p>' + esc(x.body) + '</p>' : '') +
               ((x.photos || []).length ? '<div class="rv-pics">' + x.photos.map(function (p) { return '<img src="' + photoUrl(p) + '" alt="Photo from ' + esc(x.first_name) + '" loading="lazy">'; }).join('') + '</div>' : '') +
               (x.reply ? '<div class="rv-reply"><b>Reply from ' + esc(b.name) + '</b>' + esc(x.reply) + '</div>' : '') +
               '<button type="button" class="rv-flag" data-flag="' + x.id + '">Report</button><div class="rv-rep-box"></div></div>';
-          }).join('') : '<p>' + (b.status === 'live' ? 'No reviews yet. Been here? Be the first.' : 'Reviews start when the page is live.') + '</p>') + '</div>' +
-        '<p class="shop-note" style="margin-top:14px">Carvessa doesn’t rank businesses by who pays. Reviews are never removed for being negative or because a business pays. Paid spots in the app are always labeled. Is this your business? <a href="/business/edit/">Open Business HQ</a></p>';
+          }).join('') : '<p>' + (live ? 'No reviews yet. Been here? Be the first.' : 'Reviews start when the page is live.') + '</p>') + '</div></section>' +
+        ((b.photos || []).length ? '<section id="photos"><div class="shop-card"><h2>Photos</h2><div class="shop-pics">' + b.photos.map(function (p, i) { return '<img src="' + photoUrl(p) + '" alt="' + esc(b.name) + ' photo ' + (i + 1) + '" loading="lazy">'; }).join('') + '</div></div></section>' : '') +
+        '<p class="shop-note" style="margin-top:14px">Carvessa doesn’t rank businesses by who pays. Reviews are never removed for being negative or because a business pays. Paid spots in the app are always labeled. Is this your business? <a href="/business/edit/">Open Business HQ</a></p>' +
+        '<div class="sp-bar">' + (talk ? '<button type="button" class="sp-b pr" data-chat-kind="' + (QUOTE_KINDS[b.kind] ? 'quote' : 'message') + '">' + icon('msg', 18) + (QUOTE_KINDS[b.kind] ? 'Get a quote' : msgWord) + '</button>' : '') + (tel ? '<a class="sp-b" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 18) + (b.kind === 'tow' ? 'Call now' : 'Call') + '</a>' : '') + '<a class="sp-b" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 18) + 'Go</a></div>';
+      root.classList.add('sp-has-bar');
       root.addEventListener('click', function (e) { var a = e.target.closest('[data-c]'); if (a) count(a.getAttribute('data-c')); });
-      // Write / edit a review, or report one: members only (free account).
-      function signedIn(host, then) {
+      // Tabs follow the scroll.
+      var tabs = root.querySelector('.sp-tabs');
+      var secs = tabsList.map(function (t) { return root.querySelector('#' + t[0]); });
+      window.addEventListener('scroll', function () { var y = tabs.getBoundingClientRect().bottom + 10, on = 0; secs.forEach(function (s, i) { if (s && s.getBoundingClientRect().top <= y) on = i; }); [].forEach.call(tabs.children, function (a, i) { a.classList.toggle('on', i === on); }); }, { passive: true });
+      root.querySelector('#spShare').onclick = async function () {
+        var url = 'https://carvessa.app/shops/?b=' + encodeURIComponent(b.slug);
+        if (navigator.share) { try { await navigator.share({ title: b.name, url: url }); } catch (err) { /* closed */ } return; }
+        try { await navigator.clipboard.writeText(url); this.querySelector('.sp-hide').textContent = 'Link copied'; } catch (err) { prompt('Copy this link:', url); }
+      };
+      // Write / edit a review, report one, follow, message, get a code: members only (free account).
+      function signedIn(host, then, why) {
         sb.auth.getSession().then(function (r) {
           var u = r.data.session && r.data.session.user; if (u) { then(u); return; }
-          host.innerHTML = '<div class="rv-form"><h3>Log in or create a free account</h3><p class="rv-fine">Reviews come only from Carvessa members, one per person per business.</p><div class="rv-acct"></div></div>';
-          account(function (u2) { then(u2); }, host.querySelector('.rv-acct'));
+          host.innerHTML = '<div class="rv-form"><h3>Log in or create a free account</h3><p class="rv-fine">' + (why || 'Reviews come only from Carvessa members, one per person per business.') + '</p><div class="rv-acct"></div></div>';
+          host.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          account(function (u2) { host.innerHTML = ''; then(u2); }, host.querySelector('.rv-acct'));
         });
       }
+      function drawFollow() {
+        var bt = root.querySelector('[data-follow]'); if (bt) bt.outerHTML = followBtn();
+        var fl = root.querySelector('#spFol'); if (fl) fl.textContent = nFol + ' driver' + (nFol === 1 ? '' : 's') + ' follow' + (nFol === 1 ? 's' : '') + ' this shop' + (myFollow ? ' · you get their deals first' : ' · follow to get their deals first');
+      }
       root.addEventListener('click', function (e) {
-        var k = e.target.getAttribute('data-chat-kind'); if (!k) return;
+        if (!e.target.closest('[data-follow]')) return;
+        var host = root.querySelector('#fwBox');
+        signedIn(host, async function (u) {
+          if (u.id === b.owner) { host.innerHTML = '<div class="bz-msg bad">You can’t follow your own business.</div>'; return; }
+          if (!myFollow) {
+            myFollow = (await sb.from('business_follows').select('*').eq('business_id', b.id).eq('user_id', u.id).maybeSingle()).data;
+            if (!myFollow) {
+              var x = await sb.from('business_follows').insert({ business_id: b.id }).select('*').single();
+              if (x.error) { host.innerHTML = '<div class="bz-msg bad">' + (/live/.test(x.error.message) ? 'You can follow this page once it’s live.' : /a lot of shops/.test(x.error.message) ? 'You follow a lot of shops already. Unfollow one first.' : 'That didn’t work. Please try again.') + '</div>'; return; }
+              myFollow = x.data; nFol++;
+            }
+            drawFollow();
+          }
+          if (host.innerHTML && host.querySelector('.fw-sheet')) { host.innerHTML = ''; return; }
+          followSheet(host, b, myFollow, function (f) { if (!f) { myFollow = null; nFol = Math.max(0, nFol - 1); } drawFollow(); });
+          host.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 'Follow ' + b.name + ' with a free account to get their deals first. You choose what you get.');
+      });
+      root.addEventListener('click', function (e) {
+        var c = e.target.closest('[data-code]'), sh = e.target.closest('[data-dshare]');
+        if (sh) {
+          var p0 = deals.filter(function (x) { return x.id === sh.getAttribute('data-dshare'); })[0], url = dealUrl(p0, b);
+          if (navigator.share) navigator.share({ title: b.name, text: p0.title, url: url }).catch(function () {});
+          else navigator.clipboard.writeText(url).then(function () { sh.lastChild.textContent = 'Link copied'; }, function () { prompt('Copy this link:', url); });
+          return;
+        }
+        if (!c) return;
+        var id = c.getAttribute('data-code'), host = c.closest('.sp-deal').querySelector('.sp-code'), p = deals.filter(function (x) { return x.id === id; })[0];
+        signedIn(host, async function () {
+          var x = await sb.from('deal_codes').insert({ post_id: id }).select('code, used_at').single();
+          if (x.error && x.error.code === '23505') x = await sb.from('deal_codes').select('code, used_at').eq('post_id', id).single();
+          if (x.error || !x.data) { host.innerHTML = '<div class="bz-msg bad">' + (x.error && /own deal/.test(x.error.message) ? 'You can’t use your own deal.' : x.error && /Too many/.test(x.error.message) ? 'Too many codes today. Please try again tomorrow.' : 'That didn’t work. Please try again.') + '</div>'; return; }
+          host.innerHTML = '<div class="sp-cp"><small>SHOW THIS AT THE COUNTER</small><b>' + esc(p.title) + '</b><span>' + esc(b.name) + ' · ' + endText(p) + '</span><div class="code">' + esc(x.data.code) + '</div><small>' + (x.data.used_at ? 'Already used on ' + new Date(x.data.used_at).toLocaleDateString('en-US') + '.' : 'Your code. The shop marks it used. Find it here any time.') + '</small></div>';
+        }, 'Get your counter code with a free Carvessa account. The shop never sees your name, email or phone.');
+      });
+      root.addEventListener('click', function (e) {
+        var k = e.target.closest('[data-chat-kind]'); if (!k) return; k = k.getAttribute('data-chat-kind');
         var box = root.querySelector('#chBox');
         signedIn(box, async function (u) {
           if (u.id === b.owner) { box.innerHTML = '<div class="bz-msg bad">You can’t message your own business.</div>'; return; }
@@ -805,7 +1195,7 @@
           var show = function (c) { chatThread(box, c, false, b.name); var a = document.createElement('p'); a.className = 'rv-fine'; a.innerHTML = '<a href="/messages/">See all my messages ›</a>'; box.appendChild(a); };
           if (open && open.length && k === 'message') show(open[0]); else startChat(box, b, k, show);
           box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
+        }, 'Message ' + b.name + ' with a free account. Only your first name shows; your phone and email stay private.');
       });
       var wr = root.querySelector('#rvWrite');
       if (wr) wr.onclick = function () {
@@ -813,8 +1203,7 @@
         signedIn(box, async function (u) {
           if (u.id === b.owner) { box.innerHTML = '<div class="bz-msg bad">You can’t review your own business.</div>'; return; }
           var mine = (await sb.from('business_reviews').select('id, stars, body, photos').eq('business_id', b.id).eq('author', u.id).maybeSingle()).data;
-          reviewForm(box, b, mine, function () { box.innerHTML = '<div class="bz-msg good">Thanks! Your review is up' + ' (photos show after our check). You can edit or delete it any time here.</div><div class="bz-row"><button type="button" class="bz-btn soft bz-small" id="rvDel">Delete my review</button></div>'; setTimeout(function () { location.reload(); }, 2500);
-          });
+          reviewForm(box, b, mine, function () { box.innerHTML = '<div class="bz-msg good">Thanks! Your review is up' + ' (photos show after our check). You can edit or delete it any time here.</div>'; setTimeout(function () { location.reload(); }, 2500); });
           if (mine) { var d = document.createElement('div'); d.className = 'bz-row'; d.innerHTML = '<button type="button" class="bz-btn red bz-small">Delete my review</button>'; box.appendChild(d); d.firstChild.onclick = async function () { if (!confirm('Delete your review?')) return; await sb.from('business_reviews').delete().eq('id', mine.id); location.reload(); }; }
         });
       };
@@ -823,6 +1212,9 @@
         var host = e.target.parentNode.querySelector('.rv-rep-box');
         signedIn(host, function () { reportBox(host, id); });
       });
+      // A shared deal link (?deal=…) jumps to that deal.
+      var dq = q.get('deal'), dEl = dq && root.querySelector('#deal-' + CSS.escape(dq));
+      if (dEl) setTimeout(function () { dEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); dEl.classList.add('hl'); }, 300);
     })();
   }
 })();
