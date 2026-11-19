@@ -159,3 +159,4 @@
 .bz-google:hover{background:#F4F6FA}
 .bz-or{display:flex;align-items:center;gap:10px;color:#5A6575;font-size:13px;font-weight:700;margin:10px 0 2px}.bz-or:before,.bz-or:after{content:"";flex:1;height:1px;background:#DFE6F1}.bz-or span{text-align:center}
 .bz-link{font:inherit;font-weight:800;font-size:15px;color:#1F5FBF;background:none;border:0;cursor:pointer;padding:8px 4px;text-decoration:underline}
+.hq-badge[hidden]{display:none}
