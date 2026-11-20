@@ -358,3 +358,6 @@ select.hq-pick{background:var(--top);color:var(--topInk)}
 .cl-logo>div.cl-lg{flex:none;min-width:0}
 .sp-t-night .rv-form{background:#171B22;border-color:#232936;color:#EEF2F8}.sp-t-night .rv-form h3{color:#fff}
 .sp-t-bold .shop-credit{top:8px;bottom:auto}
+/* Requests (Nov 20, 2026) */
+.rq p{font-size:15px}.rq-f{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.ask-a{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#F4F6FA;border-radius:12px;padding:10px 12px;margin:6px 0;text-decoration:none;color:#0F1B33!important}.ask-a span{margin-left:auto;font-weight:800;color:#1D7A46}

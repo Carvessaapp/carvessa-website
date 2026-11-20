@@ -111,6 +111,7 @@
     user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>', flag: '<path d="M5 21V4h11l-2 4 2 4H5"/>', bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>', plus: '<path d="M12 5v14M5 12h14"/>',
     qr: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/>', heart: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>', shield: '<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    inbox: '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
     down: '<path d="M12 4v12M6 10l6 6 6-6M4 20h16"/>', copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/>', print: '<path d="M6 9V3h12v6M6 18H4v-7h16v7h-2"/><rect x="6" y="14" width="12" height="7"/>', moon: '<path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/>', out: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>'
   };
   var icon = function (n, s) { return '<svg class="ic" width="' + (s || 20) + '" height="' + (s || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[n] || '') + '</svg>'; };
@@ -630,7 +631,7 @@
     sb.auth.getSession().then(function (r) {
       var u = r.data.session && r.data.session.user;
       if (u) {
-        if (mode === 'edit' || mode === 'inbox') { next(u); return; }
+        if (mode === 'edit' || mode === 'inbox' || mode === 'ask' || mode === 'following') { next(u); return; }
         box.innerHTML = '<div class="bz-sec">Signed in as <b>' + esc(u.email) + '</b>. <a href="#" id="aOut">Not you?</a></div><div class="bz-row"><button class="bz-btn" id="aGo">Continue</button></div>';
         box.querySelector('#aGo').onclick = function () { next(u); };
         box.querySelector('#aOut').onclick = function (e) { e.preventDefault(); sb.auth.signOut().then(function () { account(next, boxEl); }); };
@@ -733,13 +734,13 @@
   // ---------- Business HQ: the owner's private dashboard ----------
   if (mode === 'edit') {
     var STATUS = { pending: 'Waiting for our check', live: 'Live', hidden: 'Hidden', rejected: 'Not approved', blocked: 'Blocked' };
-    var NAV = [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['posts', 'Deals and posts', 'tag'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear']];
+    var NAV = [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['posts', 'Deals and posts', 'tag'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear']];
     account(async function (u) {
       root.querySelector('#bzAcct').hidden = true;
       var r = await sb.from('businesses').select(MINE).eq('owner', u.id).order('created_at');
       var pages = r.data || [];
       if (!pages.length) { root.querySelector('#bzAcct').hidden = false; root.querySelector('#bzAcct').innerHTML = '<div class="bz-sec">Signed in as <b>' + esc(u.email) + '</b>. You don’t have a business page yet. <a href="/business/join/">Create your free page</a></div>'; return; }
-      var cur = pages[0], tab = 'overview';
+      var cur = pages[0], tab = NAV.some(function (n) { return n[0] === q.get('tab'); }) ? q.get('tab') : 'overview';
       var shell = document.createElement('div'); shell.className = 'hq'; root.innerHTML = ''; root.appendChild(shell); root.classList.add('hq-wrap');
       function look() {
         shell.setAttribute('data-look', cur.hq_dark ? 'dark' : 'racing');
@@ -750,11 +751,11 @@
         shell.style.setProperty('--soft', cur.hq_dark ? 'rgba(255,255,255,.08)' : 'color-mix(in srgb, ' + acc + ' 12%, #fff)');
         shell.style.setProperty('--heroA', shade(br, 0.55)); shell.style.setProperty('--heroB', shade(br, 0.1));
       }
-      var counts = { msg: 0, rev: 0 };
+      var counts = { msg: 0, rev: 0, req: 0 };
       function go(t, extra) { tab = t; frame(extra); }
       function frame(extra) {
         look();
-        var badge = function (k) { var n = k === 'messages' ? counts.msg : k === 'reviews' ? counts.rev : 0; return '<span class="hq-badge" data-b="' + k + '"' + (n ? '' : ' hidden') + '>' + (n || '') + '</span>'; };
+        var badge = function (k) { var n = k === 'messages' ? counts.msg : k === 'reviews' ? counts.rev : k === 'requests' ? counts.req : 0; return '<span class="hq-badge" data-b="' + k + '"' + (n ? '' : ' hidden') + '>' + (n || '') + '</span>'; };
         var pub = '/shops/?b=' + encodeURIComponent(cur.slug);
         shell.innerHTML = '<header class="hq-top"><a class="hq-logo" href="/business/edit/" aria-label="Business HQ home">CAR<i>V</i>essa <span>BUSINESS HQ</span></a>' +
           (pages.length > 1 ? '<select class="hq-pick" id="hqPick" aria-label="Your pages">' + pages.map(function (p, i) { return '<option value="' + i + '"' + (p === cur ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select>' : '<a class="hq-pick" href="' + pub + '" target="_blank" rel="noopener">' + esc(cur.name) + icon('chev', 14) + '</a>') +
@@ -765,8 +766,8 @@
           '<div class="hq-status"><span class="hq-st ' + esc(cur.status) + '">' + (STATUS[cur.status] || cur.status) + '</span><small>' + esc(kindName(cur.kind)) + '</small></div>' +
           '<div class="hq-pro"><b>Pro coming later</b><small>Business network and deeper reports. Your page stays free.</small></div></aside>' +
           '<main class="hq-main" id="hqBody"></main></div>' +
-          '<nav class="hq-tabs" aria-label="Business HQ">' + [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['posts', 'Deals', 'tag'], ['reviews', 'Reviews', 'star'], ['more', 'More', 'gear']].map(function (n) { var on = n[0] === tab || (n[0] === 'more' && ['page', 'sales', 'account'].indexOf(tab) >= 0); return '<button type="button" data-tab="' + n[0] + '" class="' + (on ? 'on' : '') + '">' + icon(n[2], 20) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
-          '<div class="hq-more" id="hqMore" hidden>' + [['page', 'My page', 'wrench'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear'], ['account:hqIdea', 'Send us an idea', 'msg']].map(function (n) { return '<button type="button" data-tab="' + n[0] + '">' + icon(n[2], 18) + n[1] + '</button>'; }).join('') + '<a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a></div>';
+          '<nav class="hq-tabs" aria-label="Business HQ">' + [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['posts', 'Deals', 'tag'], ['more', 'More', 'gear']].map(function (n) { var on = n[0] === tab || (n[0] === 'more' && ['page', 'sales', 'account', 'reviews'].indexOf(tab) >= 0); return '<button type="button" data-tab="' + n[0] + '" class="' + (on ? 'on' : '') + '">' + icon(n[2], 20) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
+          '<div class="hq-more" id="hqMore" hidden>' + [['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear'], ['account:hqIdea', 'Send us an idea', 'msg']].map(function (n) { return '<button type="button" data-tab="' + n[0] + '">' + icon(n[2], 18) + n[1] + '</button>'; }).join('') + '<a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a></div>';
         var navClick = function (e) {
           var b = e.target.closest('[data-tab],[data-go]'); if (!b) return;
           var t = b.getAttribute('data-tab') || b.getAttribute('data-go');
@@ -777,18 +778,20 @@
         shell.querySelector('#hqOut').onclick = function () { sb.auth.signOut().then(function () { location.reload(); }); };
         var me = shell.querySelector('#hqMe'), menu = shell.querySelector('#hqMenu');
         me.onclick = function () { menu.hidden = !menu.hidden; me.setAttribute('aria-expanded', String(!menu.hidden)); };
-        shell.querySelector('#hqBell').onclick = function () { go(counts.msg ? 'messages' : counts.rev ? 'reviews' : 'overview'); };
+        shell.querySelector('#hqBell').onclick = function () { go(counts.req ? 'requests' : counts.msg ? 'messages' : counts.rev ? 'reviews' : 'overview'); };
         var pk = shell.querySelector('#hqPick'); if (pk && pk.tagName === 'SELECT') pk.onchange = function () { cur = pages[+pk.value]; tab = 'overview'; frame(); };
         Promise.all([
           sb.from('biz_chats').select('last_at, biz_seen_at').eq('business_id', cur.id).limit(200),
-          sb.from('business_reviews').select('id', { count: 'exact', head: true }).eq('business_id', cur.id).eq('status', 'visible').is('reply', null)
+          sb.from('business_reviews').select('id', { count: 'exact', head: true }).eq('business_id', cur.id).eq('status', 'visible').is('reply', null),
+          sb.rpc('biz_requests_near', { b: cur.id })
         ]).then(function (r) {
           counts.msg = (r[0].data || []).filter(function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; }).length; counts.rev = r[1].count || 0;
-          [].forEach.call(shell.querySelectorAll('[data-b]'), function (el) { var n = el.getAttribute('data-b') === 'messages' ? counts.msg : el.getAttribute('data-b') === 'reviews' ? counts.rev : 0; el.hidden = !n; el.textContent = n || ''; });
-          var bn = shell.querySelector('#hqBellN'), n = counts.msg + counts.rev; bn.hidden = !n; bn.textContent = n;
+          counts.req = (r[2].data || []).filter(function (x) { return !x.chat_id; }).length;
+          [].forEach.call(shell.querySelectorAll('[data-b]'), function (el) { var k = el.getAttribute('data-b'), n = k === 'messages' ? counts.msg : k === 'reviews' ? counts.rev : k === 'requests' ? counts.req : 0; el.hidden = !n; el.textContent = n || ''; });
+          var bn = shell.querySelector('#hqBellN'), n = counts.msg + counts.rev + counts.req; bn.hidden = !n; bn.textContent = n;
         });
         var body = shell.querySelector('#hqBody');
-        if (tab === 'messages') messages(body, extra); else ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, account: settings })[tab](body, extra);
+        if (tab === 'messages') messages(body, extra); else ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, account: settings, requests: requests })[tab](body, extra);
         var y = shell.getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
       }
       function head(k, title, badge) { return '<small class="hq-k">' + k + '</small><h2 class="hq-h">' + title + (badge ? ' <em>' + badge + '</em>' : '') + '</h2>'; }
@@ -855,6 +858,33 @@
           if (e.target.closest('[data-close]')) { var d2 = el.querySelector('#hqKpiD'); d2.innerHTML = ''; d2.removeAttribute('data-k'); return; }
           var g = e.target.closest('[data-go]'); if (!g) return;
           var v = g.getAttribute('data-go').split(':'); go(v[0], v[1]);
+        };
+      }
+      // Drivers ask, shops answer (Nov 20, 2026): open price requests near this page.
+      async function requests(el) {
+        el.innerHTML = '<div class="hq-load">Loading…</div>';
+        var KW = { repair: 'repair', tires: 'tire', body: 'body shop', detail: 'detailing', tow: 'towing', insurance: 'insurance', dealer: 'car' };
+        if (cur.status !== 'live') { el.innerHTML = head('PRICE REQUESTS', 'Drivers asking for a price') + '<div class="hq-note">Requests show here once your page is live.</div>'; return; }
+        if (cur.lat == null) { el.innerHTML = head('PRICE REQUESTS', 'Drivers asking for a price') + '<div class="hq-note">Add your street address in My page so we can show you requests near you.</div>'; return; }
+        var r = await sb.rpc('biz_requests_near', { b: cur.id }), list = r.data || [];
+        el.innerHTML = head('PRICE REQUESTS', 'Drivers asking for a price', list.length ? list.length + ' near you' : '') +
+          '<p class="hq-fine">Drivers near you who need ' + (KW[cur.kind] || 'car') + ' help. You see their first name, car and area, never their phone or email. Answer with a price; the first good answer often wins. Requests stay open 3 days.</p>' +
+          (list.length ? list.map(function (x) {
+            return '<div class="hq-card rq" data-r="' + x.id + '"><div class="hq-ch"><b>' + esc(x.car || 'Car not given') + '</b><small class="hq-fine" style="margin:0">' + esc(x.place || '') + ' · ' + (x.dist < 1 ? 'under 1' : Math.round(x.dist)) + ' mi · ' + when(x.created_at) + '</small></div>' +
+              '<p style="margin:4px 0 6px">' + esc(x.need) + '</p><small class="hq-fine">' + esc(x.driver_name) + (x.answers ? ' · ' + x.answers + ' shop' + (x.answers > 1 ? 's' : '') + ' answered' : ' · no answers yet') + '</small>' +
+              (x.chat_id ? '<div class="bz-row"><button type="button" class="bz-btn soft bz-small" data-chat="' + x.chat_id + '">' + icon('check', 16) + 'You answered · open the chat</button></div>' :
+                '<div class="rq-f"><div class="bz-two"><label class="bz-f"><span>Your price (optional)</span><input class="rqP" inputmode="decimal" placeholder="$560"></label><label class="bz-f"><span>What it includes (optional)</span><input class="rqN" maxlength="120" placeholder="Installed and balanced"></label></div>' +
+                '<label class="bz-f"><span>Message</span><textarea class="rqB" maxlength="1000">Hi ' + (x.driver_name === 'Carvessa member' ? 'there' : esc(x.driver_name.split(' ')[0])) + '! We can help with this. </textarea></label><div class="bz-row"><button type="button" class="bz-btn" data-send="' + x.id + '">Send my answer</button></div><div class="bz-msg" role="status"></div></div>') + '</div>';
+          }).join('') : '<div class="hq-card"><b>No open requests near you right now.</b><p class="hq-fine" style="margin:4px 0 0">We email you when a driver nearby asks. Keep your services and prices up to date so drivers pick you.</p></div>');
+        el.onclick = async function (e) {
+          var c = e.target.closest('[data-chat]'); if (c) { go('messages', c.getAttribute('data-chat')); return; }
+          var sbtn = e.target.closest('[data-send]'); if (!sbtn) return;
+          var card = sbtn.closest('.rq'), m = card.querySelector('.bz-msg'), pr = card.querySelector('.rqP').value.replace(/[^\d.]/g, '');
+          m.className = 'bz-msg'; m.textContent = 'Sending…'; sbtn.disabled = true;
+          var x = await sb.rpc('biz_request_answer', { r: sbtn.getAttribute('data-send'), b: cur.id, body: card.querySelector('.rqB').value, price: pr ? Number(pr) : null, note: card.querySelector('.rqN').value || null });
+          sbtn.disabled = false;
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = /isn.t open/.test(x.error.message) ? 'This request just closed.' : /short answer/.test(x.error.message) ? 'Please write a short answer or a price.' : 'That didn’t send. Please try again.'; return; }
+          go('messages', x.data);
         };
       }
       async function myPage(el, focus) {
@@ -1114,6 +1144,63 @@
         var main = list.querySelector('#chMain'); main.innerHTML = '<div id="chT1"></div>' + (c.businesses ? '<p class="rv-fine"><a href="/shops/?b=' + encodeURIComponent(c.businesses.slug) + '">Open their page ›</a></p>' : '');
         chatThread(main.querySelector('#chT1'), c, false, (c.businesses && c.businesses.name) || 'Business');
       };
+      var want = q.get('chat') && list.querySelector('[data-chat="' + CSS.escape(q.get('chat')) + '"]'); if (want) want.click();
+    });
+    return;
+  }
+
+  // ---------- Drivers ask, shops answer (Nov 20, 2026): ask once, shops near you send a price ----------
+  var ASK_KINDS = [['tires', 'Tires'], ['repair', 'Repair'], ['body', 'Body work'], ['detail', 'Detailing'], ['tow', 'Towing'], ['insurance', 'Insurance'], ['dealer', 'Buying a car']];
+  var ASK_HINT = { tires: 'Price for 4 tires, size 225/65R17, installed.', repair: 'Brakes squeal when I stop. Front pads?', body: 'Dent on the back door, about the size of a fist.', detail: 'Full detail inside and out, dog hair.', tow: 'Car won’t start in my driveway, need a tow to a shop.', insurance: 'Quote for a 2019 RAV4, one driver, clean record.', dealer: 'Looking for a 2019–2021 RAV4 under $22,000 out the door.' };
+  async function placeFor(zip) {
+    try { var r = await fetch('https://api.zippopotam.us/us/' + encodeURIComponent(zip)); var j = await r.json(); var p = j.places && j.places[0]; if (!p) return null; return { lat: +p.latitude, lon: +p.longitude, place: p['place name'] + ', ' + p['state abbreviation'] }; } catch (e) { return null; }
+  }
+  if (mode === 'ask') {
+    account(async function (u) {
+      root.querySelector('#bzAcct').innerHTML = '<p class="rv-fine">Signed in as <b>' + esc(u.email) + '</b>.</p>';
+      var box = root.querySelector('#bzAsk'), st = { kind: ASK_KINDS.some(function (k) { return k[0] === q.get('kind'); }) ? q.get('kind') : 'tires', spot: null };
+      async function mine() {
+        var r = await sb.from('biz_requests').select('*').eq('driver', u.id).order('created_at', { ascending: false }).limit(20);
+        var reqs = r.data || [], ids = reqs.map(function (x) { return x.id; });
+        var chats = ids.length ? (await sb.from('biz_chats').select('id, request_id, last_at, driver_seen_at, businesses(name, slug)').in('request_id', ids)).data || [] : [];
+        var cids = chats.map(function (c) { return c.id; });
+        var msgs = cids.length ? (await sb.from('biz_messages').select('chat_id, price, price_note, body, created_at').in('chat_id', cids).eq('from_business', true).order('created_at')).data || [] : [];
+        var host = root.querySelector('#bzMine');
+        host.innerHTML = reqs.length ? '<h2 style="margin:22px 0 8px">My requests</h2>' + reqs.map(function (x) {
+          var cs = chats.filter(function (c) { return c.request_id === x.id; }), open = x.status === 'open' && x.expires_at > new Date().toISOString();
+          return '<div class="bz-sec ask-r"><div class="hq-ch" style="display:flex;justify-content:space-between;gap:8px"><b>' + esc(x.car || '') + (x.car ? ' · ' : '') + esc((ASK_KINDS.filter(function (k) { return k[0] === x.kind; })[0] || [0, ''])[1]) + '</b><span class="bz-pill ' + (open ? 'live' : 'hidden') + '">' + (open ? 'Open' : 'Closed') + '</span></div><p style="margin:4px 0">' + esc(x.need) + '</p>' +
+            (cs.length ? cs.map(function (c) { var last = msgs.filter(function (m) { return m.chat_id === c.id && m.price != null; }).pop(); return '<a class="ask-a" href="/messages/?chat=' + c.id + '"><b>' + esc(c.businesses ? c.businesses.name : 'A shop') + '</b><span>' + (last ? money(last.price) + (last.price_note ? ' · ' + esc(last.price_note) : '') : 'Answered') + '</span>' + icon('chev', 16) + '</a>'; }).join('') : '<p class="rv-fine">' + (open ? 'Waiting for shops near ' + esc(x.place || 'you') + '. We email you when one answers.' : 'No answers.') + '</p>') +
+            (open ? '<button type="button" class="bz-link" data-close="' + x.id + '">Close this request</button>' : '') + '</div>';
+        }).join('') : '';
+        host.onclick = async function (e) { var id = e.target.getAttribute('data-close'); if (id && confirm('Close this request? Shops can’t answer anymore.')) { await sb.from('biz_requests').update({ status: 'closed' }).eq('id', id); mine(); } };
+      }
+      function draw() {
+        box.innerHTML = '<div class="bz-f"><span>What do you need?</span><div class="bz-chips" id="akK">' + ASK_KINDS.map(function (k) { return '<button type="button" data-k="' + k[0] + '" class="' + (st.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>'; }).join('') + '</div></div>' +
+          '<label class="bz-f"><span>Your car</span><input id="akCar" maxlength="80" placeholder="2019 Toyota RAV4"></label>' +
+          '<label class="bz-f"><span>Tell shops what you need</span><textarea id="akNeed" maxlength="600" placeholder="' + esc(ASK_HINT[st.kind]) + '"></textarea></label>' +
+          '<div class="bz-two"><label class="bz-f"><span>Your ZIP code</span><input id="akZip" inputmode="numeric" maxlength="5" placeholder="30030"></label><label class="bz-f"><span>How far</span><select id="akRad"><option value="5">5 miles</option><option value="10">10 miles</option><option value="15" selected>15 miles</option><option value="25">25 miles</option></select></label></div>' +
+          '<button type="button" class="bz-link" id="akLoc">Use my location instead</button><div class="rv-fine" id="akSpot"></div>' +
+          '<p class="rv-fine">Shops see your first name, your car, what you need and your area (about 1 km). Never your phone, email or exact spot. Up to 3 requests a day; each stays open 3 days.</p>' +
+          '<div class="bz-row"><button type="button" class="bz-btn" id="akGo">Ask shops near me</button></div><div class="bz-msg" id="akM" role="status"></div>';
+        box.querySelector('#akK').onclick = function (e) { var k = e.target.getAttribute('data-k'); if (k) { st.kind = k; [].forEach.call(this.children, function (b) { b.className = b.getAttribute('data-k') === k ? 'on' : ''; }); box.querySelector('#akNeed').placeholder = ASK_HINT[k]; } };
+        box.querySelector('#akLoc').onclick = function () {
+          var sp = box.querySelector('#akSpot'); sp.textContent = 'Finding you…';
+          if (!navigator.geolocation) { sp.textContent = 'Your browser can’t share a location. Type your ZIP.'; return; }
+          navigator.geolocation.getCurrentPosition(function (p) { st.spot = { lat: p.coords.latitude, lon: p.coords.longitude, place: 'near you' }; sp.textContent = '✓ Using your location (shops see the area only).'; }, function () { sp.textContent = 'Location is off. Type your ZIP instead.'; }, { timeout: 15000, maximumAge: 600000 });
+        };
+        box.querySelector('#akGo').onclick = async function () {
+          var m = box.querySelector('#akM'), need = box.querySelector('#akNeed').value.trim(), zip = box.querySelector('#akZip').value.trim(); m.className = 'bz-msg bad';
+          if (need.length < 5) { m.textContent = 'Please tell shops what you need.'; return; }
+          var spot = st.spot;
+          if (!spot) { if (!/^\d{5}$/.test(zip)) { m.textContent = 'Please type your 5-digit ZIP code.'; return; } m.className = 'bz-msg'; m.textContent = 'Finding your area…'; spot = await placeFor(zip); if (!spot) { m.className = 'bz-msg bad'; m.textContent = 'We couldn’t find that ZIP code.'; return; } }
+          m.className = 'bz-msg'; m.textContent = 'Sending…';
+          var x = await sb.from('biz_requests').insert({ kind: st.kind, car: box.querySelector('#akCar').value.trim() || null, need: need, lat: spot.lat, lon: spot.lon, place: spot.place, radius: +box.querySelector('#akRad').value }).select('id').single();
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = /3 requests/.test(x.error.message) ? 'You can ask up to 3 times a day.' : 'That didn’t send. Please try again.'; return; }
+          m.className = 'bz-msg good'; m.textContent = 'Sent! Shops near you get it now. We email you when one answers.';
+          box.querySelector('#akNeed').value = ''; mine();
+        };
+      }
+      draw(); mine();
     });
     return;
   }
