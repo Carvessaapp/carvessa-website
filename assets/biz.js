@@ -270,7 +270,7 @@
     var row = function (k, t, s) { return '<label class="fw-row"><span>' + t + '<small>' + s + '</small></span><input type="checkbox" class="fw-sw" data-k="' + k + '"' + (f[k] ? ' checked' : '') + '></label>'; };
     host.innerHTML = '<div class="fw-sheet" role="dialog" aria-label="Follow settings"><div class="fw-ok">' + icon('check', 16) + ' You follow ' + esc(b.name) + '</div><h3>What should we tell you?</h3>' +
       row('deals', 'New deals and specials', 'Price specials, sales, free checks') + row('news', 'News from the shop', 'New service, holiday hours') +
-      row('push', 'Phone alert', 'In the Carvessa app, signed in with this account') + row('email', 'Email too', 'One email, never more than 1 a week per shop') +
+      row('messages', 'Messages from this shop', 'They can write to you here, like a price or “your car is ready”. Stop any time.') + row('push', 'Phone alert', 'In the Carvessa app, signed in with this account') + row('email', 'Email too', 'One email, never more than 1 a week per shop') +
       '<p class="rv-fine">At most 2 phone alerts a week from one shop, and none from 9 PM to 8 AM. The shop sees how many people follow it, never who.</p>' +
       '<div class="bz-row"><button type="button" class="bz-btn" data-fw="done">Done</button><button type="button" class="bz-btn soft" data-fw="mute">Mute 30 days</button><button type="button" class="bz-btn red" data-fw="unfollow">Unfollow</button></div><div class="bz-msg" role="status"></div><p class="rv-fine"><a href="/following/">All shops I follow ›</a></p></div>';
     var m = host.querySelector('.bz-msg');
@@ -549,15 +549,53 @@
   // ---------- Messages + quote requests (step 4): one chat thread, used by drivers and by the business ----------
   var QUOTE_KINDS = { repair: 1, tires: 1, body: 1, detail: 1, tow: 1, insurance: 1, other: 1 };
   var when = function (d) { var t = new Date(d), n = new Date(); return t.toDateString() === n.toDateString() ? t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : t.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + t.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); };
+  // ---------- Offers in the chat (picture 293 part 2): a price card the driver can accept. Pay at the shop. ----------
+  function offerCard(m, asBusiness) {
+    var o = m.offer || {}, ended = o.until && o.until < today(), stt = m.offer_status || 'open';
+    var tag = stt === 'accepted' ? '<span class="of-tag ok">✓ Accepted</span>' : stt === 'declined' ? '<span class="of-tag">No thanks</span>' : ended ? '<span class="of-tag">Ended</span>' : '<span class="of-tag new">Good until ' + new Date(o.until + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>';
+    return '<div class="of-card"><div class="of-k">OFFER ' + tag + '</div><b class="of-t">' + esc(o.title || 'Offer') + '</b>' +
+      (o.lines || []).map(function (l) { return '<div class="of-l"><span>' + esc(l.t) + '</span><span>' + money(l.p) + '</span></div>'; }).join('') +
+      '<div class="of-l of-tot"><span>Total before tax</span><span>' + money(o.total) + '</span></div>' + (o.note ? '<p class="of-n">' + esc(o.note) + '</p>' : '') +
+      '<small class="of-f">Price set by the business. You pay at the shop. Carvessa doesn’t take payments.</small>' +
+      (!asBusiness && stt === 'open' && !ended ? '<div class="of-b"><button type="button" class="bz-btn green" data-ofa="accept" data-of="' + m.id + '">Accept</button><button type="button" class="bz-btn soft" data-ofa="ask" data-of="' + m.id + '">Ask a question</button><button type="button" class="bz-btn soft" data-ofa="decline" data-of="' + m.id + '">No thanks</button></div>' : '') + '</div>';
+  }
+  function offerBuilder(host, send) {
+    var d7 = new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10), max = new Date(Date.now() + 60 * 864e5).toISOString().slice(0, 10);
+    var line = function () { return '<div class="of-row"><input class="of-in-t" maxlength="80" placeholder="What (e.g. Brake pads)"><label class="of-in-p">$<input inputmode="decimal" placeholder="0"></label><button type="button" class="of-x" aria-label="Remove line">✕</button></div>'; };
+    host.innerHTML = '<div class="of-ed"><b>Offer with a price</b><label class="bz-f"><span>Title</span><input id="ofT" maxlength="80" placeholder="Front brake pads + rotors"></label>' +
+      '<div class="of-rows">' + line() + line() + '</div><button type="button" class="bz-btn soft bz-small" id="ofAdd">＋ Add a line</button>' +
+      '<div class="of-l of-tot"><span>Total before tax</span><span id="ofSum">$0</span></div>' +
+      '<div class="bz-two"><label class="bz-f"><span>Good until</span><input type="date" id="ofU" value="' + d7 + '" min="' + today() + '" max="' + max + '"></label><label class="bz-f"><span>Note (optional)</span><input id="ofN" maxlength="160" placeholder="Includes old parts back"></label></div>' +
+      '<p class="rv-fine">Real prices only. The driver can accept, ask or say no thanks. They pay at your shop.</p>' +
+      '<div class="bz-row"><button type="button" class="bz-btn" id="ofGo">Send offer</button><button type="button" class="bz-btn soft" id="ofX">Cancel</button></div><div class="bz-msg" id="ofM" role="status"></div></div>';
+    var $ = function (q) { return host.querySelector(q); };
+    var lines = function () { return [].map.call(host.querySelectorAll('.of-row'), function (r) { return { t: r.querySelector('.of-in-t').value.trim(), p: parseFloat((r.querySelector('.of-in-p input').value || '').replace(/[^\d.]/g, '')) }; }).filter(function (l) { return l.t && !isNaN(l.p); }); };
+    var sum = function () { $('#ofSum').textContent = money(lines().reduce(function (a, l) { return a + l.p; }, 0)); };
+    host.addEventListener('input', sum);
+    host.addEventListener('click', function (e) { if (e.target.classList.contains('of-x')) { var r = e.target.closest('.of-row'); if (host.querySelectorAll('.of-row').length > 1) r.remove(); sum(); } });
+    $('#ofAdd').onclick = function () { if (host.querySelectorAll('.of-row').length < 8) $('.of-rows').insertAdjacentHTML('beforeend', line()); };
+    $('#ofX').onclick = function () { host.hidden = true; host.innerHTML = ''; };
+    $('#ofGo').onclick = async function () {
+      var L = lines(), m = $('#ofM'); m.className = 'bz-msg bad';
+      if (!L.length) { m.textContent = 'Add at least one line with a price.'; return; }
+      this.disabled = true; m.className = 'bz-msg'; m.textContent = 'Sending…';
+      var err = await send({ title: $('#ofT').value.trim() || L[0].t, lines: L, until: $('#ofU').value, note: $('#ofN').value.trim() });
+      if (err) { this.disabled = false; m.className = 'bz-msg bad'; m.textContent = err; }
+    };
+    return { lines: lines };
+  }
   function chatThread(host, chat, asBusiness, title) {
     var st = { photos: [], timer: null, seen: 0 };
     host.innerHTML = '<div class="ch"><div class="ch-head"><b>' + esc(title) + '</b>' + (chat.kind === 'quote' ? '<span class="hq-tag">Quote request</span>' : '') + '</div>' +
       (chat.kind === 'quote' || chat.car ? '<div class="ch-quote">' + (chat.car ? '<b>' + esc(chat.car) + '</b>' : '') + (chat.miles != null ? ' · ' + Number(chat.miles).toLocaleString('en-US') + ' mi' : '') + (chat.topic ? '<div>' + esc(chat.topic) + '</div>' : '') + '</div>' : '') +
       '<div class="ch-list" aria-live="polite"></div>' +
       (chat.status === 'blocked' && !asBusiness ? '<div class="bz-msg bad">This business isn’t taking messages from you.</div>' :
-      '<div class="ch-pics"></div>' + (asBusiness && chat.kind === 'quote' ? '<div class="ch-price"><label>Price $<input id="chP" inputmode="decimal" placeholder="129"></label><input id="chPN" maxlength="120" placeholder="What it covers / when (e.g. Today before 4 PM)"></div>' : '') +
+      '<div class="ch-pics"></div><div class="of-build" hidden></div>' + (asBusiness && chat.kind === 'quote' ? '<div class="ch-price"><label>Price $<input id="chP" inputmode="decimal" placeholder="129"></label><input id="chPN" maxlength="120" placeholder="What it covers / when (e.g. Today before 4 PM)"></div>' : '') +
       '<div class="ch-box"><label class="ch-add" aria-label="Add a photo">+<input type="file" accept="image/*" id="chF" hidden></label><textarea id="chT" maxlength="1000" rows="2" placeholder="' + (asBusiness ? 'Write a reply…' : 'Write a message…') + '"></textarea><button type="button" class="bz-btn" id="chGo">Send</button></div>' +
-      '<p class="rv-fine">' + (asBusiness ? 'The driver’s phone and email stay private unless they share them.' : 'Only your first name shows. Don’t share card numbers or passwords.') + '</p>') +
+      (asBusiness ? '<div class="bz-row"><button type="button" class="bz-btn soft bz-small" id="chOf">＋ Offer with a price</button></div>' : '') +
+      (asBusiness && chat.driver_stop ? '<div class="bz-msg bad">This driver stopped messages from your business. They can still write to you.</div>' : '') +
+      '<p class="rv-fine">' + (asBusiness ? 'The driver’s phone and email stay private unless they share them.' : 'Only your first name shows. Don’t share card numbers or passwords.') + '</p>' +
+      (!asBusiness ? '<p class="rv-fine ch-stop">' + (chat.driver_stop ? 'You stopped messages from this business. Writing to them turns messages back on.' : '<button type="button" class="linkish" id="chStop">Stop messages from this business</button> · <button type="button" class="linkish" id="chRep">Report</button>') + '</p>' : '')) +
       '<div class="bz-msg" id="chM" role="status"></div></div>';
     var $ = function (s) { return host.querySelector(s); };
     async function load() {
@@ -565,12 +603,41 @@
       var list = r.data || []; if (list.length === st.seen && st.seen) return; st.seen = list.length;
       $('.ch-list').innerHTML = list.length ? list.map(function (m) {
         var mine = m.from_business === asBusiness;
-        return '<div class="ch-m ' + (mine ? 'me' : 'them') + '">' + (m.price != null ? '<div class="ch-pr">Price: ' + money(m.price) + (m.price_note ? ' · ' + esc(m.price_note) : '') + '<small>Set by the business. Ask for a written quote.</small></div>' : '') + (m.body ? '<div>' + esc(m.body).replace(/\n/g, '<br>') + '</div>' : '') +
+        return '<div class="ch-m ' + (mine ? 'me' : 'them') + (m.offer ? ' has-of' : '') + '">' + (m.offer ? offerCard(m, asBusiness) : '') + (m.price != null ? '<div class="ch-pr">Price: ' + money(m.price) + (m.price_note ? ' · ' + esc(m.price_note) : '') + '<small>Set by the business. Ask for a written quote.</small></div>' : '') + (m.body ? '<div>' + esc(m.body).replace(/\n/g, '<br>') + '</div>' : '') +
           ((m.photos || []).length ? '<div class="rv-pics">' + m.photos.map(function (p) { return '<a href="' + photoUrl(p) + '" target="_blank" rel="noopener"><img src="' + photoUrl(p) + '" alt="Photo" loading="lazy"></a>'; }).join('') + '</div>' : '') + '<small>' + when(m.created_at) + '</small></div>';
       }).join('') : '<p class="rv-fine">No messages yet.</p>';
       var L = $('.ch-list'); L.scrollTop = L.scrollHeight;
       sb.from('biz_chats').update(asBusiness ? { biz_seen_at: new Date().toISOString() } : { driver_seen_at: new Date().toISOString() }).eq('id', chat.id).then(function () {});
     }
+    host.addEventListener('click', async function (e) {
+      var a = e.target.closest('[data-ofa]'); if (!a) return;
+      var id = a.getAttribute('data-of'), v = a.getAttribute('data-ofa'), m = $('#chM');
+      if (v === 'ask') { var t = $('#chT'); if (t) { t.value = 'About your offer: '; t.focus(); } return; }
+      if (v === 'accept' && !confirm('Accept this offer? The shop gets a message. You pay at the shop, not here.')) return;
+      a.disabled = true;
+      var x = await sb.rpc('biz_offer_answer', { m: id, answer: v });
+      if (x.error) { a.disabled = false; m.className = 'bz-msg bad'; m.textContent = /ended/.test(x.error.message) ? 'This offer has ended. Ask the shop for a new one.' : /already/.test(x.error.message) ? 'You already answered this offer.' : 'That didn’t go through. Please try again.'; return; }
+      m.className = 'bz-msg good'; m.textContent = v === 'accept' ? 'Done. The shop knows you accepted. You pay at the shop.' : 'Done. We told the shop “no thanks”.'; st.seen = 0; load();
+    });
+    if ($('#chStop')) $('#chStop').onclick = async function () {
+      if (!confirm('Stop messages from this business? They won’t be able to write to you. You can still write to them.')) return;
+      var x = await sb.from('biz_chats').update({ driver_stop: true }).eq('id', chat.id);
+      if (x.error) { $('#chM').className = 'bz-msg bad'; $('#chM').textContent = 'That didn’t save. Please try again.'; return; }
+      chat.driver_stop = true; this.closest('.ch-stop').textContent = 'Done. This business can’t write to you anymore. Writing to them turns messages back on.';
+    };
+    if ($('#chRep')) $('#chRep').onclick = async function () {
+      var why = prompt('What’s wrong? (spam, pushy selling, rude, something else)'); if (!why) return;
+      await sb.from('feedback').insert({ mood: 'confused', message: ('[Chat report] chat=' + chat.id + ' | ' + why).slice(0, 1000), screen: 'messages' });
+      $('#chM').className = 'bz-msg good'; $('#chM').textContent = 'Thanks. A person on our team will look at it. You can also stop messages from this business.';
+    };
+    if ($('#chOf')) $('#chOf').onclick = function () {
+      var b = $('.of-build'); if (!b.hidden) { b.hidden = true; b.innerHTML = ''; return; }
+      b.hidden = false; offerBuilder(b, async function (offer) {
+        var x = await sb.from('biz_messages').insert({ chat_id: chat.id, body: $('#chT').value.trim() || null, offer: offer });
+        if (x.error) return /stopped/.test(x.error.message) ? 'This driver stopped messages from your business.' : /60 days/.test(x.error.message) ? 'Good until must be within the next 60 days.' : 'That didn’t send. Check the prices and try again.';
+        $('#chT').value = ''; b.hidden = true; b.innerHTML = ''; st.seen = 0; load(); return null;
+      });
+    };
     function drawPics() { var b = $('.ch-pics'); if (b) b.innerHTML = st.photos.map(function (p, i) { return '<span class="p"><img src="' + photoUrl(p) + '" alt=""><button type="button" data-rm="' + i + '" aria-label="Remove">✕</button></span>'; }).join(''); }
     load();
     st.timer = setInterval(function () { if (!document.body.contains(host.querySelector('.ch'))) { clearInterval(st.timer); return; } if (!document.hidden) load(); }, 12000);
@@ -1100,6 +1167,7 @@
         var chats = r.data || [], unread = function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; };
         el.innerHTML = head('TEAM RADIO', 'Messages', chats.filter(unread).length ? chats.filter(unread).length + ' new' : '') +
           '<p class="hq-fine">Drivers who wrote to you from Carvessa. Quote requests come with their car and problem. Answer fast: the first good answer often wins the job.</p>' +
+          '<div class="bz-row"><button type="button" class="bz-btn" id="nmGo">＋ New message</button></div><div id="nmBox"></div>' +
           (chats.length ? '<div class="ch-wrap"><div class="ch-side">' + chats.map(function (c) { return '<button type="button" data-chat="' + c.id + '" class="' + (c.id === openId ? 'on ' : '') + (unread(c) ? 'new' : '') + '"><b>' + esc(c.driver_name) + (c.car ? ' · ' + esc(c.car) : '') + '</b><small>' + (c.kind === 'quote' ? 'Quote · ' : '') + esc(c.topic || 'Message') + '</small><small>' + when(c.last_at) + (c.status !== 'open' ? ' · ' + c.status : '') + '</small></button>'; }).join('') + '</div><div class="ch-main" id="chMain"><p class="hq-fine">Pick a chat.</p></div></div>'
           : '<div class="hq-card">No messages yet. When your page is live, drivers can message you or ask for a quote from it.</div>');
         function open(id) {
@@ -1116,7 +1184,42 @@
           };
         }
         el.onclick = function (e) { var b = e.target.closest('[data-chat]'); if (b) open(b.getAttribute('data-chat')); };
+        el.querySelector('#nmGo').onclick = function () { var bx = el.querySelector('#nmBox'); if (bx.innerHTML) { bx.innerHTML = ''; return; } writeFirst(bx, function (id) { messages(el, id); }); };
         if (openId) open(openId);
+      }
+      // A shop writes first (picture 293 part 1): only to people who wrote to it or follow it with messages on.
+      async function writeFirst(bx, done) {
+        if (cur.status !== 'live') { bx.innerHTML = '<div class="hq-card">You can write to customers once your page is live.</div>'; return; }
+        bx.innerHTML = '<div class="hq-card">Loading your customers…</div>';
+        var r = await sb.rpc('biz_customers', { b: cur.id }), list = r.data || [], pick = null;
+        if (r.error || !list.length) { bx.innerHTML = '<div class="hq-card nm"><b>No customers to write to yet</b><p class="hq-fine">You can write to people who messaged you, asked you for a quote, or follow you with “Messages from this shop” turned on. Never strangers.</p></div>'; return; }
+        var QS = ['Your car is ready for pickup.', 'Time for an oil change? Want me to save you a spot?', 'Thanks for coming in! Let us know how everything runs.', 'Here’s the price for what you asked about.'];
+        bx.innerHTML = '<div class="hq-card nm"><b>New message</b><p class="hq-fine">Your customers: ' + list.length + ' (wrote to you or follow you with messages on).</p>' +
+          '<label class="bz-f"><span>To</span><select id="nmTo"><option value="">Pick a customer</option>' + list.map(function (c, i) { return '<option value="' + i + '">' + esc(c.name) + (c.car ? ' · ' + esc(c.car) : '') + ' · ' + (c.how === 'follower' ? 'follows you' : c.how === 'both' ? 'wrote to you + follows you' : 'wrote to you') + '</option>'; }).join('') + '</select></label>' +
+          '<div class="nm-qs">' + QS.map(function (q) { return '<button type="button" class="bz-chip" data-q="' + esc(q) + '">' + esc(q.split(/[.?!]/)[0]) + '</button>'; }).join('') + '</div>' +
+          '<label class="bz-f"><span>Message</span><textarea id="nmT" maxlength="1000" rows="3" placeholder="Hi! …"></textarea></label>' +
+          '<div class="bz-row"><button type="button" class="bz-btn soft bz-small" id="nmOf">＋ Add an offer with a price</button></div><div class="of-build" hidden></div>' +
+          '<div class="bz-row"><button type="button" class="bz-btn" id="nmSend">Send</button></div><div class="bz-msg" id="nmM" role="status"></div>' +
+          '<p class="hq-fine">They can reply, stop messages from you or report it. Up to 20 new chats a day, 8 AM–9 PM. Their phone and email stay private.</p></div>';
+        var q = function (s) { return bx.querySelector(s); }, ob = null;
+        bx.querySelector('.nm-qs').onclick = function (e) { var t = e.target.getAttribute('data-q'); if (t) { q('#nmT').value = t; q('#nmT').focus(); } };
+        q('#nmOf').onclick = function () {
+          var b = q('.of-build'); if (!b.hidden) { b.hidden = true; b.innerHTML = ''; ob = null; return; }
+          b.hidden = false; ob = offerBuilder(b, function () { return 'Tap Send below to send the message with this offer.'; });
+          var go = b.querySelector('#ofGo'); if (go) go.remove();
+        };
+        q('#nmSend').onclick = async function () {
+          var m = q('#nmM'), i = q('#nmTo').value, body = q('#nmT').value.trim(), L = ob ? ob.lines() : [];
+          m.className = 'bz-msg bad';
+          if (i === '') { m.textContent = 'Pick a customer.'; return; }
+          if (!body && !L.length) { m.textContent = 'Write a message or add an offer.'; return; }
+          var offer = L.length ? { title: (q('#ofT') && q('#ofT').value.trim()) || L[0].t, lines: L, until: q('#ofU') ? q('#ofU').value : null, note: q('#ofN') ? q('#ofN').value.trim() : '' } : null;
+          this.disabled = true; m.className = 'bz-msg'; m.textContent = 'Sending…';
+          var x = await sb.rpc('biz_write_first', { b: cur.id, d: list[+i].driver, body: body, offer: offer });
+          this.disabled = false;
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = /8 AM/.test(x.error.message) ? 'You can write first between 8 AM and 9 PM (Atlanta time).' : /20 new/.test(x.error.message) ? 'Up to 20 new chats a day. Try again tomorrow.' : /isn.t taking/.test(x.error.message) ? 'This driver isn’t taking messages from you.' : /live/.test(x.error.message) ? 'Your page must be live to write to customers.' : 'That didn’t send. Please try again.'; return; }
+          done(x.data);
+        };
       }
       function soon(el) {
         var rv = tab === 'reviews';
@@ -1282,7 +1385,7 @@
       var ids = list.map(function (f) { return f.business_id; });
       var dl = ids.length ? (await sb.from('business_posts').select('id, business_id, kind, template, title, body, price, fine, who, until, codes, created_at').in('business_id', ids).order('created_at', { ascending: false }).limit(20)).data || [] : [];
       var by = {}; list.forEach(function (f) { by[f.business_id] = f.businesses; });
-      var sum = function (f) { var muted = f.muted_until && f.muted_until > new Date().toISOString(); return muted ? 'Muted until ' + new Date(f.muted_until).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : [f.deals ? 'Deals' : null, f.news ? 'news' : null].filter(Boolean).join(' + ') + ' · ' + [f.push ? 'phone' : null, f.email ? 'email' : null].filter(Boolean).join(' + ') || 'In the app only'; };
+      var sum = function (f) { var muted = f.muted_until && f.muted_until > new Date().toISOString(); return muted ? 'Muted until ' + new Date(f.muted_until).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : [f.deals ? 'Deals' : null, f.news ? 'news' : null, f.messages ? 'messages' : null].filter(Boolean).join(' + ') + ' · ' + [f.push ? 'phone' : null, f.email ? 'email' : null].filter(Boolean).join(' + ') || 'In the app only'; };
       function draw() {
         box.innerHTML = (list.length ? '<div class="fl-list">' + list.map(function (f, i) { var b = f.businesses; return '<div class="fl-it"><div class="fl-row">' + logoHtml(b, 'fl-lo') + '<div class="fl-tx"><a href="/shops/?b=' + encodeURIComponent(b.slug) + '"><b>' + esc(b.name) + '</b></a><small>' + esc(sum(f)) + '</small></div><button type="button" class="bz-btn soft bz-small" data-i="' + i + '">' + icon('bell', 16) + 'Settings</button></div><div class="fl-sheet"></div></div>'; }).join('') + '</div>' : '<div class="bz-sec">You don’t follow any shops yet. Open a shop page on Carvessa and tap Follow to get its deals first.</div>') +
           '<div class="bz-sec"><h3>Quiet hours</h3><label class="bz-ck" style="margin:6px 0"><input type="checkbox" id="flQ"' + (alerts.quiet !== false ? ' checked' : '') + '><span>No phone alerts from shops between 9 PM and 8 AM (Atlanta time)</span></label><div class="bz-msg" id="flM" role="status"></div><p class="rv-fine">Safety recalls still show in the app.</p></div>' +
