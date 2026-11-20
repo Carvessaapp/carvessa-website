@@ -210,7 +210,9 @@
       '<div class="dl-ft">' + logoHtml(b, 'dl-lo') + '<span>' + esc(b.name) + '</span><em>' + endText(p) + '</em></div></div>';
   }
   // Share kit: a square post, a story, a flyer with a QR code, and text to copy. Every link goes to the Carvessa page.
-  function dealUrl(p, b) { return 'https://carvessa.app/shops/?b=' + encodeURIComponent(b.slug) + '&deal=' + p.id; }
+  // Short links (Nov 20, 2026): carvessa.app/b/<link> (the 404 page sends it to /shops/?b=).
+  var shortUrl = function (slug) { return 'https://carvessa.app/b/' + slug; };
+  function dealUrl(p, b) { return shortUrl(b.slug) + '?deal=' + p.id; }
   function dealText(p, b) { return b.name + ': ' + p.title + (p.price != null ? ' · ' + money(p.price) : '') + (p.until ? ' · until ' + shortDay(p.until) : '') + '.' + (p.body ? ' ' + p.body : '') + ' See it on Carvessa: ' + dealUrl(p, b); }
   function wrapText(g, text, x, y, maxW, lh, maxLines) {
     var words = String(text || '').split(/\s+/), line = '', n = 0;
@@ -869,7 +871,7 @@
       };
       var CITY = '<svg class="hq-city" viewBox="0 0 400 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0 90V60h20V40h14v20h12V30h18v30h10V50h16v40h12V45h20v45h8V35h22v55h10V55h16v35h14V25h20v65h10V50h18v40h12V40h24v50h16V58h20v32z" fill="rgba(255,255,255,.08)"/></svg>';
       async function sharePage() {
-        var url = 'https://carvessa.app/shops/?b=' + encodeURIComponent(cur.slug);
+        var url = shortUrl(cur.slug);
         if (navigator.share) { try { await navigator.share({ title: cur.name, text: cur.name + ' on Carvessa', url: url }); return; } catch (e) { return; } }
         try { await navigator.clipboard.writeText(url); alert('Link copied: ' + url); } catch (e) { prompt('Copy your page link:', url); }
       }
@@ -898,7 +900,7 @@
         var KPI = [['view', 'eye', 'Views', t.view, 'Drivers who opened your page'], ['call', 'phone', 'Calls', t.call, 'Taps on Call'], ['directions', 'pin', 'Directions', t.directions, 'Taps on Directions'], ['sales', 'cash', 'Sales you marked', money(total || 0), sales.length + ' customer' + (sales.length === 1 ? '' : 's')]];
         el.innerHTML =
           '<section class="hq-hero"><div><small>' + hello + '</small><h2>' + esc(cur.name) + '</h2><div class="hq-chips"><span class="hq-c ' + (cur.status === 'live' ? 'live' : 'wait') + '">' + (cur.status === 'live' ? '● Live' : STATUS[cur.status] || cur.status) + '</span>' + (cur.status === 'live' ? '<span class="hq-c">Verified by Carvessa</span>' : '') + (stars.length ? '<span class="hq-c">' + avg.toFixed(1) + ' stars · ' + stars.length + ' review' + (stars.length > 1 ? 's' : '') + '</span>' : '') + '<span class="hq-c">' + (fol.data || 0) + ' follower' + (fol.data === 1 ? '' : 's') + '</span></div></div>' +
-          '<div class="hq-hb"><a class="hq-w" href="/shops/?b=' + encodeURIComponent(cur.slug) + '" target="_blank" rel="noopener">' + icon('globe', 16) + 'View my page</a><button type="button" class="hq-w ghost" id="hqShare">' + icon('share', 16) + 'Share my page</button></div>' + CITY + '</section>' +
+          '<div class="hq-hb"><button type="button" class="hq-w ghost hq-link2" data-go="account:hqLink" title="Your page link">carvessa.app/b/' + esc(cur.slug) + '</button><a class="hq-w" href="/shops/?b=' + encodeURIComponent(cur.slug) + '" target="_blank" rel="noopener">' + icon('globe', 16) + 'View my page</a><button type="button" class="hq-w ghost" id="hqShare">' + icon('share', 16) + 'Share my page</button></div>' + CITY + '</section>' +
           (cur.status !== 'live' ? '<div class="hq-note">' + (cur.status === 'pending' ? 'Your page is waiting for our check. Only you can see it. We’ll call or text you at ' + esc(cur.phone || 'your number') + ' to confirm you’re the owner. Counts start when it’s live.' : 'Your page isn’t showing to drivers right now. Questions? Write to hello@carvessa.app.') + '</div>' : '') +
           '<div class="hq-kpis">' + KPI.map(function (k) { return '<button type="button" class="hq-kpi" data-kpi="' + k[0] + '"><span class="kh">' + icon(k[1], 18) + k[2] + icon('chev', 16) + '</span><b>' + k[3] + '</b><small>' + (k[0] === 'sales' ? k[4] : 'last 30 days') + '</small>' + sparkline(days.map(function (d) { return per[k[0]][d] || 0; })) + '</button>'; }).join('') + '</div>' +
           '<div id="hqKpiD"></div>' +
@@ -1230,6 +1232,9 @@
         if (focus) setTimeout(function () { var f = el.querySelector('#' + focus); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
         var sug = SUGGEST[cur.kind];
         el.innerHTML = head('ACCOUNT', 'Look and settings') +
+          '<div class="hq-card" id="hqLink"><h4>YOUR PAGE LINK</h4><p class="hq-fine" style="margin-top:0">Put it on Instagram, Facebook, Google, your receipts and business cards.</p>' +
+            '<div class="lk-show"><b id="lkNow">carvessa.app/b/' + esc(cur.slug) + '</b><button type="button" class="bz-btn bz-small" id="lkCopy">' + icon('copy', 16) + 'Copy</button>' + (navigator.share ? '<button type="button" class="bz-btn soft bz-small" id="lkShare">' + icon('share', 16) + 'Share</button>' : '') + '</div>' +
+            '<label class="bz-f"><span>Change it (letters, numbers and dashes)</span><div class="lk-edit"><em>carvessa.app/b/</em><input id="lkIn" maxlength="40" value="' + esc(cur.slug) + '" autocapitalize="none" spellcheck="false"></div></label><div class="bz-row"><button type="button" class="bz-btn soft bz-small" id="lkSave">Save my new link</button></div><div class="bz-msg" id="lkM" role="status"></div><p class="hq-fine">Your old link keeps working too.</p></div>' +
           '<div class="hq-card" id="hqColor"><h4>YOUR COLOR AND PAGE LOOK</h4><p class="hq-fine">One color for your page and Business HQ. We keep button text easy to read.</p>' +
             '<div class="cl-logo">' + logoHtml(cur, 'cl-lg') + '<div><b>' + (cur.logo ? 'Match my logo' : 'No logo yet') + '</b><small>' + (cur.logo ? 'We find the colors in your logo.' : 'Add a logo in My page, then we can match it.') + '</small></div>' + (cur.logo ? '<button type="button" class="bz-btn soft bz-small" id="clMatch">Match my logo</button>' : '') + '</div><div id="clSug"></div>' +
             '<div class="cl-sw">' + SWATCH.map(function (w) { return '<button type="button" data-c="' + w[0] + '" style="background:' + w[0] + '" aria-label="' + w[1] + '" class="' + (brandOf(cur).toLowerCase() === w[0].toLowerCase() ? 'on' : '') + '"></button>'; }).join('') + '<label class="cl-any">Any color <input type="color" id="clAny" value="' + brandOf(cur) + '"></label></div>' +
@@ -1254,6 +1259,20 @@
           var v = this.checked, x = await sb.from('businesses').update({ notify_email: v }).eq('id', cur.id), m = el.querySelector('#nM');
           if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save.'; this.checked = !v; return; }
           cur.notify_email = v; m.className = 'bz-msg good'; m.textContent = v ? 'Email alerts are on.' : 'Email alerts are off.';
+        };
+        var lkM = el.querySelector('#lkM'), lkIn = el.querySelector('#lkIn'), lkT;
+        el.querySelector('#lkCopy').onclick = async function () { try { await navigator.clipboard.writeText(shortUrl(cur.slug)); lkM.className = 'bz-msg good'; lkM.textContent = 'Copied. Paste it anywhere.'; } catch (e) { prompt('Copy your link:', shortUrl(cur.slug)); } };
+        if (el.querySelector('#lkShare')) el.querySelector('#lkShare').onclick = function () { navigator.share({ title: cur.name, url: shortUrl(cur.slug) }).catch(function () {}); };
+        lkIn.oninput = function () {
+          var v = lkIn.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-'); if (v !== lkIn.value) lkIn.value = v;
+          clearTimeout(lkT); if (v === cur.slug) { lkM.textContent = ''; return; }
+          lkT = setTimeout(async function () { var r = await sb.rpc('business_link_free', { s: v }); lkM.className = 'bz-msg ' + (r.data ? 'good' : 'bad'); lkM.textContent = r.data ? '✓ carvessa.app/b/' + v + ' is free' : (v.length < 3 ? 'At least 3 letters or numbers.' : 'That link is taken or not allowed. Try another.'); }, 350);
+        };
+        el.querySelector('#lkSave').onclick = async function () {
+          var v = lkIn.value.replace(/^-+|-+$/g, ''); if (v === cur.slug) return;
+          var r = await sb.rpc('set_business_link', { b: cur.id, s: v });
+          if (r.error) { lkM.className = 'bz-msg bad'; lkM.textContent = 'That link isn’t available. Try another.'; return; }
+          cur.slug = r.data; el.querySelector('#lkNow').textContent = 'carvessa.app/b/' + cur.slug; lkM.className = 'bz-msg good'; lkM.textContent = 'Saved. Your new link is carvessa.app/b/' + cur.slug + '. Old links still work.';
         };
         async function saveLook(up, msg) {
           var x = await sb.from('businesses').update(up).eq('id', cur.id), m = el.querySelector('#lM');
@@ -1420,7 +1439,7 @@
         '<div class="fy"><div class="fy-band" style="background:linear-gradient(150deg,' + t.bg[0] + ',' + t.bg[1] + ')"><div class="dl-k">' + icon(t.ic, 16) + t.k + '</div><h1>' + esc(p.title) + '</h1>' + (p.price != null ? '<div class="fy-p">' + money(p.price) + '</div>' : '') + (p.body ? '<p>' + esc(p.body) + '</p>' : '') + '</div>' +
         '<div class="fy-b"><div class="fy-who"><b>' + esc(b.name) + '</b><span>' + esc([b.address, b.city].filter(Boolean).join(', ')) + '</span><span>' + endText(p) + (p.who === 'new' ? ' · New customers' : '') + '</span>' + (p.fine ? '<small>' + esc(p.fine) + '</small>' : '') + '</div>' +
         '<div class="fy-qr">' + (qr ? qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true }) : '') + '<b>Scan for the deal and directions</b></div></div>' +
-        '<div class="fy-foot"><span class="fy-logo">CAR<i>V</i>essa</span><span>Car trouble? Free help in English and Spanish.</span><span>carvessa.app/shops/?b=' + esc(b.slug) + '</span></div></div>';
+        '<div class="fy-foot"><span class="fy-logo">CAR<i>V</i>essa</span><span>Car trouble? Free help in English and Spanish.</span><span>carvessa.app/b/' + esc(b.slug) + '</span></div></div>';
     })();
     return;
   }
@@ -1431,6 +1450,7 @@
       var slug = q.get('b') || '';
       var r = slug ? await sb.from('businesses').select(PUB).eq('slug', slug).maybeSingle() : { data: null };
       var b = r.data;
+      if (!b && slug) { var old = (await sb.from('businesses').select('slug').contains('old_slugs', [slug]).maybeSingle()).data; if (old) { location.replace('/shops/?b=' + encodeURIComponent(old.slug) + (q.get('deal') ? '&deal=' + encodeURIComponent(q.get('deal')) : '')); return; } }
       if (!b) { root.innerHTML = '<div class="bz"><h1>This page isn’t available</h1><p class="lead">It may be waiting for our check, or the link is wrong.</p><a class="bz-btn" href="/partners/">For businesses</a></div>'; return; }
       var [s, ps, rv, me, fc, ly] = await Promise.all([
         sb.from('business_services').select('name, price_from, note').eq('business_id', b.id).order('sort'),
@@ -1526,7 +1546,7 @@
       var secs = tabsList.map(function (t) { return root.querySelector('#' + t[0]); });
       window.addEventListener('scroll', function () { var y = tabs.getBoundingClientRect().bottom + 10, on = 0; secs.forEach(function (s, i) { if (s && s.getBoundingClientRect().top <= y) on = i; }); [].forEach.call(tabs.children, function (a, i) { a.classList.toggle('on', i === on); }); }, { passive: true });
       root.querySelector('#spShare').onclick = async function () {
-        var url = 'https://carvessa.app/shops/?b=' + encodeURIComponent(b.slug);
+        var url = shortUrl(b.slug);
         if (navigator.share) { try { await navigator.share({ title: b.name, url: url }); } catch (err) { /* closed */ } return; }
         try { await navigator.clipboard.writeText(url); this.querySelector('.sp-hide').textContent = 'Link copied'; } catch (err) { prompt('Copy this link:', url); }
       };
