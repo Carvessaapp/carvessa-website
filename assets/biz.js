@@ -111,6 +111,7 @@
     user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>', flag: '<path d="M5 21V4h11l-2 4 2 4H5"/>', bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>', plus: '<path d="M12 5v14M5 12h14"/>',
     qr: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/>', heart: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>', shield: '<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><path d="M2 20c.8-3.5 3.5-5 7-5s6.2 1.5 7 5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.5 0 4.2 1.3 5 4"/>',
     inbox: '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
     down: '<path d="M12 4v12M6 10l6 6 6-6M4 20h16"/>', copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/>', print: '<path d="M6 9V3h12v6M6 18H4v-7h16v7h-2"/><rect x="6" y="14" width="12" height="7"/>', moon: '<path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/>', out: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>'
   };
@@ -734,7 +735,7 @@
   // ---------- Business HQ: the owner's private dashboard ----------
   if (mode === 'edit') {
     var STATUS = { pending: 'Waiting for our check', live: 'Live', hidden: 'Hidden', rejected: 'Not approved', blocked: 'Blocked' };
-    var NAV = [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['posts', 'Deals and posts', 'tag'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear']];
+    var NAV = [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['customers', 'Customers', 'users'], ['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['posts', 'Deals and posts', 'tag'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear']];
     account(async function (u) {
       root.querySelector('#bzAcct').hidden = true;
       var r = await sb.from('businesses').select(MINE).eq('owner', u.id).order('created_at');
@@ -766,8 +767,8 @@
           '<div class="hq-status"><span class="hq-st ' + esc(cur.status) + '">' + (STATUS[cur.status] || cur.status) + '</span><small>' + esc(kindName(cur.kind)) + '</small></div>' +
           '<div class="hq-pro"><b>Pro coming later</b><small>Business network and deeper reports. Your page stays free.</small></div></aside>' +
           '<main class="hq-main" id="hqBody"></main></div>' +
-          '<nav class="hq-tabs" aria-label="Business HQ">' + [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['posts', 'Deals', 'tag'], ['more', 'More', 'gear']].map(function (n) { var on = n[0] === tab || (n[0] === 'more' && ['page', 'sales', 'account', 'reviews'].indexOf(tab) >= 0); return '<button type="button" data-tab="' + n[0] + '" class="' + (on ? 'on' : '') + '">' + icon(n[2], 20) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
-          '<div class="hq-more" id="hqMore" hidden>' + [['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear'], ['account:hqIdea', 'Send us an idea', 'msg']].map(function (n) { return '<button type="button" data-tab="' + n[0] + '">' + icon(n[2], 18) + n[1] + '</button>'; }).join('') + '<a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a></div>';
+          '<nav class="hq-tabs" aria-label="Business HQ">' + [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['posts', 'Deals', 'tag'], ['more', 'More', 'gear']].map(function (n) { var on = n[0] === tab || (n[0] === 'more' && ['page', 'sales', 'account', 'reviews', 'customers'].indexOf(tab) >= 0); return '<button type="button" data-tab="' + n[0] + '" class="' + (on ? 'on' : '') + '">' + icon(n[2], 20) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
+          '<div class="hq-more" id="hqMore" hidden>' + [['customers', 'Customers', 'users'], ['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear'], ['account:hqIdea', 'Send us an idea', 'msg']].map(function (n) { return '<button type="button" data-tab="' + n[0] + '">' + icon(n[2], 18) + n[1] + '</button>'; }).join('') + '<a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a></div>';
         var navClick = function (e) {
           var b = e.target.closest('[data-tab],[data-go]'); if (!b) return;
           var t = b.getAttribute('data-tab') || b.getAttribute('data-go');
@@ -791,7 +792,7 @@
           var bn = shell.querySelector('#hqBellN'), n = counts.msg + counts.rev + counts.req; bn.hidden = !n; bn.textContent = n;
         });
         var body = shell.querySelector('#hqBody');
-        if (tab === 'messages') messages(body, extra); else ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, account: settings, requests: requests })[tab](body, extra);
+        if (tab === 'messages') messages(body, extra); else ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, account: settings, requests: requests, customers: customers })[tab](body, extra);
         var y = shell.getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
       }
       function head(k, title, badge) { return '<small class="hq-k">' + k + '</small><h2 class="hq-h">' + title + (badge ? ' <em>' + badge + '</em>' : '') + '</h2>'; }
@@ -860,6 +861,72 @@
           var v = g.getAttribute('data-go').split(':'); go(v[0], v[1]);
         };
       }
+      // One box for every code a driver shows: deal codes (TONY-4821) and loyalty cards (TONY-C123).
+      function codeBox(id) {
+        return '<div class="hq-card" id="' + id + '"><h4>CHECK A CODE</h4><div class="cc-row"><input class="ccIn" maxlength="14" placeholder="TONY-4821" autocapitalize="characters" aria-label="Code from the driver’s phone"><button type="button" class="bz-btn ccGo">Check</button></div><div class="bz-msg ccM" role="status"></div><p class="hq-fine">Deal codes get marked used. Loyalty card codes get a stamp (and the reward when the card is full).</p></div>';
+      }
+      function wireCode(box) {
+        var inp = box.querySelector('.ccIn'), m = box.querySelector('.ccM');
+        box.onclick = async function (e) {
+          var give = e.target.closest('[data-give]');
+          if (!e.target.closest('.ccGo') && !give) return;
+          var c = give ? give.getAttribute('data-give') : inp.value.trim(); m.className = 'bz-msg bad';
+          if (c.length < 4) { m.textContent = 'Type the code from the driver’s phone.'; return; }
+          if (/-C[0-9A-Z]{3,5}$/i.test(c)) {
+            var y = await sb.rpc('loyalty_stamp', { b: cur.id, c: c, give: !!give });
+            if (y.error) { m.textContent = 'That didn’t work. Please try again.'; return; }
+            var l = y.data;
+            if (l.ok && l.gave) { m.className = 'bz-msg good'; m.textContent = '✓ Reward given to ' + l.name + ': ' + l.reward + '. Their card starts over.'; inp.value = ''; return; }
+            if (l.ok) { m.className = 'bz-msg good'; m.textContent = '✓ Stamp added for ' + l.name + ': ' + l.stamps + ' of ' + l.of + (l.full ? '. Card full: next visit gets “' + l.reward + '”.' : '.'); inp.value = ''; return; }
+            if (l.why === 'reward_ready') { m.className = 'bz-msg good'; m.innerHTML = esc(l.name) + '’s card is full. <button type="button" class="bz-btn bz-small" data-give="' + esc(c.toUpperCase()) + '">Give the reward: ' + esc(l.reward) + '</button>'; return; }
+            m.textContent = l.why === 'today' ? 'Already stamped today for ' + l.name + ' (' + l.stamps + ' of ' + l.of + ').' : l.why === 'off' ? 'Turn on your loyalty card in Customers first.' : 'We can’t find that card code.';
+            return;
+          }
+          var x = await sb.rpc('deal_code_use', { b: cur.id, c: c });
+          if (x.error) { m.textContent = 'That didn’t work. Please try again.'; return; }
+          var d = x.data;
+          if (d.ok) { m.className = 'bz-msg good'; m.textContent = '✓ Good code for “' + d.title + '”. Marked used.' + (d.expired ? ' Note: this deal has ended, so it’s your call.' : ''); inp.value = ''; }
+          else m.textContent = d.why === 'used' ? 'This code was already used on ' + new Date(d.used_at).toLocaleDateString('en-US') + ' (“' + d.title + '”).' : 'We can’t find that code. Check the letters and numbers.';
+        };
+      }
+      // Loyalty card + Remind my customers (picture 292 ideas 2 + 3).
+      async function customers(el) {
+        el.innerHTML = '<div class="hq-load">Loading…</div>';
+        var [lr, cr] = await Promise.all([sb.from('business_loyalty').select('*').eq('business_id', cur.id).maybeSingle(), sb.from('loyalty_cards').select('code, stamps, rewards, remind, car, first_name, last_visit, last_reminded, created_at').eq('business_id', cur.id).order('last_visit', { ascending: false, nullsFirst: false }).limit(500)]);
+        var L = lr.data || { active: false, stamps: 5, reward: TPL_KIND[cur.kind] && cur.kind === 'tires' ? 'Free tire rotation' : 'Free oil change' }, cards = cr.data || [];
+        var month = Date.now() - 30 * 864e5, ok = cards.filter(function (c) { return c.remind && (!c.last_reminded || new Date(c.last_reminded).getTime() < month); });
+        var due = function (c) { return c.last_visit && Date.now() - new Date(c.last_visit).getTime() > 90 * 864e5; };
+        el.innerHTML = head('CUSTOMERS', 'Bring them back', cards.length ? cards.length + ' card' + (cards.length > 1 ? 's' : '') : '') +
+          codeBox('cuCode') +
+          '<div class="hq-card"><h4>LOYALTY CARD</h4><label class="bz-ck" style="margin:4px 0"><input type="checkbox" id="lyOn"' + (L.active ? ' checked' : '') + '><span>Give drivers a stamp card on my page</span></label>' +
+            '<div class="bz-two"><label class="bz-f"><span>Visits to fill the card</span><select id="lyN">' + [3, 4, 5, 6, 8, 10, 12].map(function (n) { return '<option' + (n === L.stamps ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select></label><label class="bz-f"><span>The reward</span><input id="lyR" maxlength="80" value="' + esc(L.reward) + '"></label></div>' +
+            '<div class="ly-prev">' + Array.from({ length: L.stamps }, function (_, i) { return '<i class="' + (i < 2 ? 'f' : '') + '">' + (i < 2 ? icon('check', 14) : i + 1) + '</i>'; }).join('') + '<span>' + esc(L.reward) + '</span></div>' +
+            '<div class="bz-row"><button type="button" class="bz-btn" id="lyGo">Save</button></div><div class="bz-msg" id="lyM" role="status"></div><p class="hq-fine">Each visit = one stamp: type the driver’s card code in “Check a code”. A used deal code adds a stamp too. One stamp per visit (12 hours).</p></div>' +
+          '<div class="hq-card"><h4>REMIND MY CUSTOMERS</h4><p class="hq-fine" style="margin-top:0">Only drivers who said yes on their card. At most one reminder a month each, by phone and email, never at night.</p>' +
+            '<div class="bz-chips" id="rmW">' + ['an oil change', 'a tire rotation', 'a brake check', 'new wipers', 'a state inspection'].map(function (w, i) { return '<button type="button" data-w="' + w + '" class="' + (i === 0 ? 'on' : '') + '">' + w.replace(/^an? /, '').replace(/^./, function (x) { return x.toUpperCase(); }) + '</button>'; }).join('') + '</div>' +
+            '<div class="bz-row"><button type="button" class="bz-btn" id="rmGo"' + (ok.length ? '' : ' disabled') + '>Send to ' + ok.length + ' customer' + (ok.length === 1 ? '' : 's') + '</button></div><div class="bz-msg" id="rmM" role="status"></div>' +
+            (cards.filter(due).length ? '<p class="hq-fine">' + cards.filter(due).length + ' haven’t been back in 3+ months.</p>' : '') + '</div>' +
+          '<h3 class="hq-sec">Your customers</h3>' + (cards.length ? '<div class="hq-card" style="padding:4px 12px">' + cards.map(function (c) {
+            return '<div class="cu-row"><span class="av">' + esc((c.first_name || '?')[0]) + '</span><div class="tx"><b>' + esc(c.first_name) + (c.car ? ' · ' + esc(c.car) : '') + '</b><small>' + c.stamps + ' of ' + L.stamps + ' stamps' + (c.rewards ? ' · ' + c.rewards + ' reward' + (c.rewards > 1 ? 's' : '') : '') + ' · ' + (c.last_visit ? 'last visit ' + shortDay(c.last_visit.slice(0, 10)) : 'no visit yet') + '</small></div><span class="hq-c ' + (c.remind ? 'live' : '') + '" style="' + (c.remind ? '' : 'background:var(--bg);color:var(--mut)') + '">' + (c.remind ? 'Reminders on' : 'No reminders') + '</span></div>';
+          }).join('') + '</div>' : '<p class="hq-fine">No cards yet. Turn on the loyalty card; drivers get one on your page.</p>');
+        wireCode(el.querySelector('#cuCode'));
+        var what = 'an oil change';
+        el.querySelector('#rmW').onclick = function (e) { var w = e.target.getAttribute('data-w'); if (w) { what = w; [].forEach.call(this.children, function (b) { b.className = b.getAttribute('data-w') === w ? 'on' : ''; }); } };
+        el.querySelector('#lyGo').onclick = async function () {
+          var m = el.querySelector('#lyM'), rw = el.querySelector('#lyR').value.trim(); m.className = 'bz-msg bad';
+          if (rw.length < 3) { m.textContent = 'Please say what the reward is.'; return; }
+          var x = await sb.from('business_loyalty').upsert({ business_id: cur.id, active: el.querySelector('#lyOn').checked, stamps: +el.querySelector('#lyN').value, reward: rw, updated_at: new Date().toISOString() });
+          if (x.error) { m.textContent = 'That didn’t save. Please try again.'; return; }
+          customers(el);
+        };
+        el.querySelector('#rmGo').onclick = async function () {
+          var m = el.querySelector('#rmM'); if (!confirm('Send “Time for ' + what + '?” to ' + ok.length + ' customer' + (ok.length === 1 ? '' : 's') + '?')) return;
+          var x = await sb.rpc('shop_remind', { b: cur.id, what: what });
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = /live/.test(x.error.message) ? 'Your page must be live first.' : 'That didn’t send. Please try again.'; return; }
+          m.className = 'bz-msg good'; m.textContent = 'Sent to ' + x.data + ' customer' + (x.data === 1 ? '' : 's') + ' (at night they wait until 8 AM).';
+          this.disabled = true;
+        };
+      }
       // Drivers ask, shops answer (Nov 20, 2026): open price requests near this page.
       async function requests(el) {
         el.innerHTML = '<div class="hq-load">Loading…</div>';
@@ -914,7 +981,7 @@
         el.innerHTML = head('DEALS AND POSTS', 'Post a special') +
           '<p class="hq-fine">Pick a template, change the words, post. It shows on your page, in “Deals near you” in the app, and your followers get an alert.' + (cur.status !== 'live' ? ' Drivers see it once your page is live.' : '') + '</p>' +
           '<div id="pDone"></div>' +
-          '<div class="hq-card"><h4>CHECK A COUNTER CODE</h4><div class="cc-row"><input id="ccIn" maxlength="14" placeholder="TONY-4821" autocapitalize="characters" aria-label="Counter code"><button type="button" class="bz-btn" id="ccGo">Mark used</button></div><div class="bz-msg" id="ccM" role="status"></div><p class="hq-fine">A driver shows a code on their phone. Type it here so you know the customer came from Carvessa.</p></div>' +
+          codeBox('dlCode') +
           '<div class="pe"><div class="pe-l"><div class="tpl-grid" id="pTpl">' + Object.keys(TPL).map(function (k) { var t = TPL[k]; return '<button type="button" data-tpl="' + k + '" class="tpl-b' + (k === st.tpl ? ' on' : '') + '" style="--a:' + t.bg[0] + ';--b:' + t.bg[1] + '">' + icon(t.ic, 16) + '<span>' + t.name + '</span></button>'; }).join('') + '</div>' +
           '<label class="bz-f"><span>What is it?</span><input id="pT" maxlength="80"></label>' +
           '<div class="bz-two"><label class="bz-f" id="pPw"><span>Your price (optional)</span><input id="pP" inputmode="decimal" placeholder="$39.99"></label><label class="bz-f"><span>Ends on</span><input id="pU" type="date" min="' + today() + '" max="' + addDays(365) + '"></label></div>' +
@@ -963,15 +1030,7 @@
           if (x.error) { m.className = 'bz-msg bad'; m.textContent = /20 posts/.test(x.error.message) ? 'You can keep up to 20 live posts. Delete an old one first.' : /5 posts a day/.test(x.error.message) ? 'You can post up to 5 times a day.' : 'That didn’t post. Please try again.'; return; }
           posts(el, x.data);
         };
-        $('ccGo').onclick = async function () {
-          var c = $('ccIn').value.trim(), m = $('ccM'); m.className = 'bz-msg bad';
-          if (c.length < 4) { m.textContent = 'Type the code from the driver’s phone.'; return; }
-          var x = await sb.rpc('deal_code_use', { b: cur.id, c: c });
-          if (x.error) { m.textContent = 'That didn’t work. Please try again.'; return; }
-          var d = x.data;
-          if (d.ok) { m.className = 'bz-msg good'; m.textContent = '✓ Good code for “' + d.title + '”. Marked used.' + (d.expired ? ' Note: this deal has ended, so it’s your call.' : ''); $('ccIn').value = ''; }
-          else m.textContent = d.why === 'used' ? 'This code was already used on ' + new Date(d.used_at).toLocaleDateString('en-US') + ' (“' + d.title + '”).' : 'We can’t find that code. Check the letters and numbers.';
-        };
+        wireCode(el.querySelector('#dlCode'));
         $('pL').onclick = async function (e) {
           var id = e.target.closest('[data-del]'); id = id && id.getAttribute('data-del');
           if (id && confirm('Delete this post? Codes already given stop working.')) { await sb.from('business_posts').delete().eq('id', id); posts(el); return; }
@@ -1210,9 +1269,9 @@
     var box = root.querySelector('#bzFol');
     if (q.get('stop') && q.get('u') && q.get('t')) {
       box.innerHTML = '<div class="bz-sec">One moment…</div>';
-      fetch(C.url + '/functions/v1/biz-alerts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stop: q.get('stop') === 'unfollow' ? 'unfollow' : 'email', u: q.get('u'), b: q.get('b'), t: q.get('t') }) })
+      fetch(C.url + '/functions/v1/biz-alerts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stop: ['unfollow', 'remind'].indexOf(q.get('stop')) >= 0 ? q.get('stop') : 'email', u: q.get('u'), b: q.get('b'), t: q.get('t') }) })
         .then(function (r) { return r.json(); }).then(function (d) {
-          box.innerHTML = d.ok ? '<div class="bz-sec"><h3>Done</h3>' + (q.get('stop') === 'unfollow' ? 'You don’t follow ' + esc(d.name) + ' anymore.' : 'No more emails from ' + esc(d.name) + '. You still follow them in the app.') + '</div><div class="bz-row"><a class="bz-btn soft" href="/following/">See all shops I follow</a></div>' : '<div class="bz-sec">' + esc(d.why || 'This link is not valid') + '. Log in below to change your settings.</div>';
+          box.innerHTML = d.ok ? '<div class="bz-sec"><h3>Done</h3>' + (q.get('stop') === 'unfollow' ? 'You don’t follow ' + esc(d.name) + ' anymore.' : q.get('stop') === 'remind' ? 'No more reminders from ' + esc(d.name) + '. Your loyalty card stays.' : 'No more emails from ' + esc(d.name) + '. You still follow them in the app.') + '</div><div class="bz-row"><a class="bz-btn soft" href="/following/">See all shops I follow</a></div>' : '<div class="bz-sec">' + esc(d.why || 'This link is not valid') + '. Log in below to change your settings.</div>';
         }).catch(function () { box.innerHTML = '<div class="bz-sec">That didn’t work. Please try again.</div>'; });
       return;
     }
@@ -1270,18 +1329,27 @@
       var r = slug ? await sb.from('businesses').select(PUB).eq('slug', slug).maybeSingle() : { data: null };
       var b = r.data;
       if (!b) { root.innerHTML = '<div class="bz"><h1>This page isn’t available</h1><p class="lead">It may be waiting for our check, or the link is wrong.</p><a class="bz-btn" href="/partners/">For businesses</a></div>'; return; }
-      var [s, ps, rv, me, fc] = await Promise.all([
+      var [s, ps, rv, me, fc, ly] = await Promise.all([
         sb.from('business_services').select('name, price_from, note').eq('business_id', b.id).order('sort'),
         sb.from('business_posts').select('id, kind, template, title, body, price, fine, who, until, codes, created_at').eq('business_id', b.id).order('created_at', { ascending: false }).limit(20),
         sb.rpc('business_reviews_public', { b: b.id }),
         sb.auth.getSession(),
-        sb.rpc('business_followers', { b: b.id })
+        sb.rpc('business_followers', { b: b.id }),
+        sb.from('business_loyalty').select('active, stamps, reward').eq('business_id', b.id).maybeSingle()
       ]);
       var reviews = rv.data || [], user = me.data.session && me.data.session.user, isOwner = user && user.id === b.owner;
       var avg = reviews.length ? reviews.reduce(function (a, x) { return a + x.stars; }, 0) / reviews.length : 0;
       var svcs = s.data || [], posts = (ps.data || []).filter(function (p) { return !p.until || p.until >= today(); });
       var deals = posts.filter(function (p) { return p.kind === 'special'; }), news = posts.filter(function (p) { return p.kind !== 'special'; });
-      var nFol = fc.data || 0, myFollow = null;
+      var nFol = fc.data || 0, myFollow = null, LY = ly.data && ly.data.active ? ly.data : null, myCard = null;
+      if (LY && user && !isOwner) myCard = (await sb.from('loyalty_cards').select('code, stamps, rewards, remind, car').eq('business_id', b.id).maybeSingle()).data;
+      var lyHtml = function () {
+        if (!LY) return '';
+        var n = myCard ? myCard.stamps : 0;
+        return '<div class="shop-card sp-ly" id="loyalty"><h2>' + icon('star', 18) + ' Loyalty card</h2><p class="rv-fine" style="margin:0 0 8px">' + LY.stamps + ' visits = <b>' + esc(LY.reward) + '</b></p><div class="ly-prev">' + Array.from({ length: LY.stamps }, function (_, i) { return '<i class="' + (i < n ? 'f' : '') + '">' + (i < n ? icon('check', 14) : i + 1) + '</i>'; }).join('') + '</div>' +
+          (myCard ? '<div class="sp-cp" style="margin-top:10px"><small>MY CARD · SHOW AT THE COUNTER</small><div class="code">' + esc(myCard.code) + '</div><small>' + (n >= LY.stamps ? 'Card full! Your next visit gets “' + esc(LY.reward) + '”.' : n + ' of ' + LY.stamps + ' stamps') + '</small></div><label class="bz-ck" style="font-weight:600"><input type="checkbox" id="lyRem"' + (myCard.remind ? ' checked' : '') + '><span>Remind me when service is due (at most once a month)</span></label>'
+            : talk ? '<label class="bz-ck" style="font-weight:600"><input type="checkbox" id="lyRem"><span>Let ' + esc(b.name) + ' remind me when service is due (at most once a month, by phone or email)</span></label><button type="button" class="sp-btn sp-wide" id="lyJoin">' + icon('qr', 18) + 'Get my card</button>' : '<p class="sp-own">Drivers get a card with a code here.</p>') + '<div class="bz-msg" id="lyM" role="status"></div></div>';
+      };
       if (user && !isOwner) myFollow = (await sb.from('business_follows').select('*').eq('business_id', b.id).eq('user_id', user.id).maybeSingle()).data;
       var info = KINFO[b.kind] || KINFO.other, hv = headerOf(b), openState = openNow(b.hours);
       document.title = b.name + ' · Carvessa';
@@ -1329,6 +1397,7 @@
           (b.offer ? '<div class="sp-offer"><small>OFFER</small><b>' + esc(b.offer) + '</b><span>Show this page at the counter</span></div>' : '') +
           (deals[0] ? '<a class="sp-offer deal" href="#deal-' + deals[0].id + '"><small>' + tplOf(deals[0]).k + ' · ' + endText(deals[0]).toUpperCase() + '</small><b>' + esc(deals[0].title) + (deals[0].price != null ? ' · ' + money(deals[0].price) : '') + '</b><span>' + (deals[0].codes ? 'Get your counter code below' : 'See the deal below') + '</span></a>' : '') +
           news.map(function (p) { return '<div class="shop-card shop-post"><span class="hq-tag">' + (KP[p.kind] || 'News') + '</span><h2>' + esc(p.title) + '</h2>' + (p.body ? esc(p.body) : '') + (p.until ? '<div class="shop-note">Until ' + shortDay(p.until) + '</div>' : '') + '</div>'; }).join('') +
+          lyHtml() +
           (info.tip ? '<div class="shop-card shop-tip"><h2>' + info.tip[0] + '</h2>' + info.tip[1] + '</div>' : '') +
           (b.about ? '<div class="shop-card"><h2>About</h2>' + esc(b.about) + '</div>' : '') +
           '<div class="shop-card"><div class="shop-kv">' + (b.address ? '<span>Address</span><div>' + esc(b.address) + (b.city ? ', ' + esc(b.city) : '') + ' · <a href="' + maps + '" target="_blank" rel="noopener" data-c="directions">Directions</a></div>' : '') + (b.phone ? '<span>Phone</span><div><a href="tel:' + esc(tel) + '" data-c="call">' + esc(b.phone) + '</a></div>' : '') + (b.hours ? '<span>Hours</span><div>' + esc(b.hours) + '</div>' : '') + (web ? '<span>Website</span><div><a href="' + esc(web) + '" target="_blank" rel="noopener nofollow" data-c="website">' + esc(b.website.replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</a></div>' : '') + '</div></div>' +
@@ -1435,6 +1504,22 @@
         var id = e.target.getAttribute('data-flag'); if (!id) return;
         var host = e.target.parentNode.querySelector('.rv-rep-box');
         signedIn(host, function () { reportBox(host, id); });
+      });
+      // Loyalty card: get my card, change my reminder choice.
+      root.addEventListener('click', function (e) {
+        if (e.target.id !== 'lyJoin') return;
+        var host = root.querySelector('#loyalty');
+        signedIn(root.querySelector('#fwBox'), async function () {
+          var x = await sb.rpc('loyalty_join', { b: b.id, rem: !!(root.querySelector('#lyRem') && root.querySelector('#lyRem').checked), car_text: null });
+          if (x.error) { var mm = host.querySelector('#lyM'); mm.className = 'bz-msg bad'; mm.textContent = /own card/.test(x.error.message) ? 'You can’t join your own card.' : 'That didn’t work. Please try again.'; return; }
+          myCard = x.data; host.outerHTML = lyHtml();
+        }, 'Get ' + b.name + '’s loyalty card with a free account. The shop sees your first name, never your phone or email.');
+      });
+      root.addEventListener('change', async function (e) {
+        if (e.target.id !== 'lyRem' || !myCard) return;
+        var v = e.target.checked, x = await sb.from('loyalty_cards').update({ remind: v }).eq('business_id', b.id).eq('code', myCard.code), mm = root.querySelector('#lyM');
+        if (x.error) { e.target.checked = !v; mm.className = 'bz-msg bad'; mm.textContent = 'That didn’t save.'; return; }
+        myCard.remind = v; mm.className = 'bz-msg good'; mm.textContent = v ? 'Reminders on. At most once a month.' : 'Reminders off.';
       });
       // A shared deal link (?deal=…) jumps to that deal.
       var dq = q.get('deal'), dEl = dq && root.querySelector('#deal-' + CSS.escape(dq));

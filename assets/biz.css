@@ -361,3 +361,9 @@ select.hq-pick{background:var(--top);color:var(--topInk)}
 /* Requests (Nov 20, 2026) */
 .rq p{font-size:15px}.rq-f{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
 .ask-a{display:flex;gap:8px;align-items:center;justify-content:space-between;background:#F4F6FA;border-radius:12px;padding:10px 12px;margin:6px 0;text-decoration:none;color:#0F1B33!important}.ask-a span{margin-left:auto;font-weight:800;color:#1D7A46}
+/* Loyalty + customers (Nov 20, 2026) */
+.ly-prev{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0}.ly-prev i{width:36px;height:36px;border-radius:50%;border:2px dashed #C9D4E8;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;color:#5A6575}
+.ly-prev i.f{background:var(--brand,#1D7A46);border:0;color:var(--brandInk,#fff)}.hq .ly-prev i.f{background:var(--acc);color:var(--onAcc)}.ly-prev span{font-weight:800;margin-left:4px}
+.sp-ly h2{display:flex;gap:8px;align-items:center}
+.cu-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.cu-row:first-child{border-top:0}.cu-row .av{width:34px;height:34px;border-radius:50%;background:var(--soft);color:var(--acc);font-weight:800;display:grid;place-items:center;flex:none}.cu-row .tx{flex:1;min-width:0}.cu-row small{display:block;color:var(--mut)}
+.hq .bz-btn:disabled{opacity:.5;cursor:not-allowed}
