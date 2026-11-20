@@ -101,6 +101,29 @@
   var icon = function (n, s) { return '<svg class="ic" width="' + (s || 20) + '" height="' + (s || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[n] || '') + '</svg>'; };
   var shortDay = function (d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
   var today = function () { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  // "Mon–Fri 8 AM–6 PM · Sat 9 AM–2 PM · Closed Sunday" → open now? (the driver's clock; null when we can't tell)
+  function openNow(hours, at) {
+    if (!hours) return null;
+    var D = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'], now = at || new Date(), day = now.getDay(), mins = now.getHours() * 60 + now.getMinutes();
+    var di = function (w) { return D.indexOf(String(w).slice(0, 3).toLowerCase()); };
+    var tm = function (t) { var m = /^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/i.exec(t.trim()); if (!m) return null; var h = +m[1] % 12; if (/pm/i.test(m[3] || '')) h += 12; if (!m[3] && +m[1] < 7) h += 12; return h * 60 + (+m[2] || 0); };
+    var nice = function (t) { return t.trim().replace(/\s+/g, ' ').toUpperCase().replace(/(\d)(AM|PM)/, '$1 $2'); };
+    var found = null;
+    hours.split(/\s*[·;\n]\s*/).forEach(function (seg) {
+      var c = /^closed\s+(\w+)/i.exec(seg) || /^(\w+)\w*\s*:?\s*closed$/i.exec(seg);
+      if (c && di(c[1]) === day) { found = { closed: true }; return; }
+      var m = /^(\w{3})\w*(?:\s*[–-]\s*(\w{3})\w*)?\s*:?\s+(\d[^–-]*?)\s*[–-]\s*(\d.*)$/i.exec(seg);
+      if (!m) return;
+      var a = di(m[1]), z = m[2] ? di(m[2]) : a; if (a < 0 || z < 0) return;
+      var inR = a <= z ? day >= a && day <= z : day >= a || day <= z;
+      if (inR) { var o = tm(m[3]), e = tm(m[4]); if (o != null && e != null) found = { o: o, e: e, on: nice(m[3]), off: nice(m[4]) }; }
+    });
+    if (!found) return null;
+    if (found.closed) return { open: false, text: 'Closed today' };
+    if (mins >= found.o && mins < found.e) return { open: true, text: 'Open now · until ' + found.off };
+    if (mins < found.o) return { open: false, text: 'Closed · opens ' + found.on };
+    return { open: false, text: 'Closed now' };
+  }
   var addDays = function (n) { var d = new Date(Date.now() + n * 864e5); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 
   // ---------- Deals (picture 284): templates, the deal card, the share kit ----------
@@ -678,18 +701,18 @@
           (pages.length > 1 ? '<select class="hq-pick" id="hqPick" aria-label="Your pages">' + pages.map(function (p, i) { return '<option value="' + i + '"' + (p === cur ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select>' : '<a class="hq-pick" href="' + pub + '" target="_blank" rel="noopener">' + esc(cur.name) + icon('chev', 14) + '</a>') +
           '<div class="hq-tr"><button type="button" class="hq-bell" id="hqBell" aria-label="What needs you">' + icon('bell') + '<em id="hqBellN" hidden></em></button>' +
           '<button type="button" class="hq-me" id="hqMe" aria-label="Account menu" aria-expanded="false">' + esc(initials(cur.name).slice(0, 1)) + '</button>' +
-          '<div class="hq-menu" id="hqMenu" hidden><a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a><button type="button" data-go="account">' + icon('gear', 18) + 'Settings</button><button type="button" id="hqOut">' + icon('out', 18) + 'Log out</button></div></div></header>' +
+          '<div class="hq-menu" id="hqMenu" hidden><a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a><button type="button" data-go="account">' + icon('gear', 18) + 'Settings</button><button type="button" data-go="account:hqIdea">' + icon('msg', 18) + 'Send us an idea</button><button type="button" id="hqOut">' + icon('out', 18) + 'Log out</button></div></div></header>' +
           '<div class="hq-body"><aside class="hq-side"><nav class="hq-nav" aria-label="Business HQ">' + NAV.map(function (n) { return '<button type="button" data-tab="' + n[0] + '" class="' + (tab === n[0] ? 'on' : '') + '"' + (tab === n[0] ? ' aria-current="page"' : '') + '>' + icon(n[2], 18) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
           '<div class="hq-status"><span class="hq-st ' + esc(cur.status) + '">' + (STATUS[cur.status] || cur.status) + '</span><small>' + esc(kindName(cur.kind)) + '</small></div>' +
           '<div class="hq-pro"><b>Pro coming later</b><small>Business network and deeper reports. Your page stays free.</small></div></aside>' +
           '<main class="hq-main" id="hqBody"></main></div>' +
           '<nav class="hq-tabs" aria-label="Business HQ">' + [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['posts', 'Deals', 'tag'], ['reviews', 'Reviews', 'star'], ['more', 'More', 'gear']].map(function (n) { var on = n[0] === tab || (n[0] === 'more' && ['page', 'sales', 'account'].indexOf(tab) >= 0); return '<button type="button" data-tab="' + n[0] + '" class="' + (on ? 'on' : '') + '">' + icon(n[2], 20) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
-          '<div class="hq-more" id="hqMore" hidden>' + [['page', 'My page', 'wrench'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear']].map(function (n) { return '<button type="button" data-tab="' + n[0] + '">' + icon(n[2], 18) + n[1] + '</button>'; }).join('') + '<a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a></div>';
+          '<div class="hq-more" id="hqMore" hidden>' + [['page', 'My page', 'wrench'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear'], ['account:hqIdea', 'Send us an idea', 'msg']].map(function (n) { return '<button type="button" data-tab="' + n[0] + '">' + icon(n[2], 18) + n[1] + '</button>'; }).join('') + '<a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a></div>';
         var navClick = function (e) {
           var b = e.target.closest('[data-tab],[data-go]'); if (!b) return;
           var t = b.getAttribute('data-tab') || b.getAttribute('data-go');
           if (t === 'more') { var mo = shell.querySelector('#hqMore'); mo.hidden = !mo.hidden; return; }
-          go(t);
+          var tp = t.split(':'); go(tp[0], tp[1]);
         };
         shell.querySelector('.hq-nav').onclick = navClick; shell.querySelector('.hq-tabs').onclick = navClick; shell.querySelector('#hqMore').onclick = navClick; shell.querySelector('#hqMenu').onclick = navClick;
         shell.querySelector('#hqOut').onclick = function () { sb.auth.signOut().then(function () { location.reload(); }); };
@@ -952,14 +975,25 @@
         el.innerHTML = head(rv ? 'FROM THE STANDS' : 'TEAM RADIO', rv ? 'Reviews' : 'Messages', 'Coming next') +
           '<div class="hq-card">' + (rv ? 'Reviews from Carvessa members, with photos, are coming next. You’ll reply in public and can report a review that breaks our <a href="/business/review-rules/" target="_blank">Review Rules</a>. Nobody can buy or hide reviews.' : 'Drivers will message you right here, with their car and their mechanic note from Carvessa’s help. Their phone and email stay private unless they share them. Quote requests come here too.') + '</div>';
       }
-      function settings(el) {
+      function settings(el, focus) {
+        if (focus) setTimeout(function () { var f = el.querySelector('#' + focus); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
         var sug = SUGGEST[cur.kind];
         el.innerHTML = head('ACCOUNT', 'Look and settings') +
           '<div class="hq-card"><h4>PICK HOW BUSINESS HQ LOOKS</h4><p class="hq-fine">Only changes what you see here. Your public page keeps its own header and logo.</p><div class="hq-looks">' +
           LOOKS.map(function (l) { return '<button type="button" data-l="' + l[0] + '" class="' + ((cur.hq_look || 'racing') === l[0] ? 'on' : '') + '"><span class="sp"><i style="background:' + l[3] + '"></i><i style="background:' + l[4] + '"></i><i style="background:' + l[5] + '"></i><i style="background:' + l[6] + '"></i></span><b>' + l[1] + '</b><small>' + (l[0] === 'racing' ? 'Default' : l[0] === sug ? 'Suggested for you' : l[2]) + '</small></button>'; }).join('') + '</div><div class="bz-msg" id="lM" role="status"></div></div>' +
           '<div class="hq-card"><h4>EMAIL ALERTS</h4><label class="bz-ck" style="margin:4px 0"><input type="checkbox" id="nE"' + (cur.notify_email !== false ? ' checked' : '') + '><span>Email me at <b>' + esc(u.email) + '</b> when a driver messages me, asks for a quote or writes a review.</span></label><p class="hq-fine">At most one email per chat every 15 minutes while you haven’t read it. Drivers get an email when you answer.</p><div class="bz-msg" id="nM" role="status"></div></div>' +
+          '<div class="hq-card" id="hqIdea"><h4>SEND US AN IDEA OR A TIP</h4><p class="hq-fine">A feature you want, something that isn’t working, or a tip you’d like to share with other shops. We read every one.</p><div class="bz-chips idea-kinds" id="iK"><button type="button" data-ik="new" class="on">A feature I want</button><button type="button" data-ik="broken">Something isn’t working</button><button type="button" data-ik="tip">A tip to share</button></div><label class="bz-f"><span>Your idea</span><textarea id="iT" maxlength="1000" placeholder="I’d like to post a deal for one day only."></textarea></label><div class="bz-row"><button type="button" class="bz-btn" id="iGo">Send</button></div><div class="bz-msg" id="iM" role="status"></div></div>' +
           '<div class="hq-card"><h4>LOGIN</h4>Signed in as <b>' + esc(u.email) + '</b>.<div class="bz-row"><a class="bz-btn soft bz-small" href="/business/terms/" target="_blank">Partner Terms</a><a class="bz-btn soft bz-small" href="mailto:hello@carvessa.app?subject=' + encodeURIComponent('Question about ' + cur.name) + '">Ask Carvessa a question</a></div><p class="hq-fine">You agreed to the Partner Terms version ' + esc(cur.terms_version || '') + (cur.agreed_at ? ' on ' + esc(new Date(cur.agreed_at).toLocaleDateString('en-US')) : '') + '.</p></div>' +
           '<div class="hq-card hq-red"><h4>RED FLAG ZONE</h4><b>Delete this page</b><p class="hq-fine">Removes your page, services, posts and sales. Type DELETE to confirm.</p><div class="bz-two"><label class="bz-f"><span>Type DELETE</span><input id="dT" autocomplete="off"></label><div class="bz-row" style="align-self:end"><button type="button" class="bz-btn red" id="dGo">Delete page</button></div></div><div class="bz-msg" id="dM" role="status"></div><p class="hq-fine">Want to hide your page for a while instead? Write to hello@carvessa.app.</p></div>';
+        var ik = 'new';
+        el.querySelector('#iK').onclick = function (e) { var k = e.target.getAttribute('data-ik'); if (k) { ik = k; [].forEach.call(this.children, function (b) { b.className = b.getAttribute('data-ik') === k ? 'on' : ''; }); } };
+        el.querySelector('#iGo').onclick = async function () {
+          var t = el.querySelector('#iT').value.trim(), m = el.querySelector('#iM'); m.className = 'bz-msg bad';
+          if (t.length < 3) { m.textContent = 'Please type your idea.'; return; }
+          var x = await sb.from('feedback').insert({ mood: ik === 'broken' ? 'confused' : 'ok', message: ('[Business idea: ' + ik + '] ' + t + ' — ' + cur.name).slice(0, 1200), screen: 'biz-hq', platform: 'web' });
+          if (x.error) { m.textContent = 'That didn’t send. Please try again.'; return; }
+          el.querySelector('#iT').value = ''; m.className = 'bz-msg good'; m.textContent = 'Sent. Thank you! We read every idea.';
+        };
         el.querySelector('#nE').onchange = async function () {
           var v = this.checked, x = await sb.from('businesses').update({ notify_email: v }).eq('id', cur.id), m = el.querySelector('#nM');
           if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save.'; this.checked = !v; return; }
@@ -1083,7 +1117,7 @@
       var deals = posts.filter(function (p) { return p.kind === 'special'; }), news = posts.filter(function (p) { return p.kind !== 'special'; });
       var nFol = fc.data || 0, myFollow = null;
       if (user && !isOwner) myFollow = (await sb.from('business_follows').select('*').eq('business_id', b.id).eq('user_id', user.id).maybeSingle()).data;
-      var info = KINFO[b.kind] || KINFO.other, hv = headerOf(b);
+      var info = KINFO[b.kind] || KINFO.other, hv = headerOf(b), openState = openNow(b.hours);
       document.title = b.name + ' · Carvessa';
       var count = function (k) { if (b.status === 'live') sb.rpc('business_count', { b: b.id, k: k }).then(function () {}, function () {}); };
       count('view');
@@ -1100,12 +1134,14 @@
       root.innerHTML =
         '<div class="sp-hero" style="background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(0,0,0,.62)),' + hv.css.replace(/"/g, "'") + '"><div class="sp-id">' + logoHtml(b, 'sp-lo') + '<div><h1>' + esc(b.name) + '</h1><span>' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</span></div></div>' + (hv.credit ? '<a class="shop-credit" href="' + esc(hv.credit[1]) + '" target="_blank" rel="noopener nofollow">Photo: ' + esc(hv.credit[0]) + ' · CC BY</a>' : '') + '</div>' +
         (!live ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you’re the owner (we’ll call or text you).</div>' : '') +
-        '<div class="sp-acts">' + (talk ? followBtn() + (QUOTE_KINDS[b.kind] ? '<button type="button" class="sp-btn soft" data-chat-kind="quote">' + icon('msg', 16) + 'Get a quote</button>' : '<button type="button" class="sp-btn soft" data-chat-kind="message">' + icon('msg', 16) + msgWord + '</button>') : '') + '<button type="button" class="sp-btn soft" id="spShare" aria-label="Share this page">' + icon('share', 16) + '<span class="sp-hide">Share</span></button></div>' +
+        '<div class="sp-acts">' + (talk ? followBtn() + (QUOTE_KINDS[b.kind] ? '<button type="button" class="sp-btn soft" data-chat-kind="quote">' + icon('msg', 16) + 'Get a quote</button>' : '<button type="button" class="sp-btn soft" data-chat-kind="message">' + icon('msg', 16) + msgWord + '</button>') : '') + (isOwner ? '<a class="sp-btn" href="/business/edit/">' + icon('wrench', 16) + 'Edit my page</a>' : '') + '<button type="button" class="sp-btn soft" id="spShare" aria-label="Share this page">' + icon('share', 16) + '<span>Share</span></button></div>' +
+        (isOwner ? '<p class="sp-own">This is your page. Drivers also see Follow, Message and Get a quote here.</p>' : '') +
         (live ? '<p class="sp-fol" id="spFol">' + nFol + ' driver' + (nFol === 1 ? '' : 's') + ' follow' + (nFol === 1 ? 's' : '') + ' this shop' + (myFollow ? ' · you get their deals first' : ' · follow to get their deals first') + '</p>' : '') +
-        '<div class="sp-chips">' + (live ? '<span class="v">' + icon('check', 14) + 'Verified by Carvessa</span>' : '') + (reviews.length ? '<a href="#reviews">' + starRow(Math.round(avg)) + ' ' + avg.toFixed(1) + ' (' + reviews.length + ')</a>' : '') + (b.hours ? '<span>' + icon('home', 14) + esc(b.hours.length > 38 ? b.hours.slice(0, 36) + '…' : b.hours) + '</span>' : '') + '</div>' +
+        '<div class="sp-chips">' + (live ? '<span class="v">' + icon('check', 14) + 'Verified by Carvessa</span>' : '') + (reviews.length ? '<a href="#reviews">' + starRow(Math.round(avg)) + ' ' + avg.toFixed(1) + ' (' + reviews.length + ')</a>' : '') + (openState ? '<a href="#hours" class="' + (openState.open ? 'open' : 'closed') + '">' + icon('home', 14) + esc(openState.text) + '</a>' : b.hours ? '<a href="#hours">' + icon('home', 14) + 'See hours</a>' : '') + '</div>' +
         '<div id="fwBox"></div><div id="chBox"></div>' +
         '<nav class="sp-tabs" aria-label="Sections">' + tabsList.map(function (t, i) { return '<a href="#' + t[0] + '" class="' + (i === 0 ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</nav>' +
         '<section id="ov">' +
+          (b.hours ? '<div class="shop-card sp-hours" id="hours"><h2>Hours' + (openState ? ' <span class="' + (openState.open ? 'open' : 'closed') + '">' + esc(openState.text) + '</span>' : '') + '</h2>' + b.hours.split(/\s*·\s*|\s*;\s*|\n/).filter(Boolean).map(function (h) { return '<div class="sp-hr">' + esc(h) + '</div>'; }).join('') + '<div class="shop-note">Hours set by the business. Holidays can change them.</div></div>' : '') +
           (b.offer ? '<div class="sp-offer"><small>OFFER</small><b>' + esc(b.offer) + '</b><span>Show this page at the counter</span></div>' : '') +
           (deals[0] ? '<a class="sp-offer deal" href="#deal-' + deals[0].id + '"><small>' + tplOf(deals[0]).k + ' · ' + endText(deals[0]).toUpperCase() + '</small><b>' + esc(deals[0].title) + (deals[0].price != null ? ' · ' + money(deals[0].price) : '') + '</b><span>' + (deals[0].codes ? 'Get your counter code below' : 'See the deal below') + '</span></a>' : '') +
           news.map(function (p) { return '<div class="shop-card shop-post"><span class="hq-tag">' + (KP[p.kind] || 'News') + '</span><h2>' + esc(p.title) + '</h2>' + (p.body ? esc(p.body) : '') + (p.until ? '<div class="shop-note">Until ' + shortDay(p.until) + '</div>' : '') + '</div>'; }).join('') +
@@ -1125,7 +1161,7 @@
           }).join('') : '<p>' + (live ? 'No reviews yet. Been here? Be the first.' : 'Reviews start when the page is live.') + '</p>') + '</div></section>' +
         ((b.photos || []).length ? '<section id="photos"><div class="shop-card"><h2>Photos</h2><div class="shop-pics">' + b.photos.map(function (p, i) { return '<img src="' + photoUrl(p) + '" alt="' + esc(b.name) + ' photo ' + (i + 1) + '" loading="lazy">'; }).join('') + '</div></div></section>' : '') +
         '<p class="shop-note" style="margin-top:14px">Carvessa doesn’t rank businesses by who pays. Reviews are never removed for being negative or because a business pays. Paid spots in the app are always labeled. Is this your business? <a href="/business/edit/">Open Business HQ</a></p>' +
-        '<div class="sp-bar">' + (talk ? '<button type="button" class="sp-b pr" data-chat-kind="' + (QUOTE_KINDS[b.kind] ? 'quote' : 'message') + '">' + icon('msg', 18) + (QUOTE_KINDS[b.kind] ? 'Get a quote' : msgWord) + '</button>' : '') + (tel ? '<a class="sp-b" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 18) + (b.kind === 'tow' ? 'Call now' : 'Call') + '</a>' : '') + '<a class="sp-b" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 18) + 'Go</a></div>';
+        '<div class="sp-bar">' + (live ? '<button type="button" class="sp-b pr" data-chat-kind="message">' + icon('msg', 18) + 'Message</button>' : '') + (tel ? '<a class="sp-b" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 18) + (b.kind === 'tow' ? 'Call now' : 'Call') + '</a>' : '') + '<a class="sp-b" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 18) + 'Go</a></div>';
       root.classList.add('sp-has-bar');
       root.addEventListener('click', function (e) { var a = e.target.closest('[data-c]'); if (a) count(a.getAttribute('data-c')); });
       // Tabs follow the scroll.

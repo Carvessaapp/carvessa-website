@@ -314,3 +314,11 @@ select.hq-pick{background:var(--top);color:var(--topInk)}
 .fy-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#F4F6FA;padding:14px 34px;font-size:13px;font-weight:700;color:#4A5565}.fy-logo{font-family:Michroma,Manrope,sans-serif;color:#0F1B33}.fy-logo i{font-style:normal;color:#9A7535}
 @media print{body>*:not(main),header,footer,nav,.fy-tools,.bz-pre{display:none!important}body{background:#fff}.fy{box-shadow:none;max-width:none}main{padding:0!important;margin:0!important}.fy-band,.dl{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 .bz:has(.bz-login){max-width:1000px}
+/* Nov 20, 2026 fixes: owner buttons, full hours, open now, ideas card */
+.sp-acts .sp-btn:first-child{flex:none;max-width:none}.sp-acts [data-follow]{flex:1;max-width:240px}
+.sp-own{background:#FFF8E6;border:1px solid #F1DFAE;color:#4A3B12;border-radius:12px;padding:8px 12px;font-size:13.5px;font-weight:700;margin:4px 0 8px}
+.sp-chips .open{background:#E3F3EA;border-color:#E3F3EA;color:#1D7A46!important}.sp-chips .closed{background:#FBE6E3;border-color:#FBE6E3;color:#B0362B!important}
+.sp-hours h2 span{font-size:13px;font-weight:800;border-radius:99px;padding:3px 9px;margin-left:6px;vertical-align:middle}.sp-hours h2 .open{background:#E3F3EA;color:#1D7A46}.sp-hours h2 .closed{background:#FBE6E3;color:#B0362B}
+.sp-hr{padding:7px 0;border-bottom:1px solid #EEF1F6;font-size:15px;font-weight:700}.sp-hr:last-of-type{border-bottom:0}
+.idea-kinds{margin:4px 0 2px}
+.sp-btn{text-decoration:none!important}
