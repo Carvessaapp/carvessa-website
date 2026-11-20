@@ -7,5 +7,6 @@ Disallow: /partners/link/
 Disallow: /business/
 Disallow: /shops/
 Disallow: /messages/
+Disallow: /following/
 Disallow: /assets/hq/
 Sitemap: https://carvessa.app/sitemap.xml
