@@ -67,8 +67,8 @@
     ['tread', 'Tire Tread', 'Charcoal and yellow', '#1A1A1A', '#F4F4F2', '#1A1A1A', '#F2B705']
   ];
   var SUGGEST = { credit_union: 'cu', insurance: 'shield', dealer: 'lot', repair: 'workshop', body: 'workshop', tires: 'tread' };
-  var PUB = 'id, owner, slug, name, kind, address, city, state, phone, website, hours, about, offer, wallpaper, photos, logo, header, status, founding, created_at, updated_at';
-  var MINE = PUB + ', lat, lon, legal_name, control_no, owner_role, since_year, hq_look, notify_email';
+  var PUB = 'id, owner, slug, name, kind, brand_color, page_theme, address, city, state, phone, website, hours, about, offer, wallpaper, photos, logo, header, status, founding, created_at, updated_at';
+  var MINE = PUB + ', hq_dark, lat, lon, legal_name, control_no, owner_role, since_year, hq_look, notify_email';
   var STATES = { alabama: 'AL', alaska: 'AK', arizona: 'AZ', arkansas: 'AR', california: 'CA', colorado: 'CO', connecticut: 'CT', delaware: 'DE', 'district of columbia': 'DC', florida: 'FL', georgia: 'GA', hawaii: 'HI', idaho: 'ID', illinois: 'IL', indiana: 'IN', iowa: 'IA', kansas: 'KS', kentucky: 'KY', louisiana: 'LA', maine: 'ME', maryland: 'MD', massachusetts: 'MA', michigan: 'MI', minnesota: 'MN', mississippi: 'MS', missouri: 'MO', montana: 'MT', nebraska: 'NE', nevada: 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', ohio: 'OH', oklahoma: 'OK', oregon: 'OR', pennsylvania: 'PA', 'rhode island': 'RI', 'south carolina': 'SC', 'south dakota': 'SD', tennessee: 'TN', texas: 'TX', utah: 'UT', vermont: 'VT', virginia: 'VA', washington: 'WA', 'west virginia': 'WV', wisconsin: 'WI', wyoming: 'WY' };
 
   var kindName = function (k) { for (var i = 0; i < KINDS.length; i++) if (KINDS[i][0] === k) return KINDS[i][1]; return 'Business'; };
@@ -110,9 +110,45 @@
     snow: '<path d="M12 2v20M4 6l16 12M20 6L4 18"/>', gift: '<rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12M12 9c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/>',
     user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>', flag: '<path d="M5 21V4h11l-2 4 2 4H5"/>', bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>', plus: '<path d="M12 5v14M5 12h14"/>',
     qr: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/>', heart: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>', shield: '<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
     down: '<path d="M12 4v12M6 10l6 6 6-6M4 20h16"/>', copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/>', print: '<path d="M6 9V3h12v6M6 18H4v-7h16v7h-2"/><rect x="6" y="14" width="12" height="7"/>', moon: '<path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/>', out: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>'
   };
   var icon = function (n, s) { return '<svg class="ic" width="' + (s || 20) + '" height="' + (s || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[n] || '') + '</svg>'; };
+  // ---------- Brand color (picture 288 color A: match my logo) ----------
+  var KIND_COLOR = { repair: '#C0362C', tires: '#1D7A46', dealer: '#0D1B4C', credit_union: '#123B2E', insurance: '#13807A', body: '#B8560A', tow: '#D63A2F', detail: '#6E3FA8', other: '#1F5FBF' };
+  var SWATCH = [['#1F5FBF', 'Blue'], ['#C0362C', 'Red'], ['#1D7A46', 'Green'], ['#0F1B33', 'Navy'], ['#E8710A', 'Orange'], ['#6E3FA8', 'Purple'], ['#13807A', 'Teal'], ['#9A7535', 'Gold'], ['#111111', 'Black'], ['#C2185B', 'Pink']];
+  var rgb = function (h) { h = hex(h, '#1F5FBF'); return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16); }); };
+  var toHex = function (c) { return '#' + c.map(function (v) { return Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0'); }).join(''); };
+  var lum = function (h) { return rgb(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (a, v, i) { return a + v * [0.2126, 0.7152, 0.0722][i]; }, 0); };
+  var contrast = function (a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  var shade = function (h, f) { return toHex(rgb(h).map(function (v) { return v * (1 - f); })); };
+  var onColor = function (h) { return contrast(h, '#FFFFFF') >= 4.5 ? '#FFFFFF' : '#10151B'; };
+  var readable = function (h, bg) { bg = bg || '#FFFFFF'; var c = hex(h, '#1F5FBF'), n = 0; while (contrast(c, bg) < 4.5 && n++ < 12) c = shade(c, 0.12); return c; };
+  var brandOf = function (b) { return hex(b.brand_color, KIND_COLOR[b.kind] || KIND_COLOR.other); };
+  // Colors in a logo: small canvas, count bright colors, skip near-white, near-black and grays, top 3 that differ.
+  function logoColors(url) {
+    return new Promise(function (ok) {
+      var img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = function () {
+        try {
+          var c = document.createElement('canvas'); c.width = c.height = 64; var g = c.getContext('2d'); g.drawImage(img, 0, 0, 64, 64);
+          var d = g.getImageData(0, 0, 64, 64).data, box = {}, gray = {};
+          for (var i = 0; i < d.length; i += 4) {
+            if (d[i + 3] < 128) continue;
+            var r = d[i], gg = d[i + 1], bb = d[i + 2], mx = Math.max(r, gg, bb), mn = Math.min(r, gg, bb);
+            var key = [r >> 5, gg >> 5, bb >> 5].join(',');
+            var tgt = (mx > 235 && mn > 215) || mx < 22 ? null : (mx - mn < 28 ? gray : box);
+            if (!tgt) continue; (tgt[key] = tgt[key] || { n: 0, r: 0, g: 0, b: 0 }); tgt[key].n++; tgt[key].r += r; tgt[key].g += gg; tgt[key].b += bb;
+          }
+          var pick = function (m) { return Object.keys(m).map(function (k) { var v = m[k]; return { n: v.n, c: toHex([v.r / v.n, v.g / v.n, v.b / v.n]) }; }).sort(function (a, b) { return b.n - a.n; }); };
+          var out = []; pick(box).concat(pick(gray)).forEach(function (x) { if (out.length < 3 && out.every(function (o) { return contrast(o, x.c) > 1.6; })) out.push(x.c); });
+          ok(out);
+        } catch (err) { ok([]); }
+      };
+      img.onerror = function () { ok([]); };
+      img.src = url;
+    });
+  }
   var shortDay = function (d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
   var today = function () { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   // "Mon–Fri 8 AM–6 PM · Sat 9 AM–2 PM · Closed Sunday" → open now? (the driver's clock; null when we can't tell)
@@ -557,7 +593,7 @@
     };
   }
   // A driver starts a chat or a quote request with one business.
-  function startChat(host, b, kind, onOpen) {
+  function startChat(host, b, kind, onOpen, pre) {
     var st = { photos: [] }, q = kind === 'quote';
     host.innerHTML = '<div class="rv-form"><h3>' + (q ? 'Get a quote from ' : 'Message ') + esc(b.name) + '</h3><p class="rv-fine">' + (q ? 'Tell them about your car and the problem. They answer with a price here.' : 'They answer right here. Only your first name shows.') + '</p>' +
       (q ? '<div class="bz-two"><label class="bz-f"><span>Your car</span><input id="sCar" maxlength="80" placeholder="2016 Toyota Corolla"></label><label class="bz-f"><span>Miles (optional)</span><input id="sMi" inputmode="numeric" placeholder="84,000"></label></div>' : '') +
@@ -565,6 +601,7 @@
       (q ? '<div class="bz-f"><span>Photos (optional, up to 3)</span><div class="bz-pics" id="sP"></div></div>' : '') +
       '<div class="bz-row"><button type="button" class="bz-btn" id="sGo">' + (q ? 'Send quote request' : 'Send') + '</button><button type="button" class="bz-btn soft" id="sX">Cancel</button></div><div class="bz-msg" id="sM" role="status"></div></div>';
     var $ = function (s) { return host.querySelector(s); };
+    if (pre) { if (pre.car && $('#sCar')) $('#sCar').value = pre.car; if (pre.body) { $('#sB').value = pre.body; setTimeout(function () { var t = $('#sB'); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } }, 50); } }
     function drawP() { if ($('#sP')) $('#sP').innerHTML = st.photos.map(function (p, i) { return '<div class="p"><img src="' + photoUrl(p) + '" alt=""><button type="button" data-rm="' + i + '" aria-label="Remove">✕</button></div>'; }).join('') + (st.photos.length < 3 ? '<label aria-label="Add a photo">+<input type="file" accept="image/*" id="sF" hidden></label>' : ''); }
     drawP();
     if ($('#sP')) $('#sP').onclick = function (e) { var i = e.target.getAttribute('data-rm'); if (i != null) { st.photos.splice(+i, 1); drawP(); } };
@@ -704,7 +741,15 @@
       if (!pages.length) { root.querySelector('#bzAcct').hidden = false; root.querySelector('#bzAcct').innerHTML = '<div class="bz-sec">Signed in as <b>' + esc(u.email) + '</b>. You don’t have a business page yet. <a href="/business/join/">Create your free page</a></div>'; return; }
       var cur = pages[0], tab = 'overview';
       var shell = document.createElement('div'); shell.className = 'hq'; root.innerHTML = ''; root.appendChild(shell); root.classList.add('hq-wrap');
-      function look() { var l = cur.hq_look || 'racing'; shell.setAttribute('data-look', LOOKS.some(function (x) { return x[0] === l; }) ? l : 'racing'); }
+      function look() {
+        shell.setAttribute('data-look', cur.hq_dark ? 'dark' : 'racing');
+        var br = brandOf(cur), acc = cur.hq_dark ? br : readable(br);
+        if (cur.hq_dark && contrast(acc, '#16181C') < 4.5) { var c2 = acc, n = 0; while (contrast(c2, '#16181C') < 4.5 && n++ < 12) c2 = toHex(rgb(c2).map(function (v) { return v + (255 - v) * 0.15; })); acc = c2; }
+        shell.style.setProperty('--acc', acc); shell.style.setProperty('--onAcc', onColor(acc)); shell.style.setProperty('--sideOnInk', acc);
+        shell.style.setProperty('--sideOn', cur.hq_dark ? 'rgba(255,255,255,.08)' : 'color-mix(in srgb, ' + acc + ' 12%, #fff)');
+        shell.style.setProperty('--soft', cur.hq_dark ? 'rgba(255,255,255,.08)' : 'color-mix(in srgb, ' + acc + ' 12%, #fff)');
+        shell.style.setProperty('--heroA', shade(br, 0.55)); shell.style.setProperty('--heroB', shade(br, 0.1));
+      }
       var counts = { msg: 0, rev: 0 };
       function go(t, extra) { tab = t; frame(extra); }
       function frame(extra) {
@@ -993,7 +1038,12 @@
         if (focus) setTimeout(function () { var f = el.querySelector('#' + focus); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
         var sug = SUGGEST[cur.kind];
         el.innerHTML = head('ACCOUNT', 'Look and settings') +
-          '<div class="hq-card"><h4>PICK HOW BUSINESS HQ LOOKS</h4><p class="hq-fine">Only changes what you see here. Your public page keeps its own header and logo.</p><div class="hq-looks">' +
+          '<div class="hq-card" id="hqColor"><h4>YOUR COLOR AND PAGE LOOK</h4><p class="hq-fine">One color for your page and Business HQ. We keep button text easy to read.</p>' +
+            '<div class="cl-logo">' + logoHtml(cur, 'cl-lg') + '<div><b>' + (cur.logo ? 'Match my logo' : 'No logo yet') + '</b><small>' + (cur.logo ? 'We find the colors in your logo.' : 'Add a logo in My page, then we can match it.') + '</small></div>' + (cur.logo ? '<button type="button" class="bz-btn soft bz-small" id="clMatch">Match my logo</button>' : '') + '</div><div id="clSug"></div>' +
+            '<div class="cl-sw">' + SWATCH.map(function (w) { return '<button type="button" data-c="' + w[0] + '" style="background:' + w[0] + '" aria-label="' + w[1] + '" class="' + (brandOf(cur).toLowerCase() === w[0].toLowerCase() ? 'on' : '') + '"></button>'; }).join('') + '<label class="cl-any">Any color <input type="color" id="clAny" value="' + brandOf(cur) + '"></label></div>' +
+            '<h4 style="margin-top:14px">YOUR PAGE</h4><div class="cl-th" id="clTh">' + [['bold', 'Bold', 'Big color block with your name'], ['clean', 'Clean', 'White, color on buttons'], ['night', 'Night', 'Dark page, bright color']].map(function (t) { return '<button type="button" data-t2="' + t[0] + '" class="' + ((cur.page_theme || 'bold') === t[0] ? 'on' : '') + '"><i class="th-' + t[0] + '"></i><b>' + t[1] + '</b><small>' + t[2] + '</small></button>'; }).join('') + '</div>' +
+            '<h4 style="margin-top:14px">BUSINESS HQ</h4><div class="bz-chips" id="clHq"><button type="button" data-d="0" class="' + (cur.hq_dark ? '' : 'on') + '">Light</button><button type="button" data-d="1" class="' + (cur.hq_dark ? 'on' : '') + '">Dark</button></div>' +
+            '<div class="bz-row"><a class="bz-btn soft bz-small" href="/shops/?b=' + encodeURIComponent(cur.slug) + '" target="_blank" rel="noopener">See my page</a></div><div class="bz-msg" id="lM" role="status"></div></div>' +
           LOOKS.map(function (l) { return '<button type="button" data-l="' + l[0] + '" class="' + ((cur.hq_look || 'racing') === l[0] ? 'on' : '') + '"><span class="sp"><i style="background:' + l[3] + '"></i><i style="background:' + l[4] + '"></i><i style="background:' + l[5] + '"></i><i style="background:' + l[6] + '"></i></span><b>' + l[1] + '</b><small>' + (l[0] === 'racing' ? 'Default' : l[0] === sug ? 'Suggested for you' : l[2]) + '</small></button>'; }).join('') + '</div><div class="bz-msg" id="lM" role="status"></div></div>' +
           '<div class="hq-card"><h4>EMAIL ALERTS</h4><label class="bz-ck" style="margin:4px 0"><input type="checkbox" id="nE"' + (cur.notify_email !== false ? ' checked' : '') + '><span>Email me at <b>' + esc(u.email) + '</b> when a driver messages me, asks for a quote or writes a review.</span></label><p class="hq-fine">At most one email per chat every 15 minutes while you haven’t read it. Drivers get an email when you answer.</p><div class="bz-msg" id="nM" role="status"></div></div>' +
           '<div class="hq-card" id="hqIdea"><h4>SEND US AN IDEA OR A TIP</h4><p class="hq-fine">A feature you want, something that isn’t working, or a tip you’d like to share with other shops. We read every one.</p><div class="bz-chips idea-kinds" id="iK"><button type="button" data-ik="new" class="on">A feature I want</button><button type="button" data-ik="broken">Something isn’t working</button><button type="button" data-ik="tip">A tip to share</button></div><label class="bz-f"><span>Your idea</span><textarea id="iT" maxlength="1000" placeholder="I’d like to post a deal for one day only."></textarea></label><div class="bz-row"><button type="button" class="bz-btn" id="iGo">Send</button></div><div class="bz-msg" id="iM" role="status"></div></div>' +
@@ -1013,12 +1063,27 @@
           if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save.'; this.checked = !v; return; }
           cur.notify_email = v; m.className = 'bz-msg good'; m.textContent = v ? 'Email alerts are on.' : 'Email alerts are off.';
         };
-        el.querySelector('.hq-looks').onclick = async function (e) {
-          var b = e.target.closest('button[data-l]'); if (!b) return;
-          var l = b.getAttribute('data-l'), x = await sb.from('businesses').update({ hq_look: l }).eq('id', cur.id);
-          if (x.error) { el.querySelector('#lM').className = 'bz-msg bad'; el.querySelector('#lM').textContent = 'That didn’t save.'; return; }
-          cur.hq_look = l; frame();
+        async function saveLook(up, msg) {
+          var x = await sb.from('businesses').update(up).eq('id', cur.id), m = el.querySelector('#lM');
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save. Please try again.'; return; }
+          Object.assign(cur, up); look(); m.className = 'bz-msg good'; m.textContent = msg || 'Saved.';
+          [].forEach.call(el.querySelectorAll('.cl-sw button'), function (b) { b.classList.toggle('on', b.getAttribute('data-c').toLowerCase() === brandOf(cur).toLowerCase()); });
+          [].forEach.call(el.querySelectorAll('#clTh button'), function (b) { b.classList.toggle('on', b.getAttribute('data-t2') === (cur.page_theme || 'bold')); });
+          [].forEach.call(el.querySelectorAll('#clHq button'), function (b) { b.classList.toggle('on', (b.getAttribute('data-d') === '1') === !!cur.hq_dark); });
+        }
+        var colorEl = el.querySelector('#hqColor');
+        colorEl.onclick = async function (e) {
+          var c = e.target.closest('[data-c]'), t = e.target.closest('[data-t2]'), d = e.target.closest('[data-d]');
+          if (c) return saveLook({ brand_color: c.getAttribute('data-c') }, 'Saved. Your page and Business HQ use this color.');
+          if (t) return saveLook({ page_theme: t.getAttribute('data-t2') }, 'Saved. Tap “See my page” to look.');
+          if (d) return saveLook({ hq_dark: d.getAttribute('data-d') === '1' });
+          if (e.target.id === 'clMatch') {
+            var box = el.querySelector('#clSug'); box.innerHTML = '<p class="hq-fine">Looking at your logo…</p>';
+            var cols = await logoColors(photoUrl(cur.logo));
+            box.innerHTML = cols.length ? '<p class="hq-fine" style="margin:6px 0 4px">We found these colors. Tap one:</p><div class="cl-sw">' + cols.map(function (h) { return '<button type="button" data-c="' + h + '" style="background:' + h + '" aria-label="Color ' + h + '"></button>'; }).join('') + '</div>' : '<p class="hq-fine">We couldn’t read colors from this logo. Pick one below.</p>';
+          }
         };
+        el.querySelector('#clAny').onchange = function () { saveLook({ brand_color: this.value }, 'Saved your color.'); };
         el.querySelector('#dGo').onclick = async function () {
           var m = el.querySelector('#dM'); m.className = 'bz-msg bad';
           if (el.querySelector('#dT').value.trim() !== 'DELETE') { m.textContent = 'Type DELETE in capital letters to confirm.'; return; }
@@ -1144,15 +1209,33 @@
       var followBtn = function () { return myFollow ? '<button type="button" class="sp-btn soft" data-follow>' + icon('check', 16) + 'Following</button>' : '<button type="button" class="sp-btn" data-follow>' + icon('plus', 16) + 'Follow</button>'; };
       var dealHtml = function (p) { return '<div class="sp-deal" id="deal-' + p.id + '">' + dealCard(p, b) + '<div class="bz-row">' + (p.codes && talk ? '<button type="button" class="sp-btn" data-code="' + p.id + '">' + icon('qr', 16) + 'Get my counter code</button>' : '') + '<button type="button" class="sp-btn soft" data-dshare="' + p.id + '">' + icon('share', 16) + 'Share</button></div><div class="sp-code"></div></div>'; };
       var KP = { special: 'Special', news: 'News', event: 'Event', hours: 'Hours change' };
+      var theme = b.page_theme || 'bold', br = brandOf(b), brText = readable(br, theme === 'night' ? '#0E1116' : '#FFFFFF');
+      if (theme === 'night') { var nb = br, nn = 0; while (contrast(nb, '#0E1116') < 4.5 && nn++ < 12) nb = toHex(rgb(nb).map(function (v) { return v + (255 - v) * 0.15; })); brText = nb; }
+      var idHtml = logoHtml(b, 'sp-lo') + '<div><h1>' + esc(b.name) + '</h1><span>' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</span></div>';
+      // Picture 291: the tool each kind of business needs most, at the top. Uses messages and quotes that already work.
+      var KH = {
+        repair: ['wrench', 'Something wrong with your car?', 'Tell them what’s going on and get a price here. Used Carvessa’s car help? Paste your mechanic note.', 'Get a quote', 'quote', 'repair'],
+        tires: ['search', 'Find tires for my car', 'Type your car and, if you know it, the tire size on the side of the tire.', 'Get tire prices', 'quote', 'tires'],
+        dealer: ['tag', 'Ask for the out-the-door price', 'The total with tax and fees, in writing, before you go.', 'Ask for my price', 'message', 'dealer'],
+        credit_union: ['cash', 'Free car loan check-up', 'Bring your current loan. They tell you if they can lower your payment. Rates are set by the credit union.', 'Ask for a check-up', 'message', 'credit_union'],
+        insurance: ['shield', 'Quote for a car you’re looking at', 'Tell them the car. Your agent answers here; your phone and email stay private until you share them.', 'Ask for a quote', 'quote', 'insurance'],
+        body: ['wrench', 'Estimate from 3 photos', 'Close, middle and far away. They answer with a price here.', 'Send photos', 'quote', 'body'],
+        detail: ['star', 'Book a detail', 'Tell them your car and when you’d like to come.', 'Ask for a time', 'message', 'detail'],
+        tow: ['phone', 'Need a tow now?', 'Tell them where you are and what happened. On a highway, stay in the car with your belt on.', 'Call now', 'call', 'tow']
+      }[b.kind];
+      var kindHtml = KH ? '<section class="sp-kind"><div class="sp-kh">' + icon(KH[0], 20) + '<b>' + KH[1] + '</b></div><p>' + KH[2] + '</p>' +
+        (b.kind === 'tires' && talk ? '<div class="bz-two"><label class="bz-f"><span>Your car</span><input id="kCar" maxlength="80" placeholder="2019 Toyota RAV4"></label><label class="bz-f"><span>Tire size (optional)</span><input id="kSize" maxlength="20" placeholder="225/65R17"></label></div>' : '') +
+        (KH[4] === 'call' ? (tel ? '<a class="sp-btn sp-wide" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 18) + 'Call now</a>' : '') : talk ? '<button type="button" class="sp-btn sp-wide" data-chat-kind="' + KH[4] + '" data-pre="' + KH[5] + '">' + icon('msg', 18) + KH[3] + '</button>' : '<p class="sp-own">Drivers see a “' + KH[3] + '” button here.</p>') + '</section>' : '';
       var tabsList = [['ov', 'Overview'], deals.length ? ['deals', 'Deals · ' + deals.length] : null, svcs.length ? ['svc', 'Services'] : null, ['reviews', 'Reviews'], (b.photos || []).length ? ['photos', 'Photos'] : null].filter(Boolean);
       root.innerHTML =
-        '<div class="sp-hero" style="background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(0,0,0,.62)),' + hv.css.replace(/"/g, "'") + '"><div class="sp-id">' + logoHtml(b, 'sp-lo') + '<div><h1>' + esc(b.name) + '</h1><span>' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</span></div></div>' + (hv.credit ? '<a class="shop-credit" href="' + esc(hv.credit[1]) + '" target="_blank" rel="noopener nofollow">Photo: ' + esc(hv.credit[0]) + ' · CC BY</a>' : '') + '</div>' +
+        '<div class="sp-hero" style="background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(0,0,0,.62)),' + hv.css.replace(/"/g, "'") + '">' + (theme === 'bold' ? '' : '<div class="sp-id">' + idHtml + '</div>') + (hv.credit ? '<a class="shop-credit" href="' + esc(hv.credit[1]) + '" target="_blank" rel="noopener nofollow">Photo: ' + esc(hv.credit[0]) + ' · CC BY</a>' : '') + '</div>' +
+        (theme === 'bold' ? '<div class="sp-blk">' + idHtml + '</div>' : '') +
         (!live ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you’re the owner (we’ll call or text you).</div>' : '') +
         '<div class="sp-acts">' + (talk ? followBtn() + (QUOTE_KINDS[b.kind] ? '<button type="button" class="sp-btn soft" data-chat-kind="quote">' + icon('msg', 16) + 'Get a quote</button>' : '<button type="button" class="sp-btn soft" data-chat-kind="message">' + icon('msg', 16) + msgWord + '</button>') : '') + (isOwner ? '<a class="sp-btn" href="/business/edit/">' + icon('wrench', 16) + 'Edit my page</a>' : '') + '<button type="button" class="sp-btn soft" id="spShare" aria-label="Share this page">' + icon('share', 16) + '<span>Share</span></button></div>' +
         (isOwner ? '<p class="sp-own">This is your page. Drivers also see Follow, Message and Get a quote here.</p>' : '') +
         (live ? '<p class="sp-fol" id="spFol">' + nFol + ' driver' + (nFol === 1 ? '' : 's') + ' follow' + (nFol === 1 ? 's' : '') + ' this shop' + (myFollow ? ' · you get their deals first' : ' · follow to get their deals first') + '</p>' : '') +
         '<div class="sp-chips">' + (live ? '<span class="v">' + icon('check', 14) + 'Verified by Carvessa</span>' : '') + (reviews.length ? '<a href="#reviews">' + starRow(Math.round(avg)) + ' ' + avg.toFixed(1) + ' (' + reviews.length + ')</a>' : '') + (openState ? '<a href="#hours" class="' + (openState.open ? 'open' : 'closed') + '">' + icon('home', 14) + esc(openState.text) + '</a>' : b.hours ? '<a href="#hours">' + icon('home', 14) + 'See hours</a>' : '') + '</div>' +
-        '<div id="fwBox"></div><div id="chBox"></div>' +
+        '<div id="fwBox"></div>' + kindHtml + '<div id="chBox"></div>' +
         '<nav class="sp-tabs" aria-label="Sections">' + tabsList.map(function (t, i) { return '<a href="#' + t[0] + '" class="' + (i === 0 ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</nav>' +
         '<section id="ov">' +
           (b.hours ? '<div class="shop-card sp-hours" id="hours"><h2>Hours' + (openState ? ' <span class="' + (openState.open ? 'open' : 'closed') + '">' + esc(openState.text) + '</span>' : '') + '</h2>' + b.hours.split(/\s*·\s*|\s*;\s*|\n/).filter(Boolean).map(function (h) { return '<div class="sp-hr">' + esc(h) + '</div>'; }).join('') + '<div class="shop-note">Hours set by the business. Holidays can change them.</div></div>' : '') +
@@ -1176,7 +1259,8 @@
         ((b.photos || []).length ? '<section id="photos"><div class="shop-card"><h2>Photos</h2><div class="shop-pics">' + b.photos.map(function (p, i) { return '<img src="' + photoUrl(p) + '" alt="' + esc(b.name) + ' photo ' + (i + 1) + '" loading="lazy">'; }).join('') + '</div></div></section>' : '') +
         '<p class="shop-note" style="margin-top:14px">Carvessa doesn’t rank businesses by who pays. Reviews are never removed for being negative or because a business pays. Paid spots in the app are always labeled. Is this your business? <a href="/business/edit/">Open Business HQ</a></p>' +
         '<div class="sp-bar">' + (live ? '<button type="button" class="sp-b pr" data-chat-kind="message">' + icon('msg', 18) + 'Message</button>' : '') + (tel ? '<a class="sp-b" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 18) + (b.kind === 'tow' ? 'Call now' : 'Call') + '</a>' : '') + '<a class="sp-b" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 18) + 'Go</a></div>';
-      root.classList.add('sp-has-bar');
+      root.classList.add('sp-has-bar', 'sp-t-' + theme);
+      root.style.setProperty('--brand', br); root.style.setProperty('--brandInk', onColor(br)); root.style.setProperty('--brandText', brText);
       root.addEventListener('click', function (e) { var a = e.target.closest('[data-c]'); if (a) count(a.getAttribute('data-c')); });
       // Tabs follow the scroll.
       var tabs = root.querySelector('.sp-tabs');
@@ -1237,13 +1321,16 @@
         }, 'Get your counter code with a free Carvessa account. The shop never sees your name, email or phone.');
       });
       root.addEventListener('click', function (e) {
-        var k = e.target.closest('[data-chat-kind]'); if (!k) return; k = k.getAttribute('data-chat-kind');
+        var kEl = e.target.closest('[data-chat-kind]'); if (!kEl) return; var k = kEl.getAttribute('data-chat-kind'), preKey = kEl.getAttribute('data-pre');
+        var car0 = root.querySelector('#kCar') ? root.querySelector('#kCar').value.trim() : '', size0 = root.querySelector('#kSize') ? root.querySelector('#kSize').value.trim() : '';
+        var PRE = { tires: { car: car0, body: 'Price for 4 tires' + (size0 ? ', size ' + size0 : '') + ', installed and balanced, please.' }, dealer: { body: 'Hi! What’s the out-the-door price (with tax and fees, in writing) for ' }, credit_union: { body: 'Hi! I’d like a free car loan check-up. My current payment is about $' }, body: { body: 'Estimate please. I added photos: close, middle and far away.' }, insurance: { body: 'Hi! Could I get a quote for this car? ' }, detail: { body: 'Hi! I’d like to book a detail for my ' } };
+        var pre = preKey ? PRE[preKey] : null;
         var box = root.querySelector('#chBox');
         signedIn(box, async function (u) {
           if (u.id === b.owner) { box.innerHTML = '<div class="bz-msg bad">You can’t message your own business.</div>'; return; }
           var open = (await sb.from('biz_chats').select('*').eq('business_id', b.id).eq('driver', u.id).neq('status', 'blocked').order('last_at', { ascending: false }).limit(1)).data;
           var show = function (c) { chatThread(box, c, false, b.name); var a = document.createElement('p'); a.className = 'rv-fine'; a.innerHTML = '<a href="/messages/">See all my messages ›</a>'; box.appendChild(a); };
-          if (open && open.length && k === 'message') show(open[0]); else startChat(box, b, k, show);
+          if (open && open.length && k === 'message' && !pre) show(open[0]); else startChat(box, b, k, show, pre);
           box.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 'Message ' + b.name + ' with a free account. Only your first name shows; your phone and email stay private.');
       });
