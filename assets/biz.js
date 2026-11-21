@@ -67,7 +67,7 @@
     ['tread', 'Tire Tread', 'Charcoal and yellow', '#1A1A1A', '#F4F4F2', '#1A1A1A', '#F2B705']
   ];
   var SUGGEST = { credit_union: 'cu', insurance: 'shield', dealer: 'lot', repair: 'workshop', body: 'workshop', tires: 'tread' };
-  var PUB = 'id, owner, slug, name, kind, brand_color, page_theme, address, city, state, phone, website, hours, about, offer, wallpaper, photos, logo, header, status, founding, created_at, updated_at';
+  var PUB = 'id, owner, slug, name, kind, brand_color, page_theme, customer_parts, address, city, state, phone, website, hours, about, offer, wallpaper, photos, logo, header, status, founding, created_at, updated_at';
   var MINE = PUB + ', hq_dark, lat, lon, legal_name, control_no, owner_role, since_year, hq_look, notify_email';
   var STATES = { alabama: 'AL', alaska: 'AK', arizona: 'AZ', arkansas: 'AR', california: 'CA', colorado: 'CO', connecticut: 'CT', delaware: 'DE', 'district of columbia': 'DC', florida: 'FL', georgia: 'GA', hawaii: 'HI', idaho: 'ID', illinois: 'IL', indiana: 'IN', iowa: 'IA', kansas: 'KS', kentucky: 'KY', louisiana: 'LA', maine: 'ME', maryland: 'MD', massachusetts: 'MA', michigan: 'MI', minnesota: 'MN', mississippi: 'MS', missouri: 'MO', montana: 'MT', nebraska: 'NE', nevada: 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', ohio: 'OH', oklahoma: 'OK', oregon: 'OR', pennsylvania: 'PA', 'rhode island': 'RI', 'south carolina': 'SC', 'south dakota': 'SD', tennessee: 'TN', texas: 'TX', utah: 'UT', vermont: 'VT', virginia: 'VA', washington: 'WA', 'west virginia': 'WV', wisconsin: 'WI', wyoming: 'WY' };
 
@@ -383,7 +383,7 @@
       '<div class="bz-f"><span id="fSvcLab">Services and prices (you set them)</span><div id="fSvcs"></div><button type="button" class="bz-btn soft bz-small" id="fAddSvc">+ Add a service or item</button><small>Prices show as "from $X". Leave the price empty if it depends.</small></div>' +
       '<div class="bz-f"><span>Header (optional)</span><div class="bz-hopts" id="fHopt"></div><div id="fHpanel"></div><div class="bz-hprev" id="fHprev"></div></div>' +
       '<div class="bz-f"><span>Logo (optional)</span><div class="bz-logo-row" id="fLogo"></div></div>' +
-      '<div class="bz-f"><span>Photos (optional, up to 3)</span><div class="bz-pics" id="fPics"></div><small>Your shop, your work, your team. No customers’ license plates please.</small></div>' +
+      '<div class="bz-f"><span>Photos (optional, up to 24)</span><div class="bz-pics" id="fPics"></div><small>Your shop, your work, your team. They show as a gallery on your page. No customers’ license plates please.</small></div>' +
       '<div class="bz-check"><h3>For our check (drivers never see this)</h3><p>We confirm every business before its page goes live. These help us find your business record fast.</p>' +
       f('fLegal', 'Legal name, as registered with your state', b.legal_name, 'maxlength="120" placeholder="Tony’s Auto Shop LLC"') +
       '<div class="bz-two">' + f('fRegState', 'State where it’s registered', b.state || '', 'maxlength="30" placeholder="Georgia"') + f('fCtrl', 'State control or file number (optional)', b.control_no, 'maxlength="30" placeholder="Helps us find you"') + '</div>' +
@@ -423,7 +423,7 @@
     }
     function drawPics() {
       $('fPics').innerHTML = st.photos.map(function (p, i) { return '<div class="p"><img src="' + photoUrl(p) + '" alt="Photo ' + (i + 1) + '"><button type="button" data-rm="' + i + '" aria-label="Remove photo">✕</button></div>'; }).join('') +
-        (st.photos.length < 3 ? '<label aria-label="Add a photo">+<input type="file" accept="image/*" id="fPicFile" hidden></label>' : '');
+        (st.photos.length < 24 ? '<label aria-label="Add a photo">+<input type="file" accept="image/*" id="fPicFile" hidden></label>' : '');
     }
     drawKinds(); drawSvcs(); drawHeader(); drawLogo(); drawPics();
     nameSearch(st, $, function (info) {
@@ -557,35 +557,46 @@
     var tag = stt === 'accepted' ? '<span class="of-tag ok">✓ Accepted</span>' : stt === 'declined' ? '<span class="of-tag">No thanks</span>' : ended ? '<span class="of-tag">Ended</span>' : '<span class="of-tag new">Good until ' + new Date(o.until + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>';
     return '<div class="of-card"><div class="of-k">OFFER ' + tag + '</div><b class="of-t">' + esc(o.title || 'Offer') + '</b>' +
       (o.lines || []).map(function (l) { return '<div class="of-l"><span>' + esc(l.t) + '</span><span>' + money(l.p) + '</span></div>'; }).join('') +
-      '<div class="of-l of-tot"><span>Total before tax</span><span>' + money(o.total) + '</span></div>' + (o.note ? '<p class="of-n">' + esc(o.note) + '</p>' : '') +
+      '<div class="of-l of-tot"><span>Total before tax</span><span>' + money(o.total) + '</span></div>' + (o.warranty || o.earliest ? '<div class="of-we">' + (o.warranty ? '<span>' + icon('shield', 14) + 'Warranty: ' + esc(o.warranty) + '</span>' : '') + (o.earliest ? '<span>' + icon('bell', 14) + 'Earliest: ' + esc(o.earliest) + '</span>' : '') + '</div>' : '') + (o.note ? '<p class="of-n">' + esc(o.note) + '</p>' : '') +
       '<small class="of-f">Price set by the business. You pay at the shop. Carvessa doesn’t take payments.</small>' +
       (!asBusiness && stt === 'open' && !ended ? '<div class="of-b"><button type="button" class="bz-btn green" data-ofa="accept" data-of="' + m.id + '">Accept</button><button type="button" class="bz-btn soft" data-ofa="ask" data-of="' + m.id + '">Ask a question</button><button type="button" class="bz-btn soft" data-ofa="decline" data-of="' + m.id + '">No thanks</button></div>' : '') + '</div>';
   }
-  function offerBuilder(host, send) {
+  function offerBuilder(host, send, opts) {
+    opts = opts || {};
     var d7 = new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10), max = new Date(Date.now() + 60 * 864e5).toISOString().slice(0, 10);
     var line = function () { return '<div class="of-row"><input class="of-in-t" maxlength="80" placeholder="What (e.g. Brake pads)"><label class="of-in-p">$<input inputmode="decimal" placeholder="0"></label><button type="button" class="of-x" aria-label="Remove line">✕</button></div>'; };
     host.innerHTML = '<div class="of-ed"><b>Offer with a price</b><label class="bz-f"><span>Title</span><input id="ofT" maxlength="80" placeholder="Front brake pads + rotors"></label>' +
       '<div class="of-rows">' + line() + line() + '</div><button type="button" class="bz-btn soft bz-small" id="ofAdd">＋ Add a line</button>' +
       '<div class="of-l of-tot"><span>Total before tax</span><span id="ofSum">$0</span></div>' +
+      '<div class="bz-two"><label class="bz-f"><span>Warranty (optional)</span><input id="ofW" maxlength="60" placeholder="12 months / 12,000 miles"></label><label class="bz-f"><span>Earliest time (optional)</span><input id="ofE" maxlength="60" placeholder="Tomorrow 8 AM"></label></div>' +
       '<div class="bz-two"><label class="bz-f"><span>Good until</span><input type="date" id="ofU" value="' + d7 + '" min="' + today() + '" max="' + max + '"></label><label class="bz-f"><span>Note (optional)</span><input id="ofN" maxlength="160" placeholder="Includes old parts back"></label></div>' +
       '<p class="rv-fine">Real prices only. The driver can accept, ask or say no thanks. They pay at your shop.</p>' +
-      '<div class="bz-row"><button type="button" class="bz-btn" id="ofGo">Send offer</button><button type="button" class="bz-btn soft" id="ofX">Cancel</button></div><div class="bz-msg" id="ofM" role="status"></div></div>';
+      '<div class="bz-row"><button type="button" class="bz-btn" id="ofGo">' + (opts.button || 'Send offer') + '</button>' + (opts.noCancel ? '' : '<button type="button" class="bz-btn soft" id="ofX">Cancel</button>') + '</div><div class="bz-msg" id="ofM" role="status"></div></div>';
     var $ = function (q) { return host.querySelector(q); };
     var lines = function () { return [].map.call(host.querySelectorAll('.of-row'), function (r) { return { t: r.querySelector('.of-in-t').value.trim(), p: parseFloat((r.querySelector('.of-in-p input').value || '').replace(/[^\d.]/g, '')) }; }).filter(function (l) { return l.t && !isNaN(l.p); }); };
     var sum = function () { $('#ofSum').textContent = money(lines().reduce(function (a, l) { return a + l.p; }, 0)); };
     host.addEventListener('input', sum);
     host.addEventListener('click', function (e) { if (e.target.classList.contains('of-x')) { var r = e.target.closest('.of-row'); if (host.querySelectorAll('.of-row').length > 1) r.remove(); sum(); } });
     $('#ofAdd').onclick = function () { if (host.querySelectorAll('.of-row').length < 8) $('.of-rows').insertAdjacentHTML('beforeend', line()); };
-    $('#ofX').onclick = function () { host.hidden = true; host.innerHTML = ''; };
+    if ($('#ofX')) $('#ofX').onclick = function () { host.hidden = true; host.innerHTML = ''; };
+    if (opts.title) $('#ofT').value = opts.title;
     $('#ofGo').onclick = async function () {
       var L = lines(), m = $('#ofM'); m.className = 'bz-msg bad';
       if (!L.length) { m.textContent = 'Add at least one line with a price.'; return; }
       this.disabled = true; m.className = 'bz-msg'; m.textContent = 'Sending…';
-      var err = await send({ title: $('#ofT').value.trim() || L[0].t, lines: L, until: $('#ofU').value, note: $('#ofN').value.trim() });
+      var err = await send({ title: $('#ofT').value.trim() || L[0].t, lines: L, until: $('#ofU').value, note: $('#ofN').value.trim(), warranty: $('#ofW').value.trim(), earliest: $('#ofE').value.trim() });
       if (err) { this.disabled = false; m.className = 'bz-msg bad'; m.textContent = err; }
     };
-    return { lines: lines };
+    return { lines: lines, extra: function () { return { warranty: $('#ofW').value.trim(), earliest: $('#ofE').value.trim(), until: $('#ofU').value, note: $('#ofN').value.trim(), title: $('#ofT').value.trim() }; } };
   }
+  var videoUrl = function (p) { return C.url + '/storage/v1/object/public/request-videos/' + p.split('/').map(encodeURIComponent).join('/'); };
+  function mediaHtml(x) {
+    var ph = x.photos || [];
+    if (!ph.length && !x.video) return '';
+    return '<div class="rq-media">' + ph.map(function (p, i) { return '<a href="' + photoUrl(p) + '" target="_blank" rel="noopener"><img src="' + photoUrl(p) + '" alt="Photo ' + (i + 1) + ' from the driver" loading="lazy"></a>'; }).join('') +
+      (x.video ? '<video src="' + videoUrl(x.video) + '" controls preload="metadata" playsinline aria-label="Video from the driver"></video>' : '') + '</div>';
+  }
+  var PARTS_SHOP = { yes: 'Installs parts you bring', no: 'Uses its own parts', ask: 'Ask about your own parts' };
   function chatThread(host, chat, asBusiness, title) {
     var st = { photos: [], timer: null, seen: 0 };
     host.innerHTML = '<div class="ch"><div class="ch-head"><b>' + esc(title) + '</b>' + (chat.kind === 'quote' ? '<span class="hq-tag">Quote request</span>' : '') + '</div>' +
@@ -1006,20 +1017,34 @@
         el.innerHTML = head('PRICE REQUESTS', 'Drivers asking for a price', list.length ? list.length + ' near you' : '') +
           '<p class="hq-fine">Drivers near you who need ' + (KW[cur.kind] || 'car') + ' help. You see their first name, car and area, never their phone or email. Answer with a price; the first good answer often wins. Requests stay open 3 days.</p>' +
           (list.length ? list.map(function (x) {
+            var hi = 'Hi ' + (x.driver_name === 'Carvessa member' ? 'there' : esc(x.driver_name.split(' ')[0])) + '! ';
             return '<div class="hq-card rq" data-r="' + x.id + '"><div class="hq-ch"><b>' + esc(x.car || 'Car not given') + '</b><small class="hq-fine" style="margin:0">' + esc(x.place || '') + ' · ' + (x.dist < 1 ? 'under 1' : Math.round(x.dist)) + ' mi · ' + when(x.created_at) + '</small></div>' +
-              '<p style="margin:4px 0 6px">' + esc(x.need) + '</p><small class="hq-fine">' + esc(x.driver_name) + (x.answers ? ' · ' + x.answers + ' shop' + (x.answers > 1 ? 's' : '') + ' answered' : ' · no answers yet') + '</small>' +
+              '<div class="rq-tags">' + (x.miles ? '<span>' + Number(x.miles).toLocaleString('en-US') + ' mi</span>' : '') + (x.vin ? '<span>VIN ' + esc(x.vin) + '</span>' : '') + (x.own_parts ? '<span class="own">May bring their own parts</span>' : '') + '</div>' +
+              '<p style="margin:4px 0 6px">' + esc(x.need) + '</p>' + mediaHtml(x) + '<small class="hq-fine">' + esc(x.driver_name) + (x.answers ? ' · ' + x.answers + ' shop' + (x.answers > 1 ? 's' : '') + ' answered' : ' · no answers yet') + ' · sent to the closest shops only</small>' +
               (x.chat_id ? '<div class="bz-row"><button type="button" class="bz-btn soft bz-small" data-chat="' + x.chat_id + '">' + icon('check', 16) + 'You answered · open the chat</button></div>' :
-                '<div class="rq-f"><div class="bz-two"><label class="bz-f"><span>Your price (optional)</span><input class="rqP" inputmode="decimal" placeholder="$560"></label><label class="bz-f"><span>What it includes (optional)</span><input class="rqN" maxlength="120" placeholder="Installed and balanced"></label></div>' +
-                '<label class="bz-f"><span>Message</span><textarea class="rqB" maxlength="1000">Hi ' + (x.driver_name === 'Carvessa member' ? 'there' : esc(x.driver_name.split(' ')[0])) + '! We can help with this. </textarea></label><div class="bz-row"><button type="button" class="bz-btn" data-send="' + x.id + '">Send my answer</button></div><div class="bz-msg" role="status"></div></div>') + '</div>';
+                '<div class="rq-f"><label class="bz-f"><span>Message</span><textarea class="rqB" maxlength="1000">' + hi + 'We can help with this. </textarea></label>' +
+                '<div class="bz-chips rq-how"><button type="button" class="on" data-how="est">Send a written estimate</button><button type="button" data-how="msg">Message only (need to see it first)</button></div>' +
+                '<div class="rq-of"></div><div class="rq-only" hidden><div class="bz-row"><button type="button" class="bz-btn" data-send="' + x.id + '">Send my message</button></div></div><div class="bz-msg rq-m" role="status"></div></div>') + '</div>';
           }).join('') : '<div class="hq-card"><b>No open requests near you right now.</b><p class="hq-fine" style="margin:4px 0 0">We email you when a driver nearby asks. Keep your services and prices up to date so drivers pick you.</p></div>');
+        var fail = function (x) { return /isn.t open/.test(x.error.message) ? 'This request just closed.' : /short answer/.test(x.error.message) ? 'Please write a short answer or a price.' : /line/.test(x.error.message) ? x.error.message : 'That didn’t send. Please try again.'; };
+        [].forEach.call(el.querySelectorAll('.rq-of'), function (host) {
+          var card = host.closest('.rq'), rid = card.getAttribute('data-r'), it = list.filter(function (y) { return y.id === rid; })[0];
+          offerBuilder(host, async function (offer) {
+            var x = await sb.rpc('biz_request_answer', { r: rid, b: cur.id, body: card.querySelector('.rqB').value, price: null, note: null, offer: offer });
+            if (x.error) return fail(x);
+            go('messages', x.data);
+          }, { button: 'Send my estimate', noCancel: true });
+        });
         el.onclick = async function (e) {
           var c = e.target.closest('[data-chat]'); if (c) { go('messages', c.getAttribute('data-chat')); return; }
+          var hw = e.target.closest('[data-how]');
+          if (hw) { var cd = hw.closest('.rq'), est = hw.getAttribute('data-how') === 'est'; [].forEach.call(hw.parentNode.children, function (z) { z.className = z === hw ? 'on' : ''; }); cd.querySelector('.rq-of').hidden = !est; cd.querySelector('.rq-only').hidden = est; return; }
           var sbtn = e.target.closest('[data-send]'); if (!sbtn) return;
-          var card = sbtn.closest('.rq'), m = card.querySelector('.bz-msg'), pr = card.querySelector('.rqP').value.replace(/[^\d.]/g, '');
+          var card = sbtn.closest('.rq'), m = card.querySelector('.rq-m');
           m.className = 'bz-msg'; m.textContent = 'Sending…'; sbtn.disabled = true;
-          var x = await sb.rpc('biz_request_answer', { r: sbtn.getAttribute('data-send'), b: cur.id, body: card.querySelector('.rqB').value, price: pr ? Number(pr) : null, note: card.querySelector('.rqN').value || null });
+          var x = await sb.rpc('biz_request_answer', { r: sbtn.getAttribute('data-send'), b: cur.id, body: card.querySelector('.rqB').value, price: null, note: null, offer: null });
           sbtn.disabled = false;
-          if (x.error) { m.className = 'bz-msg bad'; m.textContent = /isn.t open/.test(x.error.message) ? 'This request just closed.' : /short answer/.test(x.error.message) ? 'Please write a short answer or a price.' : 'That didn’t send. Please try again.'; return; }
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = fail(x); return; }
           go('messages', x.data);
         };
       }
@@ -1211,11 +1236,11 @@
           var go = b.querySelector('#ofGo'); if (go) go.remove();
         };
         q('#nmSend').onclick = async function () {
-          var m = q('#nmM'), i = q('#nmTo').value, body = q('#nmT').value.trim(), L = ob ? ob.lines() : [];
+          var m = q('#nmM'), i = q('#nmTo').value, body = q('#nmT').value.trim(), L = ob ? ob.lines() : [], OX = ob ? ob.extra() : {};
           m.className = 'bz-msg bad';
           if (i === '') { m.textContent = 'Pick a customer.'; return; }
           if (!body && !L.length) { m.textContent = 'Write a message or add an offer.'; return; }
-          var offer = L.length ? { title: (q('#ofT') && q('#ofT').value.trim()) || L[0].t, lines: L, until: q('#ofU') ? q('#ofU').value : null, note: q('#ofN') ? q('#ofN').value.trim() : '' } : null;
+          var offer = L.length ? { title: (q('#ofT') && q('#ofT').value.trim()) || L[0].t, lines: L, until: q('#ofU') ? q('#ofU').value : null, note: q('#ofN') ? q('#ofN').value.trim() : '', warranty: OX.warranty || '', earliest: OX.earliest || '' } : null;
           this.disabled = true; m.className = 'bz-msg'; m.textContent = 'Sending…';
           var x = await sb.rpc('biz_write_first', { b: cur.id, d: list[+i].driver, body: body, offer: offer });
           this.disabled = false;
@@ -1235,6 +1260,7 @@
           '<div class="hq-card" id="hqLink"><h4>YOUR PAGE LINK</h4><p class="hq-fine" style="margin-top:0">Put it on Instagram, Facebook, Google, your receipts and business cards.</p>' +
             '<div class="lk-show"><b id="lkNow">carvessa.app/b/' + esc(cur.slug) + '</b><button type="button" class="bz-btn bz-small" id="lkCopy">' + icon('copy', 16) + 'Copy</button>' + (navigator.share ? '<button type="button" class="bz-btn soft bz-small" id="lkShare">' + icon('share', 16) + 'Share</button>' : '') + '</div>' +
             '<label class="bz-f"><span>Change it (letters, numbers and dashes)</span><div class="lk-edit"><em>carvessa.app/b/</em><input id="lkIn" maxlength="40" value="' + esc(cur.slug) + '" autocapitalize="none" spellcheck="false"></div></label><div class="bz-row"><button type="button" class="bz-btn soft bz-small" id="lkSave">Save my new link</button></div><div class="bz-msg" id="lkM" role="status"></div><p class="hq-fine">Your old link keeps working too.</p></div>' +
+          '<div class="hq-card" id="hqParts"><h4>PARTS CUSTOMERS BRING</h4><p class="hq-fine" style="margin-top:0">Some drivers buy their own parts. Tell them what you do. It shows on your page and next to your quotes.</p><div class="bz-chips" id="cpK">' + [['yes', 'We install them'], ['no', 'We use our own parts'], ['ask', 'Ask us']].map(function (o) { return '<button type="button" data-cp="' + o[0] + '" class="' + (cur.customer_parts === o[0] ? 'on' : '') + '">' + o[1] + '</button>'; }).join('') + '</div><div class="bz-msg" id="cpM" role="status"></div></div>' +
           '<div class="hq-card" id="hqColor"><h4>YOUR COLOR AND PAGE LOOK</h4><p class="hq-fine">One color for your page and Business HQ. We keep button text easy to read.</p>' +
             '<div class="cl-logo">' + logoHtml(cur, 'cl-lg') + '<div><b>' + (cur.logo ? 'Match my logo' : 'No logo yet') + '</b><small>' + (cur.logo ? 'We find the colors in your logo.' : 'Add a logo in My page, then we can match it.') + '</small></div>' + (cur.logo ? '<button type="button" class="bz-btn soft bz-small" id="clMatch">Match my logo</button>' : '') + '</div><div id="clSug"></div>' +
             '<div class="cl-sw">' + SWATCH.map(function (w) { return '<button type="button" data-c="' + w[0] + '" style="background:' + w[0] + '" aria-label="' + w[1] + '" class="' + (brandOf(cur).toLowerCase() === w[0].toLowerCase() ? 'on' : '') + '"></button>'; }).join('') + '<label class="cl-any">Any color <input type="color" id="clAny" value="' + brandOf(cur) + '"></label></div>' +
@@ -1273,6 +1299,12 @@
           var r = await sb.rpc('set_business_link', { b: cur.id, s: v });
           if (r.error) { lkM.className = 'bz-msg bad'; lkM.textContent = 'That link isn’t available. Try another.'; return; }
           cur.slug = r.data; el.querySelector('#lkNow').textContent = 'carvessa.app/b/' + cur.slug; lkM.className = 'bz-msg good'; lkM.textContent = 'Saved. Your new link is carvessa.app/b/' + cur.slug + '. Old links still work.';
+        };
+        el.querySelector('#cpK').onclick = async function (e) {
+          var v = e.target.getAttribute('data-cp'); if (!v) return;
+          var x = await sb.from('businesses').update({ customer_parts: v }).eq('id', cur.id), m = el.querySelector('#cpM');
+          if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save. Please try again.'; return; }
+          cur.customer_parts = v; [].forEach.call(this.children, function (z) { z.className = z.getAttribute('data-cp') === v ? 'on' : ''; }); m.className = 'bz-msg good'; m.textContent = 'Saved. It shows on your page.';
         };
         async function saveLook(up, msg) {
           var x = await sb.from('businesses').update(up).eq('id', cur.id), m = el.querySelector('#lM');
@@ -1339,46 +1371,123 @@
   if (mode === 'ask') {
     account(async function (u) {
       root.querySelector('#bzAcct').innerHTML = '<p class="rv-fine">Signed in as <b>' + esc(u.email) + '</b>.</p>';
-      var box = root.querySelector('#bzAsk'), st = { kind: ASK_KINDS.some(function (k) { return k[0] === q.get('kind'); }) ? q.get('kind') : 'tires', spot: null };
+      var box = root.querySelector('#bzAsk'), st = { kind: ASK_KINDS.some(function (k) { return k[0] === q.get('kind'); }) ? q.get('kind') : 'repair', spot: null, photos: [], video: null, own: false };
+      var cars = (u.user_metadata && (u.user_metadata.my_cars || (u.user_metadata.my_car ? [u.user_metadata.my_car] : []))) || [];
+      var KN = function (k) { return (ASK_KINDS.filter(function (z) { return z[0] === k; })[0] || [0, ''])[1]; };
       async function mine() {
         var r = await sb.from('biz_requests').select('*').eq('driver', u.id).order('created_at', { ascending: false }).limit(20);
         var reqs = r.data || [], ids = reqs.map(function (x) { return x.id; });
-        var chats = ids.length ? (await sb.from('biz_chats').select('id, request_id, last_at, driver_seen_at, businesses(name, slug)').in('request_id', ids)).data || [] : [];
-        var cids = chats.map(function (c) { return c.id; });
-        var msgs = cids.length ? (await sb.from('biz_messages').select('chat_id, price, price_note, body, created_at').in('chat_id', cids).eq('from_business', true).order('created_at')).data || [] : [];
+        var chats = ids.length ? (await sb.from('biz_chats').select('id, request_id').in('request_id', ids)).data || [] : [];
         var host = root.querySelector('#bzMine');
         host.innerHTML = reqs.length ? '<h2 style="margin:22px 0 8px">My requests</h2>' + reqs.map(function (x) {
-          var cs = chats.filter(function (c) { return c.request_id === x.id; }), open = x.status === 'open' && x.expires_at > new Date().toISOString();
-          return '<div class="bz-sec ask-r"><div class="hq-ch" style="display:flex;justify-content:space-between;gap:8px"><b>' + esc(x.car || '') + (x.car ? ' · ' : '') + esc((ASK_KINDS.filter(function (k) { return k[0] === x.kind; })[0] || [0, ''])[1]) + '</b><span class="bz-pill ' + (open ? 'live' : 'hidden') + '">' + (open ? 'Open' : 'Closed') + '</span></div><p style="margin:4px 0">' + esc(x.need) + '</p>' +
-            (cs.length ? cs.map(function (c) { var last = msgs.filter(function (m) { return m.chat_id === c.id && m.price != null; }).pop(); return '<a class="ask-a" href="/messages/?chat=' + c.id + '"><b>' + esc(c.businesses ? c.businesses.name : 'A shop') + '</b><span>' + (last ? money(last.price) + (last.price_note ? ' · ' + esc(last.price_note) : '') : 'Answered') + '</span>' + icon('chev', 16) + '</a>'; }).join('') : '<p class="rv-fine">' + (open ? 'Waiting for shops near ' + esc(x.place || 'you') + '. We email you when one answers.' : 'No answers.') + '</p>') +
+          var n = chats.filter(function (c) { return c.request_id === x.id; }).length, open = x.status === 'open' && x.expires_at > new Date().toISOString();
+          return '<div class="bz-sec ask-r"><div class="hq-ch" style="display:flex;justify-content:space-between;gap:8px"><b>' + esc(x.car || '') + (x.car ? ' · ' : '') + esc(KN(x.kind)) + '</b><span class="bz-pill ' + (open ? 'live' : 'hidden') + '">' + (open ? 'Open' : 'Closed') + '</span></div><p style="margin:4px 0">' + esc(x.need) + '</p>' + mediaHtml(x) +
+            (n ? '<button type="button" class="bz-btn" data-cmp="' + x.id + '">' + (n > 1 ? 'Compare ' + n + ' quotes' : 'See 1 quote') + '</button>' : '<p class="rv-fine">' + (open ? 'Sent to the closest shops near ' + esc(x.place || 'you') + '. We email you when one answers.' : 'No answers.') + '</p>') +
+            '<div class="ask-cmp" id="cmp-' + x.id + '"></div>' +
             (open ? '<button type="button" class="bz-link" data-close="' + x.id + '">Close this request</button>' : '') + '</div>';
         }).join('') : '';
-        host.onclick = async function (e) { var id = e.target.getAttribute('data-close'); if (id && confirm('Close this request? Shops can’t answer anymore.')) { await sb.from('biz_requests').update({ status: 'closed' }).eq('id', id); mine(); } };
+        host.onclick = async function (e) {
+          var id = e.target.getAttribute('data-close'); if (id && confirm('Close this request? Shops can’t answer anymore.')) { await sb.from('biz_requests').update({ status: 'closed' }).eq('id', id); mine(); return; }
+          var cb = e.target.closest('[data-cmp]'); if (cb) { compare(cb.getAttribute('data-cmp')); return; }
+          var pk = e.target.closest('[data-pick]');
+          if (pk) {
+            var rq = pk.getAttribute('data-req');
+            if (confirm('Close the request so other shops stop sending prices? (Your chats stay.)')) await sb.from('biz_requests').update({ status: 'closed' }).eq('id', rq);
+            location.href = '/messages/?chat=' + pk.getAttribute('data-pick');
+          }
+        };
+        if (q.get('compare') && reqs.some(function (x) { return x.id === q.get('compare'); })) { compare(q.get('compare')); setTimeout(function () { var el = root.querySelector('#cmp-' + q.get('compare')); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400); }
+      }
+      // Picture 299 step 4: every quote side by side, the best on each line in green.
+      async function compare(rid) {
+        var host = root.querySelector('#cmp-' + rid); if (!host) return;
+        if (host.innerHTML) { host.innerHTML = ''; return; }
+        host.innerHTML = '<p class="rv-fine">Loading…</p>';
+        var r = await sb.rpc('biz_request_quotes', { r: rid }), L = r.data || [];
+        if (!L.length) { host.innerHTML = '<p class="rv-fine">No quotes yet.</p>'; return; }
+        var tot = function (x) { return x.offer ? Number(x.offer.total) : x.price != null ? Number(x.price) : null; };
+        var best = function (vals, low) { var v = vals.filter(function (z) { return z != null; }); if (v.length < 2) return null; return low ? Math.min.apply(null, v) : Math.max.apply(null, v); };
+        var T = L.map(tot), D = L.map(function (x) { return x.dist; }), S = L.map(function (x) { return x.reviews ? Number(x.stars) : null; });
+        var bT = best(T, true), bD = best(D, true), bS = best(S, false);
+        var cell = function (v, b2, txt) { return '<td' + (v != null && b2 != null && v === b2 ? ' class="best"' : '') + '>' + txt + '</td>'; };
+        var rows = [
+          ['Total', L.map(function (x, i) { return cell(T[i], bT, T[i] != null ? '<b>' + money(T[i]) + '</b>' + (x.offer ? '<small>before tax</small>' : x.price_note ? '<small>' + esc(x.price_note) + '</small>' : '') : '<small>No price yet</small>'); })],
+          ['What’s in it', L.map(function (x) { return '<td>' + (x.offer ? (x.offer.lines || []).map(function (l) { return '<div class="cl">' + esc(l.t) + ' <span>' + money(l.p) + '</span></div>'; }).join('') : x.body ? '<small>' + esc(x.body.slice(0, 120)) + '</small>' : '—') + '</td>'; })],
+          ['Warranty', L.map(function (x) { return '<td>' + (x.offer && x.offer.warranty ? esc(x.offer.warranty) : '<small>Ask</small>') + '</td>'; })],
+          ['Earliest', L.map(function (x) { return '<td>' + (x.offer && x.offer.earliest ? esc(x.offer.earliest) : '<small>Ask</small>') + '</td>'; })],
+          ['Distance', L.map(function (x, i) { return cell(D[i], bD, D[i] != null ? (D[i] < 1 ? 'Under 1 mi' : D[i].toFixed(1) + ' mi') : '—'); })],
+          ['Rating', L.map(function (x, i) { return cell(S[i], bS, x.reviews ? '★ ' + Number(x.stars).toFixed(1) + ' <small>(' + x.reviews + ')</small>' : '<small>No reviews yet</small>'); })],
+          ['Your own parts', L.map(function (x) { return '<td>' + (x.customer_parts ? PARTS_SHOP[x.customer_parts] : '<small>Ask</small>') + '</td>'; })],
+          ['Good until', L.map(function (x) { return '<td>' + (x.offer && x.offer.until ? shortDay(x.offer.until) : '—') + (x.offer_status === 'accepted' ? '<small class="ok">You accepted</small>' : '') + '</td>'; })]
+        ];
+        host.innerHTML = '<div class="cmp-wrap"><table class="cmp"><thead><tr><th></th>' + L.map(function (x) { return '<th>' + logoHtml(x, 'cmp-lo') + '<a href="/b/' + encodeURIComponent(x.slug) + '" target="_blank" rel="noopener">' + esc(x.name) + '</a></th>'; }).join('') + '</tr></thead><tbody>' +
+          rows.map(function (r2) { return '<tr><th>' + r2[0] + '</th>' + r2[1].join('') + '</tr>'; }).join('') +
+          '<tr><th></th>' + L.map(function (x) { return '<td><button type="button" class="bz-btn bz-small" data-pick="' + x.chat_id + '" data-req="' + rid + '">Pick this shop</button><a class="bz-link" href="/messages/?chat=' + x.chat_id + '">Open chat</a></td>'; }).join('') + '</tr></tbody></table></div>' +
+          '<p class="rv-fine">Green = best on that line. The cheapest isn’t always best: check what each price includes. Prices are set by each shop; you pay at the shop.</p>';
       }
       function draw() {
+        var c0 = cars[0] || {};
+        var carTxt = c0.year ? [c0.year, c0.make, c0.model, c0.trim].filter(Boolean).join(' ') : '';
         box.innerHTML = '<div class="bz-f"><span>What do you need?</span><div class="bz-chips" id="akK">' + ASK_KINDS.map(function (k) { return '<button type="button" data-k="' + k[0] + '" class="' + (st.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>'; }).join('') + '</div></div>' +
-          '<label class="bz-f"><span>Your car</span><input id="akCar" maxlength="80" placeholder="2019 Toyota RAV4"></label>' +
-          '<label class="bz-f"><span>Tell shops what you need</span><textarea id="akNeed" maxlength="600" placeholder="' + esc(ASK_HINT[st.kind]) + '"></textarea></label>' +
-          '<div class="bz-two"><label class="bz-f"><span>Your ZIP code</span><input id="akZip" inputmode="numeric" maxlength="5" placeholder="30030"></label><label class="bz-f"><span>How far</span><select id="akRad"><option value="5">5 miles</option><option value="10">10 miles</option><option value="15" selected>15 miles</option><option value="25">25 miles</option></select></label></div>' +
+          (cars.length ? '<div class="ask-fill"><small>✓ FROM YOUR CAR IN MY GARAGE</small>' + (cars.length > 1 ? '<select id="akPick" aria-label="Which car">' + cars.map(function (c, i) { return '<option value="' + i + '">' + esc(c.nick || [c.year, c.make, c.model].filter(Boolean).join(' ')) + '</option>'; }).join('') + '</select>' : '') + '<span>Edit below if anything changed.</span></div>' : '') +
+          '<label class="bz-f"><span>Your car</span><input id="akCar" maxlength="80" placeholder="2019 Toyota RAV4" value="' + esc(carTxt) + '"></label>' +
+          '<div class="bz-two"><label class="bz-f"><span>Miles (optional)</span><input id="akMi" inputmode="numeric" maxlength="7" placeholder="61,400" value="' + (c0.miles ? esc(String(c0.miles)) : '') + '"></label><label class="bz-f"><span>VIN (optional, for the right parts)</span><input id="akVin" maxlength="17" autocapitalize="characters" spellcheck="false" placeholder="17 letters and numbers" value="' + esc(c0.vin || '') + '"></label></div>' +
+          '<label class="bz-f"><span>Tell shops what’s going on</span><textarea id="akNeed" maxlength="600" placeholder="' + esc(ASK_HINT[st.kind]) + '">' + esc((q.get('need') || '').slice(0, 600)) + '</textarea></label>' +
+          '<div class="bz-f"><span>Photos or a short video (optional)</span><div class="bz-pics" id="akP"></div><small class="rv-fine">Up to 4 photos and 1 video (20 seconds, sound on helps for noises). Only when parked. No faces or license plates up close.</small></div>' +
+          '<div class="bz-f"><span>Parts</span><div class="bz-chips" id="akParts"><button type="button" data-o="0" class="on">Shop’s parts</button><button type="button" data-o="1">I may bring my own</button></div></div>' +
+          '<div class="bz-two"><label class="bz-f"><span>Your ZIP code</span><input id="akZip" inputmode="numeric" maxlength="5" placeholder="30030"></label><label class="bz-f"><span>How far</span><select id="akRad"><option value="5">5 miles</option><option value="10" selected>10 miles</option><option value="15">15 miles</option><option value="25">25 miles</option></select></label></div>' +
           '<button type="button" class="bz-link" id="akLoc">Use my location instead</button><div class="rv-fine" id="akSpot"></div>' +
-          '<p class="rv-fine">Shops see your first name, your car, what you need and your area (about 1 km). Never your phone, email or exact spot. Up to 3 requests a day; each stays open 3 days.</p>' +
-          '<div class="bz-row"><button type="button" class="bz-btn" id="akGo">Ask shops near me</button></div><div class="bz-msg" id="akM" role="status"></div>';
-        box.querySelector('#akK').onclick = function (e) { var k = e.target.getAttribute('data-k'); if (k) { st.kind = k; [].forEach.call(this.children, function (b) { b.className = b.getAttribute('data-k') === k ? 'on' : ''; }); box.querySelector('#akNeed').placeholder = ASK_HINT[k]; } };
-        box.querySelector('#akLoc').onclick = function () {
-          var sp = box.querySelector('#akSpot'); sp.textContent = 'Finding you…';
+          '<p class="rv-fine">It goes to the 10 closest shops of that kind. Each answer is a private chat. Shops see your first name, your car, what you wrote, your photos and your area (about 1 km). Never your phone, email or exact spot. Up to 3 requests a day; each stays open 3 days.</p>' +
+          '<div class="bz-row"><button type="button" class="bz-btn" id="akGo">Send to shops near me</button></div><div class="bz-msg" id="akM" role="status"></div>';
+        var $ = function (id) { return box.querySelector('#' + id); };
+        function drawP() {
+          $('akP').innerHTML = st.photos.map(function (p, i) { return '<div class="p"><img src="' + photoUrl(p) + '" alt="Photo ' + (i + 1) + '"><button type="button" data-rm="' + i + '" aria-label="Remove photo">✕</button></div>'; }).join('') +
+            (st.video ? '<div class="p v"><video src="' + videoUrl(st.video) + '" muted playsinline></video><span>Video</span><button type="button" data-rmv="1" aria-label="Remove video">✕</button></div>' : '') +
+            (st.photos.length < 4 ? '<label aria-label="Add a photo">+<input type="file" accept="image/*" id="akF" hidden></label>' : '') +
+            (!st.video ? '<label class="vid" aria-label="Add a short video">' + icon('bolt', 18) + '<small>Video</small><input type="file" accept="video/mp4,video/quicktime,video/webm,video/*" id="akV" hidden></label>' : '');
+        }
+        drawP();
+        if ($('akPick')) $('akPick').onchange = function () { var c = cars[+this.value] || {}; $('akCar').value = [c.year, c.make, c.model, c.trim].filter(Boolean).join(' '); $('akMi').value = c.miles || ''; $('akVin').value = c.vin || ''; };
+        $('akP').onclick = function (e) { var i = e.target.getAttribute('data-rm'); if (i != null) { st.photos.splice(+i, 1); drawP(); } if (e.target.getAttribute('data-rmv')) { st.video = null; drawP(); } };
+        $('akParts').onclick = function (e) { var o = e.target.getAttribute('data-o'); if (o != null) { st.own = o === '1'; [].forEach.call(this.children, function (z) { z.className = z === e.target ? 'on' : ''; }); } };
+        box.addEventListener('change', async function (e) {
+          var m = $('akM');
+          if (e.target.id === 'akF' && e.target.files[0]) {
+            m.className = 'bz-msg'; m.textContent = 'Adding your photo…';
+            try { st.photos.push(await upload(u.id, e.target.files[0], 1600)); m.textContent = ''; } catch (err) { m.className = 'bz-msg bad'; m.textContent = 'That photo didn’t upload. Try a JPG or PNG.'; }
+            drawP();
+          }
+          if (e.target.id === 'akV' && e.target.files[0]) {
+            var f = e.target.files[0];
+            if (f.size > 15 * 1024 * 1024) { m.className = 'bz-msg bad'; m.textContent = 'That video is too big (15 MB most). Record about 10 seconds.'; return; }
+            var secs = await new Promise(function (ok) { var v = document.createElement('video'); v.preload = 'metadata'; v.onloadedmetadata = function () { ok(v.duration); URL.revokeObjectURL(v.src); }; v.onerror = function () { ok(0); }; v.src = URL.createObjectURL(f); });
+            if (secs > 21) { m.className = 'bz-msg bad'; m.textContent = 'Please keep the video to 20 seconds.'; return; }
+            m.className = 'bz-msg'; m.textContent = 'Adding your video…';
+            var ext = (f.type.split('/')[1] || 'mp4').replace('quicktime', 'mov');
+            var path = u.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+            var up = await sb.storage.from('request-videos').upload(path, f, { contentType: f.type || 'video/mp4', upsert: false });
+            if (up.error) { m.className = 'bz-msg bad'; m.textContent = 'That video didn’t upload. Try an MP4 under 15 MB.'; return; }
+            st.video = path; m.textContent = ''; drawP();
+          }
+        });
+        $('akK').onclick = function (e) { var k = e.target.getAttribute('data-k'); if (k) { st.kind = k; [].forEach.call(this.children, function (b) { b.className = b.getAttribute('data-k') === k ? 'on' : ''; }); $('akNeed').placeholder = ASK_HINT[k]; } };
+        $('akLoc').onclick = function () {
+          var sp = $('akSpot'); sp.textContent = 'Finding you…';
           if (!navigator.geolocation) { sp.textContent = 'Your browser can’t share a location. Type your ZIP.'; return; }
           navigator.geolocation.getCurrentPosition(function (p) { st.spot = { lat: p.coords.latitude, lon: p.coords.longitude, place: 'near you' }; sp.textContent = '✓ Using your location (shops see the area only).'; }, function () { sp.textContent = 'Location is off. Type your ZIP instead.'; }, { timeout: 15000, maximumAge: 600000 });
         };
-        box.querySelector('#akGo').onclick = async function () {
-          var m = box.querySelector('#akM'), need = box.querySelector('#akNeed').value.trim(), zip = box.querySelector('#akZip').value.trim(); m.className = 'bz-msg bad';
-          if (need.length < 5) { m.textContent = 'Please tell shops what you need.'; return; }
+        $('akGo').onclick = async function () {
+          var m = $('akM'), need = $('akNeed').value.trim(), zip = $('akZip').value.trim(); m.className = 'bz-msg bad';
+          if (need.length < 5) { m.textContent = 'Please tell shops what’s going on.'; return; }
+          var vin = $('akVin').value.trim().toUpperCase(), mi = $('akMi').value.replace(/[^\d]/g, '');
+          if (vin && !/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)) { m.textContent = 'The VIN should be 17 letters and numbers (no I, O or Q), or leave it empty.'; return; }
           var spot = st.spot;
           if (!spot) { if (!/^\d{5}$/.test(zip)) { m.textContent = 'Please type your 5-digit ZIP code.'; return; } m.className = 'bz-msg'; m.textContent = 'Finding your area…'; spot = await placeFor(zip); if (!spot) { m.className = 'bz-msg bad'; m.textContent = 'We couldn’t find that ZIP code.'; return; } }
           m.className = 'bz-msg'; m.textContent = 'Sending…';
-          var x = await sb.from('biz_requests').insert({ kind: st.kind, car: box.querySelector('#akCar').value.trim() || null, need: need, lat: spot.lat, lon: spot.lon, place: spot.place, radius: +box.querySelector('#akRad').value }).select('id').single();
+          var x = await sb.from('biz_requests').insert({ kind: st.kind, car: $('akCar').value.trim() || null, need: need, lat: spot.lat, lon: spot.lon, place: spot.place, radius: +$('akRad').value, photos: st.photos, video: st.video, miles: mi ? Math.min(999999, +mi) : null, vin: vin || null, own_parts: st.own }).select('id').single();
           if (x.error) { m.className = 'bz-msg bad'; m.textContent = /3 requests/.test(x.error.message) ? 'You can ask up to 3 times a day.' : 'That didn’t send. Please try again.'; return; }
-          m.className = 'bz-msg good'; m.textContent = 'Sent! Shops near you get it now. We email you when one answers.';
-          box.querySelector('#akNeed').value = ''; mine();
+          m.className = 'bz-msg good'; m.textContent = 'Sent to the closest shops! We email you when one answers. Compare the quotes below.';
+          $('akNeed').value = ''; st.photos = []; st.video = null; drawP(); mine();
         };
       }
       draw(); mine();
@@ -1446,6 +1555,8 @@
 
   // ---------- Public page (picture 283 look, 284 deals, 285 follow) ----------
   if (mode === 'shop') {
+    // Picture 298: the page is the shop's own site (no Carvessa menu or big footer; one line at the bottom).
+    document.documentElement.classList.add('bz-shoppage');
     (async function () {
       var slug = q.get('b') || '';
       var r = slug ? await sb.from('businesses').select(PUB).eq('slug', slug).maybeSingle() : { data: null };
@@ -1475,7 +1586,7 @@
       };
       if (user && !isOwner) myFollow = (await sb.from('business_follows').select('*').eq('business_id', b.id).eq('user_id', user.id).maybeSingle()).data;
       var info = KINFO[b.kind] || KINFO.other, hv = headerOf(b), openState = openNow(b.hours);
-      document.title = b.name + ' · Carvessa';
+      document.title = b.name + (b.city ? ' · ' + b.city : '');
       var count = function (k) { if (b.status === 'live') sb.rpc('business_count', { b: b.id, k: k }).then(function () {}, function () {}); };
       count('view');
       var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([b.name, b.address, b.city].filter(Boolean).join(', '));
@@ -1504,40 +1615,56 @@
       var kindHtml = KH ? '<section class="sp-kind"><div class="sp-kh">' + icon(KH[0], 20) + '<b>' + KH[1] + '</b></div><p>' + KH[2] + '</p>' +
         (b.kind === 'tires' && talk ? '<div class="bz-two"><label class="bz-f"><span>Your car</span><input id="kCar" maxlength="80" placeholder="2019 Toyota RAV4"></label><label class="bz-f"><span>Tire size (optional)</span><input id="kSize" maxlength="20" placeholder="225/65R17"></label></div>' : '') +
         (KH[4] === 'call' ? (tel ? '<a class="sp-btn sp-wide" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 18) + 'Call now</a>' : '') : talk ? '<button type="button" class="sp-btn sp-wide" data-chat-kind="' + KH[4] + '" data-pre="' + KH[5] + '">' + icon('msg', 18) + KH[3] + '</button>' : '<p class="sp-own">Drivers see a “' + KH[3] + '” button here.</p>') + '</section>' : '';
-      var tabsList = [['ov', 'Overview'], deals.length ? ['deals', 'Deals · ' + deals.length] : null, svcs.length ? ['svc', 'Services'] : null, ['reviews', 'Reviews'], (b.photos || []).length ? ['photos', 'Photos'] : null].filter(Boolean);
+      var tabsList = [(b.photos || []).length ? ['photos', 'Photos'] : null, deals.length ? ['deals', 'Deals · ' + deals.length] : null, svcs.length ? ['svc', 'Services'] : null, ['reviews', 'Reviews'], ['ov', 'Hours & contact']].filter(Boolean);
+      var mainBtn = talk ? (QUOTE_KINDS[b.kind] ? '<button type="button" class="sp-btn" data-chat-kind="quote">' + icon('msg', 16) + 'Get a quote</button>' : '<button type="button" class="sp-btn" data-chat-kind="message">' + icon('msg', 16) + msgWord + '</button>') : '';
+      var PARTS = { yes: 'We install parts you bring', no: 'We use our own parts', ask: 'Bringing your own parts? Ask us' };
+      var hoursCard = b.hours ? '<div class="shop-card sp-hours" id="hours"><h2>Hours' + (openState ? ' <span class="' + (openState.open ? 'open' : 'closed') + '">' + esc(openState.text) + '</span>' : '') + '</h2>' + b.hours.split(/\s*·\s*|\s*;\s*|\n/).filter(Boolean).map(function (h) { return '<div class="sp-hr">' + esc(h) + '</div>'; }).join('') + '<div class="shop-note">Hours set by the business. Holidays can change them.</div></div>' : '';
+      var contactCard = '<div class="shop-card"><h2>Find us</h2><div class="shop-kv">' + (b.address ? '<span>Address</span><div>' + esc(b.address) + (b.city ? ', ' + esc(b.city) : '') + '</div>' : b.city ? '<span>Area</span><div>' + esc(b.city) + '</div>' : '') + (b.phone ? '<span>Phone</span><div><a href="tel:' + esc(tel) + '" data-c="call">' + esc(b.phone) + '</a></div>' : '') + (web ? '<span>Website</span><div><a href="' + esc(web) + '" target="_blank" rel="noopener nofollow" data-c="website">' + esc(b.website.replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</a></div>' : '') + '</div>' +
+        '<a class="sp-btn soft sp-wide" style="margin-top:10px" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 16) + 'Directions</a></div>';
       root.innerHTML =
-        '<div class="sp-hero" style="background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(0,0,0,.62)),' + hv.css.replace(/"/g, "'") + '">' + (theme === 'bold' ? '' : '<div class="sp-id">' + idHtml + '</div>') + (hv.credit ? '<a class="shop-credit" href="' + esc(hv.credit[1]) + '" target="_blank" rel="noopener nofollow">Photo: ' + esc(hv.credit[0]) + ' · CC BY</a>' : '') + '</div>' +
-        (theme === 'bold' ? '<div class="sp-blk">' + idHtml + '</div>' : '') +
-        (!live ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you’re the owner (we’ll call or text you).</div>' : '') +
-        '<div class="sp-acts">' + (talk ? followBtn() + (QUOTE_KINDS[b.kind] ? '<button type="button" class="sp-btn soft" data-chat-kind="quote">' + icon('msg', 16) + 'Get a quote</button>' : '<button type="button" class="sp-btn soft" data-chat-kind="message">' + icon('msg', 16) + msgWord + '</button>') : '') + (isOwner ? '<a class="sp-btn" href="/business/edit/">' + icon('wrench', 16) + 'Edit my page</a>' : '') + '<button type="button" class="sp-btn soft" id="spShare" aria-label="Share this page">' + icon('share', 16) + '<span>Share</span></button></div>' +
-        (isOwner ? '<p class="sp-own">This is your page. Drivers also see Follow, Message and Get a quote here.</p>' : '') +
-        (live ? '<p class="sp-fol" id="spFol">' + nFol + ' driver' + (nFol === 1 ? '' : 's') + ' follow' + (nFol === 1 ? 's' : '') + ' this shop' + (myFollow ? ' · you get their deals first' : ' · follow to get their deals first') + '</p>' : '') +
-        '<div class="sp-chips">' + (live ? '<span class="v">' + icon('check', 14) + 'Verified by Carvessa</span>' : '') + (reviews.length ? '<a href="#reviews">' + starRow(Math.round(avg)) + ' ' + avg.toFixed(1) + ' (' + reviews.length + ')</a>' : '') + (openState ? '<a href="#hours" class="' + (openState.open ? 'open' : 'closed') + '">' + icon('home', 14) + esc(openState.text) + '</a>' : b.hours ? '<a href="#hours">' + icon('home', 14) + 'See hours</a>' : '') + '</div>' +
-        '<div id="fwBox"></div>' + kindHtml + '<div id="chBox"></div>' +
-        '<nav class="sp-tabs" aria-label="Sections">' + tabsList.map(function (t, i) { return '<a href="#' + t[0] + '" class="' + (i === 0 ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</nav>' +
-        '<section id="ov">' +
-          (b.hours ? '<div class="shop-card sp-hours" id="hours"><h2>Hours' + (openState ? ' <span class="' + (openState.open ? 'open' : 'closed') + '">' + esc(openState.text) + '</span>' : '') + '</h2>' + b.hours.split(/\s*·\s*|\s*;\s*|\n/).filter(Boolean).map(function (h) { return '<div class="sp-hr">' + esc(h) + '</div>'; }).join('') + '<div class="shop-note">Hours set by the business. Holidays can change them.</div></div>' : '') +
-          (b.offer ? '<div class="sp-offer"><small>OFFER</small><b>' + esc(b.offer) + '</b><span>Show this page at the counter</span></div>' : '') +
-          (deals[0] ? '<a class="sp-offer deal" href="#deal-' + deals[0].id + '"><small>' + tplOf(deals[0]).k + ' · ' + endText(deals[0]).toUpperCase() + '</small><b>' + esc(deals[0].title) + (deals[0].price != null ? ' · ' + money(deals[0].price) : '') + '</b><span>' + (deals[0].codes ? 'Get your counter code below' : 'See the deal below') + '</span></a>' : '') +
-          news.map(function (p) { return '<div class="shop-card shop-post"><span class="hq-tag">' + (KP[p.kind] || 'News') + '</span><h2>' + esc(p.title) + '</h2>' + (p.body ? esc(p.body) : '') + (p.until ? '<div class="shop-note">Until ' + shortDay(p.until) + '</div>' : '') + '</div>'; }).join('') +
-          lyHtml() +
-          (info.tip ? '<div class="shop-card shop-tip"><h2>' + info.tip[0] + '</h2>' + info.tip[1] + '</div>' : '') +
-          (b.about ? '<div class="shop-card"><h2>About</h2>' + esc(b.about) + '</div>' : '') +
-          '<div class="shop-card"><div class="shop-kv">' + (b.address ? '<span>Address</span><div>' + esc(b.address) + (b.city ? ', ' + esc(b.city) : '') + ' · <a href="' + maps + '" target="_blank" rel="noopener" data-c="directions">Directions</a></div>' : '') + (b.phone ? '<span>Phone</span><div><a href="tel:' + esc(tel) + '" data-c="call">' + esc(b.phone) + '</a></div>' : '') + (b.hours ? '<span>Hours</span><div>' + esc(b.hours) + '</div>' : '') + (web ? '<span>Website</span><div><a href="' + esc(web) + '" target="_blank" rel="noopener nofollow" data-c="website">' + esc(b.website.replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</a></div>' : '') + '</div></div>' +
-        '</section>' +
-        (deals.length ? '<section id="deals"><h2 class="sp-h">Deals</h2>' + deals.map(dealHtml).join('') + '<p class="shop-note">Deals are set by the business. Ask for a written quote.</p></section>' : '') +
-        (svcs.length ? '<section id="svc"><div class="shop-card"><h2>' + info.svc + '</h2>' + svcs.map(function (x) { return '<div class="shop-svc"><span>' + esc(x.name) + '</span><b>' + (x.price_from != null ? 'from ' + money(x.price_from) : 'Ask') + '</b></div>'; }).join('') + '<div class="shop-note">' + (b.kind === 'credit_union' ? 'Set by the credit union. Not an offer from Carvessa.' : 'Prices set by the business. Ask for a written quote.') + '</div></div></section>' : '') +
-        '<section id="reviews"><div class="shop-card"><h2>Reviews' + (reviews.length ? ' <span class="rv-sum">' + avg.toFixed(1) + ' · ' + reviews.length + '</span>' : '') + '</h2>' + (reviews.length ? '<div class="sp-bars">' + bars + '</div>' : '') + '<p class="rv-fine">From Carvessa members. Only first names show. <a href="/business/review-rules/" target="_blank">Review Rules</a></p>' +
-          (talk ? '<div class="bz-row" style="margin:6px 0 10px"><button type="button" class="bz-btn bz-small" id="rvWrite">Write a review</button></div><div id="rvBox"></div>' : '') +
-          (reviews.length ? reviews.slice(0, 20).map(function (x) {
-            return '<div class="rv-item" data-id="' + x.id + '"><div class="rv-top">' + starRow(x.stars) + '<b>' + esc(x.first_name) + '</b><small>' + ago(x.created_at) + '</small></div>' + (x.body ? '<p>' + esc(x.body) + '</p>' : '') +
-              ((x.photos || []).length ? '<div class="rv-pics">' + x.photos.map(function (p) { return '<img src="' + photoUrl(p) + '" alt="Photo from ' + esc(x.first_name) + '" loading="lazy">'; }).join('') + '</div>' : '') +
-              (x.reply ? '<div class="rv-reply"><b>Reply from ' + esc(b.name) + '</b>' + esc(x.reply) + '</div>' : '') +
-              '<button type="button" class="rv-flag" data-flag="' + x.id + '">Report</button><div class="rv-rep-box"></div></div>';
-          }).join('') : '<p>' + (live ? 'No reviews yet. Been here? Be the first.' : 'Reviews start when the page is live.') + '</p>') + '</div></section>' +
-        ((b.photos || []).length ? '<section id="photos"><div class="shop-card"><h2>Photos</h2><div class="shop-pics">' + b.photos.map(function (p, i) { return '<img src="' + photoUrl(p) + '" alt="' + esc(b.name) + ' photo ' + (i + 1) + '" loading="lazy">'; }).join('') + '</div></div></section>' : '') +
-        '<p class="shop-note" style="margin-top:14px">Carvessa doesn’t rank businesses by who pays. Reviews are never removed for being negative or because a business pays. Paid spots in the app are always labeled. Is this your business? <a href="/business/edit/">Open Business HQ</a></p>' +
-        '<div class="sp-bar">' + (live ? '<button type="button" class="sp-b pr" data-chat-kind="message">' + icon('msg', 18) + 'Message</button>' : '') + (tel ? '<a class="sp-b" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 18) + (b.kind === 'tow' ? 'Call now' : 'Call') + '</a>' : '') + '<a class="sp-b" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 18) + 'Go</a></div>';
+        '<header class="s2-top"><div class="s2-in"><a class="s2-brand" href="#top">' + logoHtml(b, 's2-lo') + '<b>' + esc(b.name) + '</b></a>' +
+          '<nav class="s2-menu" aria-label="Sections">' + tabsList.map(function (t) { return '<a href="#' + t[0] + '">' + t[1].replace(/ · \d+$/, '') + '</a>'; }).join('') + '</nav>' +
+          '<div class="s2-cta">' + (tel ? '<a class="sp-btn soft s2-call" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 16) + '<span>' + esc(b.phone) + '</span></a>' : '') + mainBtn + (isOwner ? '<a class="sp-btn" href="/business/edit/">' + icon('wrench', 16) + 'Edit</a>' : '') + '</div></div></header>' +
+        '<section class="s2-hero" id="top" style="background:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.25) 70%),' + hv.css.replace(/"/g, "'") + '"><div class="s2-in"><div class="s2-hid">' +
+          logoHtml(b, 's2-hlo') + '<h1>' + esc(b.name) + '</h1>' +
+          '<p class="s2-line">' + esc(kindName(b.kind)) + (b.city ? ' · ' + esc(b.city) : '') + '</p>' +
+          '<div class="s2-chips">' + (openState ? '<a href="#ov" class="' + (openState.open ? 'open' : 'closed') + '">' + esc(openState.text) + '</a>' : '') + (reviews.length ? '<a href="#reviews">★ ' + avg.toFixed(1) + ' (' + reviews.length + ')</a>' : '') + (live ? '<span class="v">' + icon('check', 13) + 'Verified by Carvessa</span>' : '') + '</div>' +
+          '<div class="s2-acts">' + mainBtn + (tel ? '<a class="sp-btn s2-glass" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 16) + (b.kind === 'tow' ? 'Call now' : 'Call') + '</a>' : '') + '<a class="sp-btn s2-glass" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 16) + 'Directions</a>' + (talk ? followBtn() : '') + '<button type="button" class="sp-btn s2-glass" id="spShare" aria-label="Share this page">' + icon('share', 16) + '<span class="s2-sh">Share</span></button></div>' +
+        '</div></div>' + (hv.credit ? '<a class="shop-credit" href="' + esc(hv.credit[1]) + '" target="_blank" rel="noopener nofollow">Photo: ' + esc(hv.credit[0]) + ' · CC BY</a>' : '') + '</section>' +
+        '<div class="s2-in s2-body">' +
+          (!live ? '<div class="shop-pre">Preview: only you can see this page. It goes live after we confirm you’re the owner (we’ll call or text you).</div>' : '') +
+          (isOwner ? '<p class="sp-own">This is your page. Drivers also see Follow, Message and Get a quote. Add photos, posts and prices in <a href="/business/edit/?tab=page">Business HQ</a>.</p>' : '') +
+          (live ? '<p class="sp-fol" id="spFol">' + nFol + ' driver' + (nFol === 1 ? '' : 's') + ' follow' + (nFol === 1 ? 's' : '') + ' this shop' + (myFollow ? ' · you get their deals first' : ' · follow to get their deals first') + '</p>' : '') +
+          '<div id="fwBox"></div>' + kindHtml + '<div id="chBox"></div>' +
+          '<nav class="sp-tabs" aria-label="Sections">' + tabsList.map(function (t, i) { return '<a href="#' + t[0] + '" class="' + (i === 0 ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</nav>' +
+          '<div class="s2-grid"><div class="s2-main">' +
+            ((b.photos || []).length ? '<section id="photos" class="s2-o1"><div class="shop-card"><h2>Photos <span class="rv-sum">' + b.photos.length + '</span></h2><div class="s2-gal' + (b.photos.length === 1 ? ' one' : '') + '">' + b.photos.slice(0, 24).map(function (p, i) { return '<a href="' + photoUrl(p) + '" target="_blank" rel="noopener"' + (i >= 5 ? ' class="more"' : '') + '><img src="' + photoUrl(p) + '" alt="' + esc(b.name) + ' photo ' + (i + 1) + '" loading="lazy"></a>'; }).join('') + '</div>' + (b.photos.length > 5 ? '<button type="button" class="bz-btn soft bz-small" id="s2All" style="margin-top:10px">See all ' + b.photos.length + ' photos</button>' : '') + '</div></section>' : '') +
+            (b.offer || deals[0] ? '<div class="s2-o2">' + (b.offer ? '<div class="sp-offer"><small>OFFER</small><b>' + esc(b.offer) + '</b><span>Show this page at the counter</span></div>' : '') + '</div>' : '') +
+            (deals.length ? '<section id="deals" class="s2-o2"><h2 class="sp-h">Deals</h2>' + deals.map(dealHtml).join('') + '<p class="shop-note">Deals are set by the business. Ask for a written quote.</p></section>' : '') +
+            (news.length ? '<section class="s2-o3"><h2 class="sp-h">News</h2>' + news.map(function (p) { return '<div class="shop-card shop-post"><span class="hq-tag">' + (KP[p.kind] || 'News') + '</span><h2>' + esc(p.title) + '</h2>' + (p.body ? esc(p.body) : '') + (p.until ? '<div class="shop-note">Until ' + shortDay(p.until) + '</div>' : '') + '</div>'; }).join('') + '</section>' : '') +
+            '<section id="reviews" class="s2-o6"><div class="shop-card"><h2>Reviews' + (reviews.length ? ' <span class="rv-sum">' + avg.toFixed(1) + ' · ' + reviews.length + '</span>' : '') + '</h2>' + (reviews.length ? '<div class="sp-bars">' + bars + '</div>' : '') + '<p class="rv-fine">From Carvessa members. Only first names show. <a href="/business/review-rules/" target="_blank">Review Rules</a></p>' +
+              (talk ? '<div class="bz-row" style="margin:6px 0 10px"><button type="button" class="bz-btn bz-small" id="rvWrite">Write a review</button></div><div id="rvBox"></div>' : '') +
+              (reviews.length ? reviews.slice(0, 20).map(function (x) {
+                return '<div class="rv-item" data-id="' + x.id + '"><div class="rv-top">' + starRow(x.stars) + '<b>' + esc(x.first_name) + '</b><small>' + ago(x.created_at) + '</small></div>' + (x.body ? '<p>' + esc(x.body) + '</p>' : '') +
+                  ((x.photos || []).length ? '<div class="rv-pics">' + x.photos.map(function (p) { return '<img src="' + photoUrl(p) + '" alt="Photo from ' + esc(x.first_name) + '" loading="lazy">'; }).join('') + '</div>' : '') +
+                  (x.reply ? '<div class="rv-reply"><b>Reply from ' + esc(b.name) + '</b>' + esc(x.reply) + '</div>' : '') +
+                  '<button type="button" class="rv-flag" data-flag="' + x.id + '">Report</button><div class="rv-rep-box"></div></div>';
+              }).join('') : '<p>' + (live ? 'No reviews yet. Been here? Be the first.' : 'Reviews start when the page is live.') + '</p>') + '</div></section>' +
+          '</div><aside class="s2-side">' +
+            (svcs.length || b.customer_parts ? '<section id="svc" class="s2-o4"><div class="shop-card"><h2>' + info.svc + '</h2>' + svcs.map(function (x) { return '<div class="shop-svc"><span>' + esc(x.name) + '</span><b>' + (x.price_from != null ? 'from ' + money(x.price_from) : 'Ask') + '</b></div>'; }).join('') + (b.customer_parts ? '<div class="shop-svc"><span>Customer parts</span><b>' + PARTS[b.customer_parts] + '</b></div>' : '') + '<div class="shop-note">' + (b.kind === 'credit_union' ? 'Set by the credit union. Not an offer from Carvessa.' : 'Prices set by the business. Ask for a written quote.') + '</div></div></section>' : '') +
+            '<section id="ov" class="s2-o7">' + hoursCard + contactCard + (b.about ? '<div class="shop-card"><h2>About</h2>' + esc(b.about) + '</div>' : '') + '</section>' +
+            '<div class="s2-o5">' + lyHtml() + '</div>' +
+            (info.tip ? '<div class="shop-card shop-tip s2-o8"><h2>' + info.tip[0] + '</h2>' + info.tip[1] + '</div>' : '') +
+          '</aside></div></div>' +
+        '<footer class="s2-foot"><span>© ' + new Date().getFullYear() + ' ' + esc(b.name) + '</span><span><a href="/" class="s2-by">Page on <span class="fy-logo">CAR<i>V</i>essa</span></a> · <a href="/business/terms/">Terms</a> · <a href="/privacy/">Privacy</a> · <button type="button" class="linkish" id="s2Rep">Report this page</button></span>' +
+          '<small>Carvessa doesn’t rank businesses by who pays. Reviews are never removed for being negative or because a business pays. <a href="/business/edit/">Is this your business?</a></small></footer>' +
+        '<div class="sp-bar">' + (live ? '<button type="button" class="sp-b pr" data-chat-kind="' + (QUOTE_KINDS[b.kind] ? 'quote' : 'message') + '">' + icon('msg', 18) + (QUOTE_KINDS[b.kind] ? 'Quote' : 'Message') + '</button>' : '') + (tel ? '<a class="sp-b" href="tel:' + esc(tel) + '" data-c="call">' + icon('phone', 18) + (b.kind === 'tow' ? 'Call now' : 'Call') + '</a>' : '') + '<a class="sp-b" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 18) + 'Go</a></div>';
+      if (root.querySelector('#s2All')) root.querySelector('#s2All').onclick = function () { root.querySelector('.s2-gal').classList.add('all'); this.remove(); };
+      root.querySelector('#s2Rep').onclick = async function () {
+        var why = prompt('What’s wrong with this page? (fake business, wrong information, scam, something else)'); if (!why) return;
+        await sb.from('feedback').insert({ mood: 'confused', message: ('[Page report] business=' + b.slug + ' | ' + why).slice(0, 1000), screen: 'shops' });
+        this.textContent = 'Thanks, we’ll look at it';
+      };
       root.classList.add('sp-has-bar', 'sp-t-' + theme);
       root.style.setProperty('--brand', br); root.style.setProperty('--brandInk', onColor(br)); root.style.setProperty('--brandText', brText);
       root.addEventListener('click', function (e) { var a = e.target.closest('[data-c]'); if (a) count(a.getAttribute('data-c')); });
@@ -1548,7 +1675,7 @@
       root.querySelector('#spShare').onclick = async function () {
         var url = shortUrl(b.slug);
         if (navigator.share) { try { await navigator.share({ title: b.name, url: url }); } catch (err) { /* closed */ } return; }
-        try { await navigator.clipboard.writeText(url); this.querySelector('.sp-hide').textContent = 'Link copied'; } catch (err) { prompt('Copy this link:', url); }
+        try { await navigator.clipboard.writeText(url); this.querySelector('.s2-sh').textContent = 'Link copied'; } catch (err) { prompt('Copy this link:', url); }
       };
       // Write / edit a review, report one, follow, message, get a code: members only (free account).
       function signedIn(host, then, why) {
