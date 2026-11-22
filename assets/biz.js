@@ -67,7 +67,7 @@
     ['tread', 'Tire Tread', 'Charcoal and yellow', '#1A1A1A', '#F4F4F2', '#1A1A1A', '#F2B705']
   ];
   var SUGGEST = { credit_union: 'cu', insurance: 'shield', dealer: 'lot', repair: 'workshop', body: 'workshop', tires: 'tread' };
-  var PUB = 'id, owner, slug, name, kind, brand_color, page_theme, customer_parts, address, city, state, phone, website, hours, about, offer, wallpaper, photos, logo, header, status, founding, created_at, updated_at';
+  var PUB = 'id, owner, slug, name, kind, brand_color, page_theme, customer_parts, address, city, state, phone, website, hours, social, about, offer, wallpaper, photos, logo, header, status, founding, created_at, updated_at';
   var MINE = PUB + ', hq_dark, lat, lon, legal_name, control_no, owner_role, since_year, hq_look, notify_email';
   var STATES = { alabama: 'AL', alaska: 'AK', arizona: 'AZ', arkansas: 'AR', california: 'CA', colorado: 'CO', connecticut: 'CT', delaware: 'DE', 'district of columbia': 'DC', florida: 'FL', georgia: 'GA', hawaii: 'HI', idaho: 'ID', illinois: 'IL', indiana: 'IN', iowa: 'IA', kansas: 'KS', kentucky: 'KY', louisiana: 'LA', maine: 'ME', maryland: 'MD', massachusetts: 'MA', michigan: 'MI', minnesota: 'MN', mississippi: 'MS', missouri: 'MO', montana: 'MT', nebraska: 'NE', nevada: 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', ohio: 'OH', oklahoma: 'OK', oregon: 'OR', pennsylvania: 'PA', 'rhode island': 'RI', 'south carolina': 'SC', 'south dakota': 'SD', tennessee: 'TN', texas: 'TX', utah: 'UT', vermont: 'VT', virginia: 'VA', washington: 'WA', 'west virginia': 'WV', wisconsin: 'WI', wyoming: 'WY' };
 
@@ -363,32 +363,126 @@
     document.addEventListener('click', function (e) { if (!box.contains(e.target) && e.target !== inp) box.hidden = true; });
   }
 
+  // ---------- Picture 294: day-by-day hours and social links ----------
+  // Hours are saved as text in a form openNow() reads ("Mon–Fri 8 AM–6 PM · Sat 9 AM–2 PM · Closed Sun").
+  var WDAYS = [['mon', 'Mon', 'Monday'], ['tue', 'Tue', 'Tuesday'], ['wed', 'Wed', 'Wednesday'], ['thu', 'Thu', 'Thursday'], ['fri', 'Fri', 'Friday'], ['sat', 'Sat', 'Saturday'], ['sun', 'Sun', 'Sunday']];
+  var JSDAY = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
+  var hm = function (m) { var h = Math.floor(m / 60), mm = m % 60, ap = h >= 12 ? 'PM' : 'AM'; return (h % 12 || 12) + (mm ? ':' + String(mm).padStart(2, '0') : '') + ' ' + ap; };
+  function parseWeek(text) {
+    var w = {}, any = false; WDAYS.forEach(function (d) { w[d[0]] = { s: 'unset', o: 480, c: 1080 }; });
+    if (!text) return { week: w, any: false };
+    var D = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    var di = function (x) { return D.indexOf(String(x).slice(0, 3).toLowerCase()); };
+    var tm = function (t) { var m = /^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/i.exec(t.trim()); if (!m) return null; var h = +m[1] % 12; if (/pm/i.test(m[3] || '')) h += 12; if (!m[3] && +m[1] < 7) h += 12; return h * 60 + (+m[2] || 0); };
+    text.split(/\s*[·;\n]\s*/).forEach(function (seg) {
+      var c = /^closed\s+(\w+)(?:\s*[–-]\s*(\w+))?/i.exec(seg) || /^(\w+)\w*(?:\s*[–-]\s*(\w+))?\s*:?\s*closed$/i.exec(seg);
+      var m = c ? null : /^(\w{3})\w*(?:\s*[–-]\s*(\w{3})\w*)?\s*:?\s+(\d[^–-]*?)\s*[–-]\s*(\d.*)$/i.exec(seg);
+      var src = c || m; if (!src) return;
+      var a = di(src[1]), z = src[2] ? di(src[2]) : a; if (a < 0 || z < 0) return;
+      for (var k = 0; k < 7; k++) {
+        var inR = a <= z ? k >= a && k <= z : k >= a || k <= z; if (!inR) continue;
+        if (c) { w[D[k]] = { s: 'closed', o: 480, c: 1080 }; any = true; }
+        else { var o = tm(m[3]), e = tm(m[4]); if (o != null && e != null && e > o) { w[D[k]] = { s: 'open', o: o, c: e }; any = true; } }
+      }
+    });
+    return { week: w, any: any };
+  }
+  function weekText(w) {
+    var out = [], i = 0;
+    while (i < 7) {
+      var d = w[WDAYS[i][0]];
+      if (d.s === 'unset') { i++; continue; }
+      if (d.s === 'closed') { out.push('Closed ' + WDAYS[i][1]); i++; continue; }
+      var j = i; while (j + 1 < 7 && w[WDAYS[j + 1][0]].s === 'open' && w[WDAYS[j + 1][0]].o === d.o && w[WDAYS[j + 1][0]].c === d.c) j++;
+      out.push(WDAYS[i][1] + (j > i ? '–' + WDAYS[j][1] : '') + ' ' + hm(d.o) + '–' + hm(d.c)); i = j + 1;
+    }
+    return out.join(' · ');
+  }
+  var SOCIAL = [['instagram', 'Instagram', '@yourshop'], ['facebook', 'Facebook', 'facebook.com/yourshop'], ['tiktok', 'TikTok', '@yourshop'], ['youtube', 'YouTube', '@yourshop'], ['google', 'Google Business', 'Paste your Google Maps link']];
+  // What the owner typed → the full link, null when empty, false when we can't read it.
+  function socialUrl(k, v) {
+    v = String(v || '').trim(); if (!v) return null;
+    var bare = v.replace(/^https?:\/\//i, '').replace(/^(www\.|m\.)/i, '');
+    if (k === 'instagram' || k === 'tiktok') {
+      var h = bare.replace(/^(instagram|tiktok)\.com\//i, '').replace(/^@/, '').replace(/[/?#].*$/, '');
+      return /^[A-Za-z0-9_.]{1,40}$/.test(h) ? (k === 'instagram' ? 'https://instagram.com/' : 'https://tiktok.com/@') + h : false;
+    }
+    if (k === 'youtube') {
+      if (/^youtube\.com\//i.test(bare)) { var yp = bare.replace(/^youtube\.com\//i, '').replace(/[?#].*$/, ''); return /^[A-Za-z0-9_.@\-/]{1,120}$/.test(yp) ? 'https://youtube.com/' + yp : false; }
+      var yh = bare.replace(/^@/, ''); return /^[A-Za-z0-9_.\-]{1,60}$/.test(yh) ? 'https://youtube.com/@' + yh : false;
+    }
+    if (k === 'facebook') {
+      var fp = /^facebook\.com\//i.test(bare) ? bare.replace(/^facebook\.com\//i, '') : bare.replace(/^@/, '');
+      fp = fp.replace(/#.*$/, ''); return /^[A-Za-z0-9_.\-/?=&]{2,120}$/.test(fp) ? 'https://facebook.com/' + fp : false;
+    }
+    if (k === 'google') { var gu = 'https://' + bare; return /^https:\/\/(g\.page|maps\.app\.goo\.gl|goo\.gl\/maps|(www\.)?google\.com\/maps|maps\.google\.com|business\.google\.com)\/[^\s<>"]{1,200}$/.test(gu) ? gu : false; }
+    return false;
+  }
+  function socialShow(k, url) {
+    if (!url) return '';
+    if (k === 'instagram') return '@' + url.replace(/^https:\/\/instagram\.com\//, '');
+    if (k === 'tiktok') return url.replace(/^https:\/\/tiktok\.com\//, '');
+    if (k === 'youtube') return url.replace(/^https:\/\/youtube\.com\//, '');
+    if (k === 'facebook') return url.replace(/^https:\/\//, '');
+    return url;
+  }
+  var SOC_SVG = {
+    instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/>',
+    facebook: '<path d="M15 3h-2.5A3.5 3.5 0 0 0 9 6.5V9H6.5v3.5H9V21h3.5v-8.5H15l.5-3.5h-3V7a1 1 0 0 1 1-1H15z"/>',
+    tiktok: '<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 2.6 2.4 4.4 5 4.6"/>',
+    youtube: '<rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="M10 9l5 3-5 3z" fill="currentColor"/>',
+    google: '<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>'
+  };
+  function socialRow(social, cls) {
+    if (!social) return '';
+    var html = SOCIAL.filter(function (x) { return social[x[0]]; }).map(function (x) {
+      return '<a class="' + (cls || 'sp-soc') + '" href="' + esc(social[x[0]]) + '" target="_blank" rel="noopener nofollow" aria-label="' + x[1] + '" title="' + x[1] + '" data-c="social"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + SOC_SVG[x[0]] + '</svg></a>';
+    }).join('');
+    return html ? '<div class="sp-socs">' + html + '</div>' : '';
+  }
+
   // ---------- The business form (join step 3 and My page) ----------
   function form(b, svcs, onSave, host) {
     host = host || root.querySelector('#bzForm');
     var h = b.header || { style: b.id && WALLS[b.wallpaper] && !b.header ? 'legacy' : 'photo' };
     var st = { kind: b.kind || 'repair', header: { style: h.style || 'photo', pattern: h.pattern || 'fade', c1: hex(h.c1, '#1F3F9F'), c2: hex(h.c2, '#5B8DEF'), photo: h.photo || null }, logo: b.logo || null, photos: (b.photos || []).slice(), svcs: svcs.length ? svcs.map(function (s) { return { name: s.name, price: s.price_from == null ? '' : s.price_from }; }) : [{ name: '', price: '' }] };
     var f = function (id, label, val, extra) { return '<label class="bz-f"><span>' + label + '</span><input id="' + id + '" value="' + esc(val) + '" ' + (extra || '') + '></label>'; };
-    host.innerHTML =
-      '<div class="bz-f bz-namebox"><span>Business name</span><input id="fName" maxlength="80" value="' + esc(b.name) + '" placeholder="Start typing, we’ll look you up"><div class="bz-sug" id="fSug" hidden></div></div>' +
-      '<div class="bz-found" id="fFound" hidden></div>' +
-      '<div class="bz-f"><span>What kind of business?</span><div class="bz-chips" id="fKind"></div></div>' +
-      f('fAddr', 'Address', b.address, 'maxlength="160" autocomplete="street-address"') +
-      f('fCity', 'City and state', b.city, 'maxlength="60" placeholder="Atlanta, GA"') +
-      f('fPhone', 'Phone', b.phone, 'maxlength="30" inputmode="tel" autocomplete="tel"') +
-      f('fWeb', 'Website (optional)', b.website, 'maxlength="200" inputmode="url"') +
-      f('fHours', 'Hours', b.hours, 'maxlength="160" placeholder="Mon–Sat 8 AM–6 PM · Closed Sunday"') +
-      '<label class="bz-f"><span>About your business</span><textarea id="fAbout" maxlength="600" placeholder="Family shop since 2009. Tires, brakes and oil changes, most same day.">' + esc(b.about) + '</textarea></label>' +
-      '<label class="bz-f"><span>One offer (optional)</span><input id="fOffer" maxlength="120" value="' + esc(b.offer) + '" placeholder="Free tire check"><small>Shown at the top of your page.</small></label>' +
-      '<div class="bz-f"><span id="fSvcLab">Services and prices (you set them)</span><div id="fSvcs"></div><button type="button" class="bz-btn soft bz-small" id="fAddSvc">+ Add a service or item</button><small>Prices show as "from $X". Leave the price empty if it depends.</small></div>' +
-      '<div class="bz-f"><span>Header (optional)</span><div class="bz-hopts" id="fHopt"></div><div id="fHpanel"></div><div class="bz-hprev" id="fHprev"></div></div>' +
-      '<div class="bz-f"><span>Logo (optional)</span><div class="bz-logo-row" id="fLogo"></div></div>' +
-      '<div class="bz-f"><span>Photos (optional, up to 24)</span><div class="bz-pics" id="fPics"></div><small>Your shop, your work, your team. They show as a gallery on your page. No customers’ license plates please.</small></div>' +
-      '<div class="bz-check"><h3>For our check (drivers never see this)</h3><p>We confirm every business before its page goes live. These help us find your business record fast.</p>' +
-      f('fLegal', 'Legal name, as registered with your state', b.legal_name, 'maxlength="120" placeholder="Tony’s Auto Shop LLC"') +
-      '<div class="bz-two">' + f('fRegState', 'State where it’s registered', b.state || '', 'maxlength="30" placeholder="Georgia"') + f('fCtrl', 'State control or file number (optional)', b.control_no, 'maxlength="30" placeholder="Helps us find you"') + '</div>' +
-      '<div class="bz-two"><label class="bz-f"><span>Your role</span><select id="fRole">' + ['Owner', 'Co-owner', 'Manager', 'Other'].map(function (r) { return '<option' + (b.owner_role === r ? ' selected' : '') + '>' + r + '</option>'; }).join('') + '</select></label>' + f('fSince', 'In business since (year)', b.since_year || '', 'inputmode="numeric" maxlength="4" placeholder="2014"') + '</div></div>' +
-      '<div class="bz-row"><button class="bz-btn" id="fSave">' + (b.id ? 'Save changes' : 'Create my page') + '</button></div><div class="bz-msg" id="fMsg" role="status"></div>';
+    var STEPS = [
+      ['Find you', 'Type your business name. We look it up on the map and fill in what we can.'],
+      ['Basics', 'Check what drivers will see.'],
+      ['Hours', 'Pick each day. Drivers see “Open now” or “Closed”.'],
+      ['About and links', 'Tell drivers why they should pick you. Add the places they already follow you.'],
+      ['Your look', 'Header, logo and photos. All optional, you can change them later.'],
+      ['Services and prices', 'You set them. Prices show as “from $X”.'],
+      ['Owner check', 'We confirm every business before its page goes live. Drivers never see this.']];
+    var sec = function (n, inner) { return '<section class="pf-sec" data-step="' + n + '"' + (n ? ' hidden' : '') + '><h3 class="pf-h">' + STEPS[n][0] + '</h3><p class="pf-sub">' + STEPS[n][1] + '</p>' + inner + '</section>'; };
+    var soc = b.social || {};
+    host.innerHTML = '<div class="pf"><div class="pf-main">' +
+      '<ol class="pf-steps" id="fSteps">' + STEPS.map(function (x, n) { return '<li><button type="button" data-go="' + n + '"><i>' + (n + 1) + '</i><span>' + x[0] + '</span></button></li>'; }).join('') + '</ol>' +
+      '<div class="bz-msg" id="fDraft" role="status" hidden></div>' +
+      '<details class="pf-pvm"><summary>See your page as you go</summary><div class="pf-pv" id="fPv2"></div></details>' +
+      sec(0, '<div class="bz-f bz-namebox"><span>Business name</span><input id="fName" maxlength="80" value="' + esc(b.name) + '" placeholder="Start typing, we’ll look you up"><div class="bz-sug" id="fSug" hidden></div></div>' +
+        '<div class="bz-found" id="fFound" hidden></div>') +
+      sec(1, '<div class="bz-f"><span>What kind of business?</span><div class="bz-chips" id="fKind"></div></div>' +
+        f('fAddr', 'Street address', b.address, 'maxlength="160" autocomplete="street-address"') +
+        f('fCity', 'City and state', b.city, 'maxlength="60" placeholder="Atlanta, GA"') +
+        f('fPhone', 'Phone', b.phone, 'maxlength="30" inputmode="tel" autocomplete="tel"')) +
+      sec(2, '<input type="hidden" id="fHours" value="' + esc(b.hours) + '"><div class="bz-msg" id="fHoursOld" hidden></div><div class="pf-week" id="fWeek"></div>' +
+        '<button type="button" class="bz-btn soft bz-small" id="fCopy">Same hours every weekday? Copy Monday to Tue–Fri</button><small class="pf-small">Holidays can change hours. Post a “Hours change” update in Business HQ when they do.</small>') +
+      sec(3, '<label class="bz-f"><span>About your business</span><textarea id="fAbout" maxlength="600" placeholder="Family shop since 2009. Tires, brakes and oil changes, most same day. Hablamos español.">' + esc(b.about) + '</textarea><small>Tip: what you do best, how long you’ve been open, languages you speak.</small></label>' +
+        f('fWeb', 'Website (optional)', b.website, 'maxlength="200" inputmode="url" placeholder="yourshop.com"') +
+        '<div class="bz-f"><span>Social media (optional)</span><div class="pf-socs">' + SOCIAL.map(function (x) { return '<label class="pf-soc"><i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + SOC_SVG[x[0]] + '</svg></i><input id="fS_' + x[0] + '" maxlength="220" placeholder="' + x[2] + '" value="' + esc(socialShow(x[0], soc[x[0]])) + '" aria-label="' + x[1] + '"></label>'; }).join('') + '</div><small>They show as round buttons on your page. Make sure each one opens your page.</small></div>' +
+        '<label class="bz-f"><span>One offer (optional)</span><input id="fOffer" maxlength="120" value="' + esc(b.offer) + '" placeholder="Free tire check"><small>Shown at the top of your page.</small></label>') +
+      sec(4, '<div class="bz-f"><span>Header (optional)</span><div class="bz-hopts" id="fHopt"></div><div id="fHpanel"></div><div class="bz-hprev" id="fHprev"></div></div>' +
+        '<div class="bz-f"><span>Logo (optional)</span><div class="bz-logo-row" id="fLogo"></div></div>' +
+        '<div class="bz-f"><span>Photos (optional, up to 24)</span><div class="bz-pics" id="fPics"></div><small>Your shop, your work, your team. They show as a gallery on your page. No customers’ license plates please.</small></div>') +
+      sec(5, '<div class="bz-f"><span id="fSvcLab">Services and prices (you set them)</span><div id="fSvcs"></div><button type="button" class="bz-btn soft bz-small" id="fAddSvc">+ Add a service or item</button><small>Leave the price empty if it depends.</small></div>') +
+      sec(6, '<div class="bz-check" style="margin-top:0"><p>These help us find your business record fast.</p>' +
+        f('fLegal', 'Legal name, as registered with your state', b.legal_name, 'maxlength="120" placeholder="Tony’s Auto Shop LLC"') +
+        '<div class="bz-two">' + f('fRegState', 'State where it’s registered', b.state || '', 'maxlength="30" placeholder="Georgia"') + f('fCtrl', 'State control or file number (optional)', b.control_no, 'maxlength="30" placeholder="Helps us find you"') + '</div>' +
+        '<div class="bz-two"><label class="bz-f"><span>Your role</span><select id="fRole">' + ['Owner', 'Co-owner', 'Manager', 'Other'].map(function (r) { return '<option' + (b.owner_role === r ? ' selected' : '') + '>' + r + '</option>'; }).join('') + '</select></label>' + f('fSince', 'In business since (year)', b.since_year || '', 'inputmode="numeric" maxlength="4" placeholder="2014"') + '</div></div>') +
+      '<div class="bz-row pf-nav"><button type="button" class="bz-btn soft" id="fBack">Back</button><button type="button" class="bz-btn" id="fNext">Next</button><button type="button" class="bz-btn" id="fSave">' + (b.id ? 'Save changes' : 'Send my page for the check') + '</button></div><div class="bz-msg" id="fMsg" role="status"></div>' +
+      '</div><aside class="pf-side" aria-label="Live preview"><div class="pf-lab">LIVE PREVIEW · YOUR PAGE</div><div class="pf-pv" id="fPv"></div></aside></div>';
     var $ = function (id) { return host.querySelector('#' + id); };
     function drawKinds() {
       $('fKind').innerHTML = KINDS.map(function (k) { return '<button type="button" data-k="' + k[0] + '" class="' + (st.kind === k[0] ? 'on' : '') + '">' + k[1] + '</button>'; }).join('');
@@ -426,10 +520,105 @@
         (st.photos.length < 24 ? '<label aria-label="Add a photo">+<input type="file" accept="image/*" id="fPicFile" hidden></label>' : '');
     }
     drawKinds(); drawSvcs(); drawHeader(); drawLogo(); drawPics();
+
+    // Hours, day by day (picture 294).
+    var pw = parseWeek(b.hours); st.week = pw.week;
+    if (b.hours && !pw.any) { $('fHoursOld').hidden = false; $('fHoursOld').textContent = 'Your old hours: “' + b.hours + '”. Pick them below so “Open now” works.'; }
+    var TOPTS = []; for (var tmn = 0; tmn < 1440; tmn += 30) TOPTS.push(tmn);
+    var tsel = function (day, which, val) { return '<select data-d="' + day + '" data-w="' + which + '" aria-label="' + (which === 'o' ? 'Opens' : 'Closes') + '">' + TOPTS.map(function (m) { return '<option value="' + m + '"' + (m === val ? ' selected' : '') + '>' + hm(m) + '</option>'; }).join('') + '</select>'; };
+    function drawWeek() {
+      $('fWeek').innerHTML = WDAYS.map(function (d) {
+        var x = st.week[d[0]];
+        return '<div class="pf-day"><b>' + d[1] + '</b><select data-d="' + d[0] + '" data-w="s" aria-label="' + d[2] + '"><option value="unset"' + (x.s === 'unset' ? ' selected' : '') + '>Not set</option><option value="open"' + (x.s === 'open' ? ' selected' : '') + '>Open</option><option value="closed"' + (x.s === 'closed' ? ' selected' : '') + '>Closed</option></select>' +
+          (x.s === 'open' ? '<span class="pf-tm">' + tsel(d[0], 'o', x.o) + '<em>to</em>' + tsel(d[0], 'c', x.c) + '</span>' : '<span class="pf-tm pf-off">' + (x.s === 'closed' ? 'Closed all day' : '') + '</span>') + '</div>';
+      }).join('');
+    }
+    function syncHours() { $('fHours').value = weekText(st.week); }
+    drawWeek(); if (pw.any) syncHours();
+    $('fWeek').onchange = function (e) {
+      var d = e.target.getAttribute('data-d'), w = e.target.getAttribute('data-w'); if (!d) return;
+      var x = st.week[d];
+      if (w === 's') { x.s = e.target.value; drawWeek(); }
+      else { x[w] = +e.target.value; if (x.c <= x.o) { x.c = Math.min(x.o + 60, 1410); drawWeek(); } }
+      syncHours(); pv();
+    };
+    $('fCopy').onclick = function () { var m = st.week.mon; ['tue', 'wed', 'thu', 'fri'].forEach(function (k) { st.week[k] = { s: m.s, o: m.o, c: m.c }; }); drawWeek(); syncHours(); pv(); };
+
+    // Live preview: the page drivers will see, updating as they type.
+    function pv() {
+      var name = $('fName').value.trim() || 'Your business', kindL = (KINDS.filter(function (k) { return k[0] === st.kind; })[0] || [0, ''])[1];
+      var hv = headerOf({ header: st.header, kind: st.kind, wallpaper: b.wallpaper }), hrs = $('fHours').value, os = openNow(hrs);
+      var social = {}; SOCIAL.forEach(function (x) { var u = socialUrl(x[0], $('fS_' + x[0]).value); if (u) social[x[0]] = u; });
+      var svc = st.svcs.filter(function (x) { return String(x.name || '').trim(); }).slice(0, 4);
+      var html = '<div class="pv-hd" style="background:' + hv.css.replace(/"/g, "'") + '"><span class="pv-lg">' + (st.logo ? '<img src="' + photoUrl(st.logo) + '" alt="">' : esc(initials(name))) + '</span></div>' +
+        '<div class="pv-b"><b class="pv-n">' + esc(name) + '</b><span class="pv-k">' + esc([kindL, $('fCity').value.trim()].filter(Boolean).join(' · ')) + '</span>' +
+        (hrs ? '<div class="pv-card"><b>Hours</b>' + (os ? '<span class="pv-os ' + (os.open ? 'on' : '') + '">' + esc(os.text) + '</span>' : '') + hrs.split(' · ').map(function (h) { return '<div class="pv-hr">' + esc(h) + '</div>'; }).join('') + '</div>' : '<div class="pv-card pv-empty">Hours show here</div>') +
+        ($('fAbout').value.trim() ? '<div class="pv-card"><b>About</b><p>' + esc($('fAbout').value.trim()) + '</p></div>' : '') +
+        socialRow(Object.keys(social).length ? social : null, 'sp-soc pv-soc') +
+        (svc.length ? '<div class="pv-card"><b>' + esc((KINFO[st.kind] || KINFO.other).svc) + '</b>' + svc.map(function (x) { var pr = String(x.price || '').replace(/[^\d.]/g, ''); return '<div class="pv-sv"><span>' + esc(x.name) + '</span><em>' + (pr ? 'from $' + esc(pr) : '') + '</em></div>'; }).join('') + '</div>' : '') +
+        ($('fAddr').value.trim() ? '<div class="pv-card pv-addr">' + esc([$('fAddr').value.trim(), $('fCity').value.trim()].filter(Boolean).join(', ')) + '</div>' : '') +
+        '</div><div class="pv-bar"><span class="on">Message</span><span>Call</span><span>Go</span></div>';
+      $('fPv').innerHTML = html; $('fPv2').innerHTML = html;
+    }
+    var pvT = 0; host.addEventListener('input', function () { cancelAnimationFrame(pvT); pvT = requestAnimationFrame(pv); });
+    host.addEventListener('click', function () { cancelAnimationFrame(pvT); pvT = requestAnimationFrame(pv); });
+
+    // Steps: one short step at a time. New pages keep a draft on this device; My page saves on each Next.
+    var stepNow = 0, seen = b.id ? 6 : 0, DKEY = 'carvessa:pagedraft:v1';
+    var FIELDS = ['fName', 'fAddr', 'fCity', 'fPhone', 'fWeb', 'fHours', 'fAbout', 'fOffer', 'fLegal', 'fRegState', 'fCtrl', 'fRole', 'fSince'].concat(SOCIAL.map(function (x) { return 'fS_' + x[0]; }));
+    function saveDraft() {
+      if (b.id) return;
+      var v = {}; FIELDS.forEach(function (id) { v[id] = $(id).value; });
+      try { localStorage.setItem(DKEY, JSON.stringify({ at: Date.now(), v: v, kind: st.kind, header: st.header, logo: st.logo, photos: st.photos, svcs: st.svcs, week: st.week, step: stepNow, seen: seen })); } catch (err) { /* private mode: fine */ }
+    }
+    if (!b.id) {
+      try {
+        var dr = JSON.parse(localStorage.getItem(DKEY) || 'null');
+        if (dr && Date.now() - dr.at < 14 * 864e5 && dr.v && dr.v.fName) {
+          FIELDS.forEach(function (id) { if (dr.v[id] != null) $(id).value = dr.v[id]; });
+          st.kind = dr.kind || st.kind; st.header = dr.header || st.header; st.logo = dr.logo || null; st.photos = dr.photos || []; st.svcs = dr.svcs && dr.svcs.length ? dr.svcs : st.svcs; if (dr.week) st.week = dr.week;
+          st.picked = dr.v.fName; seen = dr.seen || 0;
+          drawKinds(); drawSvcs(); drawHeader(); drawLogo(); drawPics(); drawWeek();
+          $('fDraft').hidden = false; $('fDraft').className = 'bz-msg good'; $('fDraft').innerHTML = '✓ We kept what you typed last time. <button type="button" class="pf-link" id="fClear">Start over</button>';
+          $('fDraft').querySelector('#fClear').onclick = function () { try { localStorage.removeItem(DKEY); } catch (err) { /* fine */ } location.reload(); };
+          stepNow = Math.min(dr.step || 0, 6);
+        }
+      } catch (err) { /* a broken draft is skipped */ }
+    }
+    function checkStep(n) {
+      var m = $('fMsg'); m.className = 'bz-msg bad'; m.textContent = '';
+      if (n === 0 && $('fName').value.trim().length < 2) { m.textContent = 'Please type your business name.'; return false; }
+      if (n === 1) {
+        if ($('fCity').value.trim().length < 2) { m.textContent = 'Please type your city and state.'; return false; }
+        if (!/\d{7,}/.test($('fPhone').value.replace(/\D/g, ''))) { m.textContent = 'Please type a phone number we can call to confirm you’re the owner.'; return false; }
+      }
+      if (n === 3) { for (var k = 0; k < SOCIAL.length; k++) { if (socialUrl(SOCIAL[k][0], $('fS_' + SOCIAL[k][0]).value) === false) { m.textContent = 'We can’t read your ' + SOCIAL[k][1] + ' link. ' + (SOCIAL[k][0] === 'google' ? 'Paste the link from Google Maps (Share › Copy link).' : 'Type it like ' + SOCIAL[k][2] + '.'); return false; } } }
+      return true;
+    }
+    function goStep(n) {
+      stepNow = n; seen = Math.max(seen, n);
+      host.querySelectorAll('.pf-sec').forEach(function (x) { x.hidden = +x.getAttribute('data-step') !== n; });
+      host.querySelectorAll('#fSteps button').forEach(function (bt) { var k = +bt.getAttribute('data-go'); bt.className = k === n ? 'on' : k <= seen ? 'done' : ''; bt.disabled = k > seen; if (k === n) bt.setAttribute('aria-current', 'step'); else bt.removeAttribute('aria-current'); });
+      $('fBack').hidden = n === 0;
+      $('fNext').hidden = n === 6;
+      $('fNext').textContent = n < 6 ? 'Next: ' + STEPS[n + 1][0].toLowerCase() : 'Next';
+      $('fSave').hidden = !b.id && n !== 6;
+      saveDraft(); pv();
+    }
+    host._go = function (fieldId) { var el = host.querySelector('#' + fieldId); var sc = el && el.closest('.pf-sec'); if (sc) goStep(+sc.getAttribute('data-step')); return el; };
+    $('fSteps').onclick = function (e) { var bt = e.target.closest('[data-go]'); if (bt && !bt.disabled) { var n = +bt.getAttribute('data-go'); if (n <= stepNow || checkStep(stepNow)) goStep(n); } };
+    $('fBack').onclick = function () { if (stepNow > 0) { goStep(stepNow - 1); host.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+    $('fNext').onclick = async function () {
+      if (!checkStep(stepNow)) return;
+      if (b.id) { var ok = await doSave(true); if (!ok) return; }
+      goStep(stepNow + 1); host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    host.addEventListener('change', function () { saveDraft(); });
     nameSearch(st, $, function (info) {
       var put = function (id, v) { if (v && !$(id).value.trim()) { $(id).value = v; return 1; } return 0; };
       var n = 0;
       $('fName').value = info.name; n += put('fAddr', info.address) + put('fCity', info.city) + put('fPhone', info.phone) + put('fWeb', info.website) + put('fHours', info.hours);
+      if (info.hours) { var pw2 = parseWeek($('fHours').value); if (pw2.any) { st.week = pw2.week; drawWeek(); syncHours(); } }
       if (info.kind) { st.kind = info.kind; drawKinds(); n++; }
       if (!$('fRegState').value && /, GA$/.test(info.city || '')) $('fRegState').value = 'Georgia';
       if (info.lat != null) st.spot = { lat: info.lat, lon: info.lon, key: [$('fAddr').value.trim(), $('fCity').value.trim()].join('|') };
@@ -464,19 +653,20 @@
       } catch (err) { $('fMsg').className = 'bz-msg bad'; $('fMsg').textContent = 'That photo didn’t upload. Try a JPG or PNG photo.'; }
     });
     $('fPics').onclick = function (e) { var i = e.target.getAttribute('data-rm'); if (i != null) { st.photos.splice(+i, 1); drawPics(); } };
-    $('fSave').onclick = async function () {
+    $('fSave').onclick = function () { doSave(false); };
+    async function doSave(quiet) {
       var name = $('fName').value.trim(), phone = $('fPhone').value.trim(), msg = $('fMsg');
       msg.className = 'bz-msg bad';
-      if (name.length < 2) { msg.textContent = 'Please type your business name.'; return; }
-      if ($('fCity').value.trim().length < 2) { msg.textContent = 'Please type your city and state.'; return; }
-      if (!/\d{7,}/.test(phone.replace(/\D/g, ''))) { msg.textContent = 'Please type a phone number we can call to confirm you’re the owner.'; return; }
+      for (var cs = 0; cs < 4; cs++) { if (!checkStep(cs)) { goStep(cs); return false; } }
       var since = parseInt($('fSince').value, 10);
-      if ($('fSince').value && !(since >= 1900 && since <= new Date().getFullYear())) { msg.textContent = 'Please type the year you started, like 2014.'; return; }
+      if ($('fSince').value && !(since >= 1900 && since <= new Date().getFullYear())) { msg.textContent = 'Please type the year you started, like 2014.'; goStep(6); return false; }
       var hs = st.header, header = { style: hs.style === 'legacy' ? 'legacy' : hs.style };
       if (hs.style === 'color') { header.pattern = hs.pattern; header.c1 = hs.c1; header.c2 = hs.c2; }
-      if (hs.style === 'own') { if (!hs.photo) { msg.textContent = 'Choose a photo for your header, or pick another header option.'; return; } header.photo = hs.photo; }
+      if (hs.style === 'own') { if (!hs.photo) { msg.textContent = 'Choose a photo for your header, or pick another header option.'; goStep(4); return false; } header.photo = hs.photo; }
+      var social = {}; SOCIAL.forEach(function (x) { var u = socialUrl(x[0], $('fS_' + x[0]).value); if (u) social[x[0]] = u; });
       var row = { name: name, kind: st.kind, address: $('fAddr').value.trim() || null, city: $('fCity').value.trim(), phone: phone, website: $('fWeb').value.trim() || null,
         hours: $('fHours').value.trim() || null, about: $('fAbout').value.trim() || null, offer: $('fOffer').value.trim() || null, photos: st.photos, header: header, logo: st.logo,
+        social: Object.keys(social).length ? social : null,
         legal_name: $('fLegal').value.trim() || null, state: $('fRegState').value.trim() || null, control_no: $('fCtrl').value.trim() || null, owner_role: $('fRole').value, since_year: since || null };
       // Map spot for "Deals near you": from the name search, else look the address up (OpenStreetMap).
       var addrKey = [row.address || '', row.city].join('|');
@@ -485,10 +675,13 @@
         try { var gq = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=' + encodeURIComponent([row.address, row.city].filter(Boolean).join(', '))); var gj = (await gq.json())[0]; if (gj) { row.lat = +gj.lat; row.lon = +gj.lon; } } catch (err) { /* the spot is a bonus */ }
       }
       var list = st.svcs.map(function (s) { var n = String(s.name || '').trim(); var pr = String(s.price || '').replace(/[^\d.]/g, ''); return n ? { name: n, price_from: pr ? Number(pr) : null } : null; }).filter(Boolean);
-      $('fSave').disabled = true; msg.className = 'bz-msg'; msg.textContent = 'Saving…';
-      try { await onSave(row, list); } catch (err) { msg.className = 'bz-msg bad'; msg.textContent = (err && err.message && /up to 3/.test(err.message)) ? 'You can have up to 3 business pages.' : 'That didn’t save. Please try again.'; }
-      $('fSave').disabled = false;
-    };
+      $('fSave').disabled = true; $('fNext').disabled = true; msg.className = 'bz-msg'; msg.textContent = 'Saving…';
+      var okSave = true;
+      try { await onSave(row, list, quiet); if (!b.id) { try { localStorage.removeItem(DKEY); } catch (err) { /* fine */ } } } catch (err) { okSave = false; msg.className = 'bz-msg bad'; msg.textContent = (err && err.message && /up to 3/.test(err.message)) ? 'You can have up to 3 business pages.' : (err && err.message && /social_ok/.test(err.message)) ? 'One of your social links didn’t look right. Check step 4.' : 'That didn’t save. Please try again.'; }
+      $('fSave').disabled = false; $('fNext').disabled = false;
+      return okSave;
+    }
+    goStep(stepNow);
   }
   async function saveServices(id, svcs) {
     var d = await sb.from('business_services').delete().eq('business_id', id); if (d.error) throw d.error;
@@ -1057,9 +1250,10 @@
           var was = cur.status; Object.assign(cur, x.data);
           var m = el.querySelector('#fMsg'); m.className = 'bz-msg good';
           m.textContent = cur.status === 'pending' && was === 'live' ? 'Saved. You changed your name, address or phone, so we’ll check it again before it shows.' : 'Saved.';
+          if (arguments[2]) setTimeout(function () { if (m.textContent === 'Saved.') m.textContent = ''; }, 1800);
           var pkEl = shell.querySelector('a.hq-pick'); if (pkEl) pkEl.firstChild.textContent = cur.name;
         }, el.querySelector('#hqForm'));
-        if (focus) setTimeout(function () { var f = el.querySelector('#' + focus); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (f.focus && /INPUT|TEXTAREA/.test(f.tagName)) f.focus(); } }, 200);
+        if (focus) setTimeout(function () { var fh = el.querySelector('#hqForm'), f = fh && fh._go ? fh._go(focus === 'fHours' ? 'fWeek' : focus) : el.querySelector('#' + focus); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (f.focus && /INPUT|TEXTAREA/.test(f.tagName)) f.focus(); } }, 200);
       }
       async function posts(el, justPosted) {
         var [r, cd, fol] = await Promise.all([
@@ -1620,7 +1814,7 @@
       var PARTS = { yes: 'We install parts you bring', no: 'We use our own parts', ask: 'Bringing your own parts? Ask us' };
       var hoursCard = b.hours ? '<div class="shop-card sp-hours" id="hours"><h2>Hours' + (openState ? ' <span class="' + (openState.open ? 'open' : 'closed') + '">' + esc(openState.text) + '</span>' : '') + '</h2>' + b.hours.split(/\s*·\s*|\s*;\s*|\n/).filter(Boolean).map(function (h) { return '<div class="sp-hr">' + esc(h) + '</div>'; }).join('') + '<div class="shop-note">Hours set by the business. Holidays can change them.</div></div>' : '';
       var contactCard = '<div class="shop-card"><h2>Find us</h2><div class="shop-kv">' + (b.address ? '<span>Address</span><div>' + esc(b.address) + (b.city ? ', ' + esc(b.city) : '') + '</div>' : b.city ? '<span>Area</span><div>' + esc(b.city) + '</div>' : '') + (b.phone ? '<span>Phone</span><div><a href="tel:' + esc(tel) + '" data-c="call">' + esc(b.phone) + '</a></div>' : '') + (web ? '<span>Website</span><div><a href="' + esc(web) + '" target="_blank" rel="noopener nofollow" data-c="website">' + esc(b.website.replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</a></div>' : '') + '</div>' +
-        '<a class="sp-btn soft sp-wide" style="margin-top:10px" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 16) + 'Directions</a></div>';
+        socialRow(b.social) + '<a class="sp-btn soft sp-wide" style="margin-top:10px" href="' + maps + '" target="_blank" rel="noopener" data-c="directions">' + icon('pin', 16) + 'Directions</a></div>';
       root.innerHTML =
         '<header class="s2-top"><div class="s2-in"><a class="s2-brand" href="#top">' + logoHtml(b, 's2-lo') + '<b>' + esc(b.name) + '</b></a>' +
           '<nav class="s2-menu" aria-label="Sections">' + tabsList.map(function (t) { return '<a href="#' + t[0] + '">' + t[1].replace(/ · \d+$/, '') + '</a>'; }).join('') + '</nav>' +
