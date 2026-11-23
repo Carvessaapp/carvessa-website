@@ -551,7 +551,7 @@
     });
   }
   // Business HQ › Appointments
-  async function hqAppts(el, cur, head) {
+  async function hqAppts(el, cur, head, go) {
     var k = (await sb.from('business_booking').select('*').eq('business_id', cur.id).maybeSingle()).data;
     var kk = k || { active: false, slot_min: 30, capacity: 1, auto_confirm: false, tz: 'America/New_York', blocks: [] };
     var since = new Date(Date.now() - 3 * 864e5).toISOString();
@@ -564,7 +564,7 @@
       return '<div class="ap-c" data-a="' + a.id + '"><div class="ap-t"><b>' + esc(whenText(a.starts_at, tz)) + '</b><span>' + esc(a.minutes >= 60 ? a.minutes / 60 + ' hr' : a.minutes + ' min') + '</span></div>' +
         '<div class="ap-w"><b>' + esc(a.driver_name) + ' · ' + esc(a.service) + '</b>' + (a.car ? '<span>' + esc(a.car) + '</span>' : '') + (a.note ? '<q>' + esc(a.note) + '</q>' : '') +
         (a.status === 'offered' && a.offered_at ? '<span class="ap-off">You offered ' + esc(whenText(a.offered_at, tz)) + '. Waiting for ' + esc(a.driver_name) + '.</span>' : '') + '</div>' +
-        '<div class="ap-b">' + btns + '</div><div class="ap-x"></div><div class="bz-msg" role="status"></div></div>';
+        '<div class="ap-b">' + btns + B('chat', 'Message', 'soft') + '</div><div class="ap-x"></div><div class="bz-msg" role="status"></div></div>';
     };
     var B = function (act, lab, cls) { return '<button type="button" class="bz-btn bz-small ' + (cls || '') + '" data-act="' + act + '">' + lab + '</button>'; };
     var byDay = {}; coming.forEach(function (a) { var d = whenText(a.starts_at, tz).split(' · ')[0]; (byDay[d] = byDay[d] || []).push(a); });
@@ -598,11 +598,12 @@
       m.className = 'bz-msg'; m.textContent = 'Saving…';
       var x = k ? await sb.from('business_booking').update(row).eq('business_id', cur.id) : await sb.from('business_booking').insert(row);
       if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save. Please try again.'; return; }
-      hqAppts(el, cur, head);
+      hqAppts(el, cur, head, go);
     };
     el.onclick = async function (e) {
       var bt = e.target.closest('[data-act]'); if (!bt) return;
       var c = bt.closest('.ap-c'), id = c.getAttribute('data-a'), act = bt.getAttribute('data-act'), m = c.querySelector('.bz-msg'), a = all.filter(function (x) { return x.id === id; })[0];
+      if (act === 'chat') { bt.disabled = true; var ch = await sb.rpc('appt_chat', { a: id }); bt.disabled = false; if (ch.error) { m.className = 'bz-msg bad'; m.textContent = (ch.error.message || '').replace(/^.*?:\s*/, ''); return; } if (go) go('messages', ch.data); return; }
       if (act === 'offer') {
         var days = shopDays(tz, 14), x = c.querySelector('.ap-x');
         x.innerHTML = '<div class="ap-pick"><select data-od><option value="">Pick a day</option>' + days.map(function (d, i) { return '<option value="' + i + '">' + new Date(zoned(d.date, 720, tz)).toLocaleDateString('en-US', { timeZone: tz, weekday: 'short', month: 'short', day: 'numeric' }) + '</option>'; }).join('') + '</select><select data-ot disabled><option>Time</option></select><input data-om maxlength="200" placeholder="Short note (optional)"><button type="button" class="bz-btn bz-small" data-act="offer-go">Send this time</button></div>';
@@ -617,7 +618,7 @@
       var res = await sb.rpc('appt_shop', arg);
       if (res.error) { bt.disabled = false; m.className = 'bz-msg bad'; m.textContent = (res.error.message || '').replace(/^.*?:\s*/, '') || 'That didn’t save.'; return; }
       if (act === 'came' && res.data && res.data.stamped) alert('Added a loyalty stamp for ' + a.driver_name + '.');
-      hqAppts(el, cur, head);
+      hqAppts(el, cur, head, go);
     };
   }
 
@@ -1206,11 +1207,11 @@
         shell.style.setProperty('--soft', cur.hq_dark ? 'rgba(255,255,255,.08)' : 'color-mix(in srgb, ' + acc + ' 12%, #fff)');
         shell.style.setProperty('--heroA', shade(br, 0.55)); shell.style.setProperty('--heroB', shade(br, 0.1));
       }
-      var counts = { msg: 0, rev: 0, req: 0 };
+      var counts = { msg: 0, rev: 0, req: 0, appt: 0 };
       function go(t, extra) { tab = t; frame(extra); }
       function frame(extra) {
         look();
-        var badge = function (k) { var n = k === 'messages' ? counts.msg : k === 'reviews' ? counts.rev : k === 'requests' ? counts.req : 0; return '<span class="hq-badge" data-b="' + k + '"' + (n ? '' : ' hidden') + '>' + (n || '') + '</span>'; };
+        var badge = function (k) { var n = k === 'messages' ? counts.msg : k === 'reviews' ? counts.rev : k === 'requests' ? counts.req : k === 'appointments' ? counts.appt : 0; return '<span class="hq-badge" data-b="' + k + '"' + (n ? '' : ' hidden') + '>' + (n || '') + '</span>'; };
         var pub = '/shops/?b=' + encodeURIComponent(cur.slug);
         shell.innerHTML = '<header class="hq-top"><a class="hq-logo" href="/business/edit/" aria-label="Business HQ home">CAR<i>V</i>essa <span>BUSINESS HQ</span></a>' +
           (pages.length > 1 ? '<select class="hq-pick" id="hqPick" aria-label="Your pages">' + pages.map(function (p, i) { return '<option value="' + i + '"' + (p === cur ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select>' : '<a class="hq-pick" href="' + pub + '" target="_blank" rel="noopener">' + esc(cur.name) + icon('chev', 14) + '</a>') +
@@ -1233,20 +1234,22 @@
         shell.querySelector('#hqOut').onclick = function () { sb.auth.signOut().then(function () { location.reload(); }); };
         var me = shell.querySelector('#hqMe'), menu = shell.querySelector('#hqMenu');
         me.onclick = function () { menu.hidden = !menu.hidden; me.setAttribute('aria-expanded', String(!menu.hidden)); };
-        shell.querySelector('#hqBell').onclick = function () { go(counts.req ? 'requests' : counts.msg ? 'messages' : counts.rev ? 'reviews' : 'overview'); };
+        shell.querySelector('#hqBell').onclick = function () { go(counts.appt ? 'appointments' : counts.req ? 'requests' : counts.msg ? 'messages' : counts.rev ? 'reviews' : 'overview'); };
         var pk = shell.querySelector('#hqPick'); if (pk && pk.tagName === 'SELECT') pk.onchange = function () { cur = pages[+pk.value]; tab = 'overview'; frame(); };
         Promise.all([
           sb.from('biz_chats').select('last_at, biz_seen_at').eq('business_id', cur.id).limit(200),
           sb.from('business_reviews').select('id', { count: 'exact', head: true }).eq('business_id', cur.id).eq('status', 'visible').is('reply', null),
-          sb.rpc('biz_requests_near', { b: cur.id })
+          sb.rpc('biz_requests_near', { b: cur.id }),
+          sb.from('appointments').select('id', { count: 'exact', head: true }).eq('business_id', cur.id).eq('status', 'requested')
         ]).then(function (r) {
+          counts.appt = r[3].count || 0;
           counts.msg = (r[0].data || []).filter(function (c) { return !c.biz_seen_at || c.last_at > c.biz_seen_at; }).length; counts.rev = r[1].count || 0;
           counts.req = (r[2].data || []).filter(function (x) { return !x.chat_id; }).length;
-          [].forEach.call(shell.querySelectorAll('[data-b]'), function (el) { var k = el.getAttribute('data-b'), n = k === 'messages' ? counts.msg : k === 'reviews' ? counts.rev : k === 'requests' ? counts.req : 0; el.hidden = !n; el.textContent = n || ''; });
-          var bn = shell.querySelector('#hqBellN'), n = counts.msg + counts.rev + counts.req; bn.hidden = !n; bn.textContent = n;
+          [].forEach.call(shell.querySelectorAll('[data-b]'), function (el) { var k = el.getAttribute('data-b'), n = k === 'messages' ? counts.msg : k === 'reviews' ? counts.rev : k === 'requests' ? counts.req : k === 'appointments' ? counts.appt : 0; el.hidden = !n; el.textContent = n || ''; });
+          var bn = shell.querySelector('#hqBellN'), n = counts.msg + counts.rev + counts.req + counts.appt; bn.hidden = !n; bn.textContent = n;
         });
         var body = shell.querySelector('#hqBody');
-        if (tab === 'messages') messages(body, extra); else ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, account: settings, requests: requests, customers: customers, appointments: function (el) { hqAppts(el, cur, head); } })[tab](body, extra);
+        if (tab === 'messages') messages(body, extra); else ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, account: settings, requests: requests, customers: customers, appointments: function (el) { hqAppts(el, cur, head, go); } })[tab](body, extra);
         var y = shell.getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
       }
       function head(k, title, badge) { return '<small class="hq-k">' + k + '</small><h2 class="hq-h">' + title + (badge ? ' <em>' + badge + '</em>' : '') + '</h2>'; }
@@ -1889,10 +1892,10 @@
           var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([b.name, b.address, b.city].filter(Boolean).join(', '));
           var acts = '';
           if (a.status === 'offered' && a.offered_at) acts = '<button type="button" class="bz-btn bz-small" data-x="accept">Yes, ' + esc(whenText(a.offered_at, k.tz, true)) + '</button><button type="button" class="bz-btn soft bz-small" data-x="change">Pick another time</button><button type="button" class="bz-btn soft bz-small" data-x="decline_offer">No thanks</button>';
-          else if (a.status === 'requested' || a.status === 'confirmed') acts = '<a class="bz-btn soft bz-small" href="' + maps + '" target="_blank" rel="noopener">Directions</a>' + (b.slug ? '<a class="bz-btn soft bz-small" href="/shops/?b=' + encodeURIComponent(b.slug) + '">Message</a>' : '') + '<button type="button" class="bz-btn soft bz-small" data-x="ics">Add to calendar</button>' + (soon ? '' : '<button type="button" class="bz-btn soft bz-small" data-x="change">Change time</button><button type="button" class="bz-btn soft bz-small" data-x="cancel">Cancel</button>');
+          else if (a.status === 'requested' || a.status === 'confirmed') acts = '<a class="bz-btn soft bz-small" href="' + maps + '" target="_blank" rel="noopener">Directions</a>' + '<button type="button" class="bz-btn soft bz-small" data-x="chat">Message</button>' + '<button type="button" class="bz-btn soft bz-small" data-x="ics">Add to calendar</button>' + (soon ? '' : '<button type="button" class="bz-btn soft bz-small" data-x="change">Change time</button><button type="button" class="bz-btn soft bz-small" data-x="cancel">Cancel</button>');
           else if (a.status === 'declined' && b.slug) acts = '<a class="bz-btn soft bz-small" href="/shops/?b=' + encodeURIComponent(b.slug) + '&book=1">Pick another time</a>';
           return '<div class="ap-c ap-mine" data-a="' + a.id + '"><span class="ap-st ' + ch[1] + '">' + ch[0] + '</span><div class="ap-t"><b>' + esc(whenText(a.starts_at, k.tz)) + '</b></div>' +
-            '<div class="ap-w"><b>' + esc(a.service) + (a.car ? ' · ' + esc(a.car) : '') + '</b><span>' + esc(b.name) + (b.address ? ' · ' + esc(b.address) : '') + '</span>' + (a.shop_note ? '<q>' + esc(a.shop_note) + '</q>' : '') + (a.status === 'offered' && a.offered_at ? '<span class="ap-off">' + esc(b.name) + ' offered ' + esc(whenText(a.offered_at, k.tz)) + ' instead.</span>' : '') + (a.status === 'requested' ? '<span class="hq-fine">Most shops answer within a few hours. We email you.</span>' : '') + (soon && (a.status === 'requested' || a.status === 'confirmed') ? '<span class="hq-fine">Less than 2 hours away: to change it, call or message the shop.</span>' : '') + '</div>' +
+            '<div class="ap-w"><b>' + esc(a.service) + (a.car ? ' · ' + esc(a.car) : '') + '</b><span>' + (b.slug ? '<a class="ap-lk" href="/shops/?b=' + encodeURIComponent(b.slug) + '">' + esc(b.name) + '</a>' : esc(b.name)) + (b.address ? ' · <a class="ap-lk" href="' + maps + '" target="_blank" rel="noopener">' + esc(b.address) + '</a>' : '') + '</span>' + (a.shop_note ? '<q>' + esc(a.shop_note) + '</q>' : '') + (a.status === 'offered' && a.offered_at ? '<span class="ap-off">' + esc(b.name) + ' offered ' + esc(whenText(a.offered_at, k.tz)) + ' instead.</span>' : '') + (a.status === 'requested' ? '<span class="hq-fine">Most shops answer within a few hours. We email you.</span>' : '') + (soon && (a.status === 'requested' || a.status === 'confirmed') ? '<span class="hq-fine">Less than 2 hours away: to change it, call or message the shop.</span>' : '') + '</div>' +
             '<div class="ap-b">' + acts + '</div><div class="bz-msg" role="status"></div></div>';
         };
         box.innerHTML = (up.length ? up.map(one).join('') : '<div class="bz-sec">No upcoming appointments. Book a time on any shop page that shows “Book a time”.</div>') + (past.length ? '<h3 class="ap-h">Earlier</h3>' + past.map(one).join('') : '');
@@ -1900,6 +1903,7 @@
           var bt = e.target.closest('[data-x]'); if (!bt) return;
           var c = bt.closest('.ap-c'), a = list.filter(function (x) { return x.id === c.getAttribute('data-a'); })[0], b = bOf(a.business_id), k = kOf(a.business_id), m = c.querySelector('.bz-msg'), x = bt.getAttribute('data-x');
           if (x === 'ics') { icsFile(a, b, k.tz); return; }
+          if (x === 'chat') { bt.disabled = true; var ch = await sb.rpc('appt_chat', { a: a.id }); bt.disabled = false; if (ch.error) { m.className = 'bz-msg bad'; m.textContent = (ch.error.message || '').replace(/^.*?:\s*/, ''); return; } location.href = '/messages/?chat=' + ch.data; return; }
           if (x === 'change') { bookFlow(b, k, { change: a, onDone: load }); return; }
           if (x === 'cancel' && !confirm('Cancel ' + a.service + ' at ' + b.name + '?')) return;
           bt.disabled = true; m.className = 'bz-msg'; m.textContent = 'Saving…';

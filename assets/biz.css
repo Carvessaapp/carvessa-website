@@ -562,3 +562,4 @@ body.bk-open{overflow:hidden}
 .ap-bl{display:flex;justify-content:space-between;align-items:center;border:1px solid #EEF1F6;border-radius:10px;padding:6px 10px;margin:4px 0;font-size:14px}.ap-bl button{border:0;background:none;font-size:15px;cursor:pointer;color:#5A6575}
 .hq[data-look="dark"] .ap-c{background:#1E2128;border-color:#2B2F38;color:#EEF2F8}.hq[data-look="dark"] .ap-w span,.hq[data-look="dark"] .ap-t span{color:#AEB8C8}
 .ap-add select,.ap-add input,.ap-pick select,.ap-pick input{width:auto!important;flex:0 1 auto}
+.ap-lk{color:inherit;text-decoration:underline;text-underline-offset:2px}
