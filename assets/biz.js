@@ -1087,7 +1087,7 @@
     sb.auth.getSession().then(function (r) {
       var u = r.data.session && r.data.session.user;
       if (u) {
-        if (mode === 'edit' || mode === 'inbox' || mode === 'ask' || mode === 'following' || mode === 'appts' || mode === 'shop') { next(u); return; }
+        if (mode === 'edit' || mode === 'inbox' || mode === 'ask' || mode === 'following' || mode === 'appts' || mode === 'shop' || mode === 'profile' || mode === 'settings') { next(u); return; }
         box.innerHTML = '<div class="bz-sec">Signed in as <b>' + esc(u.email) + '</b>. <a href="#" id="aOut">Not you?</a></div><div class="bz-row"><button class="bz-btn" id="aGo">Continue</button></div>';
         box.querySelector('#aGo').onclick = function () { next(u); };
         box.querySelector('#aOut').onclick = function (e) { e.preventDefault(); sb.auth.signOut().then(function () { account(next, boxEl); }); };
@@ -1720,8 +1720,8 @@
 
 
   // ---------- Picture 304: one bar on the driver's own pages ----------
-  var MYPAGES = [['appts', '/appointments/', 'Appointments'], ['inbox', '/messages/', 'Messages'], ['following', '/following/', 'Shops I follow'], ['ask', '/ask/', 'Ask for a price']];
-  if (MYPAGES.some(function (x) { return x[0] === mode; })) {
+  var MYPAGES = [['profile', '/profile/', 'Profile'], ['appts', '/appointments/', 'Appointments'], ['inbox', '/messages/', 'Messages'], ['following', '/following/', 'Shops I follow'], ['ask', '/ask/', 'Ask for a price']];
+  if (mode === 'settings' || MYPAGES.some(function (x) { return x[0] === mode; })) {
     var myBar = document.createElement('nav'); myBar.className = 'my-bar'; myBar.setAttribute('aria-label', 'My Carvessa');
     myBar.innerHTML = MYPAGES.map(function (x) { return '<a href="' + x[1] + '"' + (x[0] === mode ? ' class="on" aria-current="page"' : '') + ' data-my="' + x[0] + '">' + x[2] + '<em hidden></em></a>'; }).join('');
     root.insertBefore(myBar, root.firstChild);
@@ -1735,6 +1735,138 @@
     });
   }
 
+
+
+  // ---------- Picture 305: My profile + Settings (same account fields as the app: user_metadata) ----------
+  var ALERT_DEF = { upkeep: true, price: true, nearby: false, rates: false, email: true };
+  function firstName(u) { var m = u.user_metadata || {}; return ((m.name || m.full_name || '').trim().split(/\s+/)[0] || (u.email || '').split('@')[0] || '').slice(0, 40); }
+  function avatarHtml(u, size) {
+    var m = u.user_metadata || {}, a = m.avatar, art = a && window.CV_AVATARS && window.CV_AVATARS.filter(function (x) { return x.id === a; })[0];
+    if (art) return '<span class="pf-av" style="width:' + size + 'px;height:' + size + 'px">' + art.xml + '</span>';
+    var g = m.avatar_url || m.picture;
+    if (g && a !== 'letter') return '<img class="pf-av" alt="" referrerpolicy="no-referrer" src="' + esc(g) + '" style="width:' + size + 'px;height:' + size + 'px">';
+    return '<span class="pf-av pf-lt" style="width:' + size + 'px;height:' + size + 'px;font-size:' + Math.round(size * 0.44) + 'px">' + esc((firstName(u)[0] || '?').toUpperCase()) + '</span>';
+  }
+  function loadAvatars(done) {
+    if (window.CV_AVATARS) { done(); return; }
+    var sc = document.createElement('script'); sc.src = '/assets/avatars.js'; sc.onload = done; sc.onerror = done; document.head.appendChild(sc);
+  }
+  if (mode === 'settings' && q.get('out') === '1') {
+    sb.auth.signOut().finally(function () { location.replace('/'); });
+    return;
+  }
+  if (mode === 'profile') {
+    account(function (u0) {
+      root.querySelector('#bzAcct').innerHTML = '';
+      loadAvatars(async function () {
+        var u = u0, host = root.querySelector('#bzPro');
+        var rv = await sb.from('reviews').select('id', { count: 'exact', head: true }).eq('user_id', u.id);
+        function draw() {
+          var m = u.user_metadata || {}, cars = m.my_cars || (m.my_car ? [m.my_car] : []);
+          var since = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+          host.innerHTML = '<div class="bz-sec pf-top">' + avatarHtml(u, 72) + '<div><div class="pf-nm">' + esc(firstName(u)) + '</div><div class="rv-fine" style="margin:2px 0">Free member since ' + esc(since) + '</div><button type="button" class="ap-lk pf-chg" id="pfPic">Change picture</button></div></div>' +
+            '<div class="pf-pick" id="pfPick" hidden></div>' +
+            '<div class="bz-sec"><label class="bz-f"><span>First name</span><input id="pfN" autocomplete="given-name" maxlength="40" value="' + esc(firstName(u)) + '"></label>' +
+            '<label class="bz-f"><span>ZIP code</span><input id="pfZ" inputmode="numeric" maxlength="5" autocomplete="postal-code" value="' + esc(m.zip || '') + '"></label>' +
+            '<label class="bz-f"><span>Email</span><input value="' + esc(u.email || '') + '" readonly class="pf-ro"></label>' +
+            '<div class="bz-row"><button class="bz-btn" id="pfSave">Save</button></div><div class="bz-msg" id="pfM" role="status"></div>' +
+            '<p class="rv-fine">Your ZIP sets prices, tax and shops near you. Your email can’t be changed here.</p></div>' +
+            '<div class="bz-sec pf-list"><div class="pf-rw"><span>My cars</span><i>' + (cars.length ? cars.length + (cars.length === 1 ? ' car' : ' cars') : 'None yet') + ' · in the app</i></div>' +
+            '<div class="pf-rw"><span>My reviews</span><i>' + (rv.count || 0) + ' · in the app</i></div>' +
+            '<a class="pf-rw" href="/settings/"><span>Settings</span><i>Alerts, language, password ›</i></a></div>';
+          host.querySelector('#pfSave').onclick = async function () {
+            var n = host.querySelector('#pfN').value.trim(), z = host.querySelector('#pfZ').value.trim(), msg = host.querySelector('#pfM'), bt = this;
+            msg.className = 'bz-msg bad';
+            if (!n) { msg.textContent = 'Type your first name.'; return; }
+            if (z && !/^\d{5}$/.test(z)) { msg.textContent = 'A ZIP code has 5 numbers.'; return; }
+            bt.disabled = true; msg.className = 'bz-msg'; msg.textContent = 'Saving…';
+            var r = await sb.auth.updateUser({ data: { name: n, zip: z } }); bt.disabled = false;
+            if (r.error) { msg.className = 'bz-msg bad'; msg.textContent = 'Couldn’t save. Please try again.'; return; }
+            u = r.data.user; draw(); var m2 = host.querySelector('#pfM'); m2.className = 'bz-msg ok'; m2.textContent = '✓ Saved. The app shows it too.';
+          };
+          host.querySelector('#pfPic').onclick = function () {
+            var pk = host.querySelector('#pfPick'), set = 'normal';
+            function grid() {
+              pk.innerHTML = '<div class="pf-tabs" role="tablist"><button type="button" data-set="normal" class="' + (set === 'normal' ? 'on' : '') + '">Normal</button><button type="button" data-set="fun" class="' + (set === 'fun' ? 'on' : '') + '">Fun</button></div>' +
+                '<div class="pf-grid">' + (window.CV_AVATARS || []).filter(function (x) { return x.set === set; }).map(function (x) { return '<button type="button" data-av="' + x.id + '" aria-label="' + esc(x.name) + '" class="' + ((u.user_metadata || {}).avatar === x.id ? 'on' : '') + '">' + x.xml + '</button>'; }).join('') + '</div>' +
+                '<div class="bz-row"><button type="button" class="bz-btn soft bz-small" data-av="letter">Just use my first letter</button></div>' +
+                '<p class="rv-fine">Want your own photo? Add it in the Carvessa app. It stays on your phone.</p>';
+            }
+            if (!pk.hidden) { pk.hidden = true; return; }
+            grid(); pk.hidden = false;
+            pk.onclick = async function (e) {
+              var t = e.target.closest('[data-set]'); if (t) { set = t.getAttribute('data-set'); grid(); return; }
+              var b = e.target.closest('[data-av]'); if (!b) return;
+              var r = await sb.auth.updateUser({ data: { avatar: b.getAttribute('data-av') } });
+              if (!r.error) { u = r.data.user; draw(); }
+            };
+          };
+        }
+        draw();
+      });
+    });
+    return;
+  }
+  if (mode === 'settings') {
+    account(function (u0) {
+      root.querySelector('#bzAcct').innerHTML = '';
+      var u = u0, host = root.querySelector('#bzSet');
+      var google = (u.app_metadata || {}).provider === 'google';
+      var al = Object.assign({}, ALERT_DEF, (u.user_metadata || {}).alerts || {});
+      var T = function (k, label, sub) { return '<label class="pf-tg"><span><b>' + label + '</b><small>' + sub + '</small></span><input type="checkbox" class="fw-sw" data-al="' + k + '"' + (al[k] ? ' checked' : '') + '></label>'; };
+      host.innerHTML = '<h2 class="pf-h">Alerts</h2><div class="bz-sec pf-list">' +
+        T('upkeep', 'Maintenance reminders', 'Oil change coming up, from your miles') +
+        T('price', 'Price drops', 'On your saved cars') +
+        T('nearby', 'New cars for sale near you', 'That fit your plan') +
+        T('rates', 'Loan rate changes', 'When car loan rates move') +
+        T('email', 'Also by email', 'Phone alerts come first') +
+        '<div class="bz-msg" id="stAm" role="status"></div>' +
+        '<p class="rv-fine">Recall alerts and car payment reminders are turned on in the app. Appointment reminders always come. <a href="/following/">Deals from shops I follow ›</a></p></div>' +
+        '<h2 class="pf-h">Language</h2><div class="bz-sec"><div class="pf-seg"><a href="/settings/" class="on" aria-current="true">English</a><a href="/es/" lang="es">Español</a></div><p class="rv-fine">In the app, change it on Me › Look &amp; language.</p></div>' +
+        '<h2 class="pf-h">Account</h2><div class="bz-sec pf-list">' +
+        '<div class="pf-rw"><span>Signed in as</span><i>' + esc(u.email || '') + (google ? ' · with Google' : '') + '</i></div>' +
+        (google ? '' : '<button type="button" class="pf-rw" id="stPw"><span>Change password</span><i>›</i></button><div id="stPwBox" hidden></div>') +
+        '<a class="pf-rw" href="/privacy/"><span>Privacy</span><i>›</i></a><a class="pf-rw" href="/terms/"><span>Terms</span><i>›</i></a>' +
+        '<button type="button" class="pf-rw" id="stOut"><span>Log out</span><i>›</i></button>' +
+        '<button type="button" class="pf-rw pf-red" id="stDel"><span>Delete my account</span><i>›</i></button><div id="stDelBox" hidden></div></div>';
+      host.onchange = async function (e) {
+        var c = e.target.closest('[data-al]'); if (!c) return;
+        var k = c.getAttribute('data-al'), m = host.querySelector('#stAm'); al[k] = c.checked;
+        var r = await sb.auth.updateUser({ data: { alerts: al } });
+        if (r.error) { c.checked = !c.checked; al[k] = c.checked; m.className = 'bz-msg bad'; m.textContent = 'Couldn’t save. Please try again.'; return; }
+        u = r.data.user; m.className = 'bz-msg ok'; m.textContent = '✓ Saved';
+      };
+      var pw = host.querySelector('#stPw');
+      if (pw) pw.onclick = function () {
+        var bx = host.querySelector('#stPwBox'); if (!bx.hidden) { bx.hidden = true; return; }
+        bx.hidden = false;
+        bx.innerHTML = '<label class="bz-f"><span>New password (8 or more characters)</span><input id="stP1" type="password" autocomplete="new-password"></label><label class="bz-f"><span>Type it again</span><input id="stP2" type="password" autocomplete="new-password"></label><div class="bz-row"><button class="bz-btn" id="stPs">Save new password</button></div><div class="bz-msg" id="stPm" role="status"></div>';
+        bx.querySelector('#stPs').onclick = async function () {
+          var a = bx.querySelector('#stP1').value, b2 = bx.querySelector('#stP2').value, m = bx.querySelector('#stPm'); m.className = 'bz-msg bad';
+          if (a.length < 8) { m.textContent = 'Use a password with at least 8 characters.'; return; }
+          if (a !== b2) { m.textContent = 'The two passwords don’t match.'; return; }
+          this.disabled = true; var r = await sb.auth.updateUser({ password: a }); this.disabled = false;
+          if (r.error) { m.textContent = /different|same/i.test(r.error.message) ? 'Pick a password you haven’t used here before.' : 'Couldn’t change it. Please try again.'; return; }
+          bx.innerHTML = '<div class="bz-msg ok">✓ Password changed.</div>';
+        };
+      };
+      host.querySelector('#stOut').onclick = function () { sb.auth.signOut().finally(function () { location.href = '/'; }); };
+      host.querySelector('#stDel').onclick = function () {
+        var bx = host.querySelector('#stDelBox'); if (!bx.hidden) { bx.hidden = true; return; }
+        bx.hidden = false;
+        bx.innerHTML = '<div class="pf-del"><b>Are you sure?</b><p>This deletes your Carvessa account for good: your profile, saved cars, reviews, messages, appointments and alerts, on the website and in the app. It can’t be undone.</p><div class="bz-row"><button type="button" class="bz-btn soft" id="stKeep">Keep my account</button><button type="button" class="bz-btn pf-delbtn" id="stDelGo">Delete for good</button></div><div class="bz-msg" id="stDm" role="status"></div></div>';
+        bx.querySelector('#stKeep').onclick = function () { bx.hidden = true; };
+        bx.querySelector('#stDelGo').onclick = async function () {
+          var m = bx.querySelector('#stDm'); this.disabled = true; m.className = 'bz-msg'; m.textContent = 'Deleting…';
+          var r = await sb.rpc('delete_my_account');
+          if (r.error) { this.disabled = false; m.className = 'bz-msg bad'; m.textContent = 'Couldn’t delete your account. Please try again, or email hello@carvessa.app.'; return; }
+          await sb.auth.signOut({ scope: 'local' }).catch(function () {});
+          host.innerHTML = '<div class="bz-sec"><b>Your account is deleted.</b> Thank you for trying Carvessa.</div>';
+        };
+      };
+    });
+    return;
+  }
 
   // ---------- My messages (drivers) ----------
   if (mode === 'inbox') {

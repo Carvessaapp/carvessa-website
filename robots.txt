@@ -10,5 +10,7 @@ Disallow: /messages/
 Disallow: /following/
 Disallow: /ask/
 Disallow: /appointments/
+Disallow: /profile/
+Disallow: /settings/
 Disallow: /assets/hq/
 Sitemap: https://carvessa.app/sitemap.xml
