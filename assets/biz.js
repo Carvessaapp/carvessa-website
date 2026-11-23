@@ -101,7 +101,7 @@
 
   // ---------- Line icons (picture 283; no emoji) ----------
   var ICONS = {
-    home: '<path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/>', msg: '<path d="M4 5h16v11H8l-4 4z"/>', star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+    home: '<path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/>', cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', msg: '<path d="M4 5h16v11H8l-4 4z"/>', star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
     wrench: '<path d="M14 6a4 4 0 0 0 5 5l-9 9-3-3 9-9a4 4 0 0 1-2-2z"/>', post: '<path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/>', cash: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="3"/>',
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>', eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
     phone: '<path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 6a2 2 0 0 1 2-2z"/>', pin: '<path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -441,11 +441,191 @@
     return html ? '<div class="sp-socs">' + html + '</div>' : '';
   }
 
+  // ---------- Appointments (picture 295): drivers book, shops confirm ----------
+  var APCOLS = 'id, business_id, driver_name, service, minutes, starts_at, offered_at, car, note, remind, status, shop_note, created_at, updated_at';
+  var TZS = [['America/New_York', 'Eastern'], ['America/Chicago', 'Central'], ['America/Denver', 'Mountain'], ['America/Phoenix', 'Arizona'], ['America/Los_Angeles', 'Pacific'], ['America/Anchorage', 'Alaska'], ['Pacific/Honolulu', 'Hawaii']];
+  function tzParts(d, tz) {
+    var o = {}; new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', weekday: 'short' }).formatToParts(d).forEach(function (x) { o[x.type] = x.value; });
+    return { y: +o.year, m: +o.month, d: +o.day, h: +o.hour % 24, mi: +o.minute, dow: String(o.weekday).slice(0, 3).toLowerCase(), date: o.year + '-' + o.month + '-' + o.day };
+  }
+  // A wall-clock time at the shop (date + minutes after midnight) → the real moment.
+  function zoned(date, mins, tz) {
+    var a = date.split('-').map(Number), guess = Date.UTC(a[0], a[1] - 1, a[2], Math.floor(mins / 60), mins % 60);
+    for (var i = 0; i < 2; i++) { var p = tzParts(new Date(guess), tz), seen = Date.UTC(p.y, p.m - 1, p.d, p.h, p.mi); guess += Date.UTC(a[0], a[1] - 1, a[2], Math.floor(mins / 60), mins % 60) - seen; }
+    return new Date(guess);
+  }
+  function whenText(iso, tz, short) { var d = new Date(iso); return d.toLocaleDateString('en-US', { timeZone: tz, weekday: 'short', month: 'short', day: 'numeric' }) + (short ? ' ' : ' · ') + d.toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit' }); }
+  function shopDays(tz, n) { var out = [], seen = {}; for (var i = 0; out.length < n && i < n + 3; i++) { var p = tzParts(new Date(Date.now() + i * 864e5), tz); if (!seen[p.date]) { seen[p.date] = 1; out.push(p); } } return out; }
+  // Open start times for one day: inside the shop's hours, outside blocked times, at least 30 min from now, room for one more car.
+  function daySlots(k, week, day, mins, busy) {
+    var w = week[day.dow]; if (!w || w.s !== 'open') return null;
+    var out = [], slot = k.slot_min || 30, cap = k.capacity || 1, soon = Date.now() + 30 * 60000;
+    for (var m = w.o; m + mins <= w.c; m += slot) {
+      var blocked = (k.blocks || []).some(function (x) { var f = hmToMin(x.f), t = hmToMin(x.t); return (x.d === day.dow || x.d === day.date) && f != null && t != null && m < t && m + mins > f; });
+      if (blocked) continue;
+      var st = zoned(day.date, m, k.tz), en = st.getTime() + mins * 60000;
+      if (st.getTime() < soon) continue;
+      var n = (busy || []).filter(function (x) { var a = new Date(x.starts_at).getTime(); return a < en && a + x.minutes * 60000 > st.getTime(); }).length;
+      out.push({ m: m, iso: st.toISOString(), full: n >= cap });
+    }
+    return out;
+  }
+  var hmToMin = function (v) { var mm = /^(\d{1,2}):(\d{2})/.exec(v || ''); return mm ? +mm[1] * 60 + +mm[2] : null; };
+  var minToHm = function (m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+  function icsFile(a, b, tz) {
+    var f = function (d) { return new Date(d).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); }, e = function (t) { return String(t || '').replace(/[\\,;]/g, '\\$&').replace(/\n/g, ' '); };
+    var txt = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Carvessa//Appointments//EN', 'BEGIN:VEVENT', 'UID:' + a.id + '@carvessa.app', 'DTSTAMP:' + f(Date.now()), 'DTSTART:' + f(a.starts_at), 'DTEND:' + f(new Date(a.starts_at).getTime() + a.minutes * 60000),
+      'SUMMARY:' + e(a.service + ' · ' + b.name), 'LOCATION:' + e([b.address, b.city].filter(Boolean).join(', ')), 'DESCRIPTION:' + e('Booked on Carvessa. Change or cancel up to 2 hours before: https://carvessa.app/appointments/'), 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    var url = URL.createObjectURL(new Blob([txt], { type: 'text/calendar' })), l = document.createElement('a'); l.href = url; l.download = 'carvessa-appointment.ics'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+  function bkSheet() {
+    var ov = document.createElement('div'); ov.className = 'bk-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    ov.innerHTML = '<div class="bk-box"><button type="button" class="bk-x" aria-label="Close">✕</button><div class="bk-in"></div></div>';
+    document.body.appendChild(ov); document.body.classList.add('bk-open');
+    var close = function () { ov.remove(); document.body.classList.remove('bk-open'); };
+    ov.querySelector('.bk-x').onclick = close; ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
+    document.addEventListener('keydown', function esc2(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc2); } });
+    return { el: ov.querySelector('.bk-in'), close: close };
+  }
+  // The driver's booking flow. opts.change = an appointment to move (service stays the same).
+  async function bookFlow(b, k, opts) {
+    opts = opts || {};
+    var sh = bkSheet(), host = sh.el, week = parseWeek(b.hours).week;
+    host.innerHTML = '<p class="lead">Loading open times…</p>';
+    var sv = opts.change ? { data: [] } : await sb.from('business_services').select('name, price_from, minutes, bookable').eq('business_id', b.id).order('sort');
+    var list = (sv.data || []).filter(function (x) { return x.bookable !== false; });
+    var days = shopDays(k.tz, 14), from = zoned(days[0].date, 0, k.tz).toISOString(), to = zoned(days[days.length - 1].date, 1439, k.tz).toISOString();
+    var busy = (await sb.rpc('appt_busy', { b: b.id, d0: from, d1: to })).data || [];
+    if (opts.change) busy = busy.filter(function (x) { return !(x.starts_at === opts.change.starts_at && x.minutes === opts.change.minutes); });
+    var st = { svc: opts.change ? { name: opts.change.service, minutes: opts.change.minutes } : null, other: '', day: null, slot: null, car: '', note: '', remind: true };
+    var hasHours = WDAYS.some(function (d) { return week[d[0]].s === 'open'; });
+    function draw() {
+      var mins = st.svc ? st.svc.minutes : 30;
+      var dayHtml = days.map(function (d, i) { var sl = daySlots(k, week, d, mins, busy), open = sl && sl.some(function (x) { return !x.full; }), lab = new Date(zoned(d.date, 720, k.tz)).toLocaleDateString('en-US', { timeZone: k.tz, weekday: 'short' });
+        return '<button type="button" data-day="' + i + '" class="bk-day' + (st.day === i ? ' on' : '') + '"' + (open ? '' : ' disabled') + '><small>' + lab + '</small><b>' + d.d + '</b><em>' + (sl ? (open ? '' : 'Full') : 'Closed') + '</em></button>'; }).join('');
+      var slots = st.day != null ? daySlots(k, week, days[st.day], mins, busy) || [] : [];
+      host.innerHTML = '<p class="bk-k">' + (opts.change ? 'CHANGE YOUR TIME' : 'BOOK A TIME') + '</p><h2 class="bk-h">' + esc(b.name) + '</h2>' +
+        (!hasHours ? '<div class="bz-msg bad">This business hasn’t set its hours yet, so online booking isn’t open. Message or call them instead.</div>' :
+        (opts.change ? '<p class="bk-sub">' + esc(st.svc.name) + ' · now ' + esc(whenText(opts.change.starts_at, k.tz)) + '</p>' :
+          '<h3 class="bk-s"><i>1</i>What do you need?</h3><div class="bk-svcs">' + list.map(function (x, i) { var mn = x.minutes || 30; return '<button type="button" data-svc="' + i + '" class="bk-svc' + (st.svc && st.svc.i === i ? ' on' : '') + '"><b>' + esc(x.name) + '</b><span>' + (mn >= 60 ? (mn / 60) + ' hr' : mn + ' min') + (x.price_from != null ? ' · from $' + Number(x.price_from).toLocaleString('en-US') : '') + '</span></button>'; }).join('') +
+          '<button type="button" data-svc="other" class="bk-svc' + (st.svc && st.svc.i === 'other' ? ' on' : '') + '"><b>Something else</b><span>Tell them below</span></button></div>') +
+        (st.svc ? '<h3 class="bk-s"><i>' + (opts.change ? 1 : 2) + '</i>Pick a day</h3><div class="bk-days">' + dayHtml + '</div>' : '') +
+        (st.day != null ? '<h3 class="bk-s"><i>' + (opts.change ? 2 : 3) + '</i>Pick a time</h3>' + (slots.length ? '<div class="bk-slots">' + slots.map(function (x, i) { return '<button type="button" data-slot="' + i + '" class="bk-slot' + (st.slot === i ? ' on' : '') + '"' + (x.full ? ' disabled aria-label="' + hm(x.m) + ', full"' : '') + '>' + hm(x.m) + '</button>'; }).join('') + '</div>' : '<p class="bk-sub">No open times left that day.</p>') : '') +
+        (st.slot != null && !opts.change ? '<h3 class="bk-s"><i>4</i>Your car and a note</h3><div class="bz-two"><label class="bz-f"><span>Your car</span><input id="bkCar" maxlength="80" placeholder="2018 Chevy Trax" value="' + esc(st.car) + '"></label><label class="bz-f"><span>Miles (optional)</span><input id="bkMi" maxlength="9" inputmode="numeric" placeholder="84,200"></label></div>' +
+          '<label class="bz-f"><span>' + (st.svc.i === 'other' ? 'What do you need?' : 'Anything they should know? (optional)') + '</span><textarea id="bkNote" maxlength="400" placeholder="Tire light came on too. Can you check?">' + esc(st.note) + '</textarea></label>' +
+          '<label class="bz-ck"><input type="checkbox" id="bkRem"' + (st.remind ? ' checked' : '') + '><span>Remind me the day before and 1 hour before</span></label>' +
+          '<p class="rv-fine">The shop sees your first name, car and note. Your phone and email stay private unless you share them. No payment on Carvessa.</p>' : '') +
+        (st.slot != null ? '<div class="bz-row"><button type="button" class="bz-btn" id="bkGo">' + (opts.change ? 'Change to ' : k.auto_confirm ? 'Book ' : 'Ask for ') + esc(whenText(slots[st.slot].iso, k.tz, true)) + '</button></div><div class="bz-msg" id="bkM" role="status"></div><div id="bkAcct"></div>' : ''));
+    }
+    draw();
+    host.addEventListener('input', function (e) { if (e.target.id === 'bkCar') st.car = e.target.value; if (e.target.id === 'bkNote') st.note = e.target.value; });
+    host.addEventListener('change', function (e) { if (e.target.id === 'bkRem') st.remind = e.target.checked; });
+    host.addEventListener('click', async function (e) {
+      var t = e.target.closest('button'); if (!t || t.disabled) return;
+      if (t.hasAttribute('data-svc')) { var v = t.getAttribute('data-svc'); st.svc = v === 'other' ? { i: 'other', name: 'Something else', minutes: Math.max(k.slot_min || 30, 60) } : { i: +v, name: list[+v].name, minutes: list[+v].minutes || 30 }; st.slot = null; draw(); return; }
+      if (t.hasAttribute('data-day')) { st.day = +t.getAttribute('data-day'); st.slot = null; draw(); var sl = host.querySelector('.bk-slots'); if (sl) sl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+      if (t.hasAttribute('data-slot')) { st.slot = +t.getAttribute('data-slot'); draw(); var go = host.querySelector('#bkGo'); if (go) go.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+      if (t.id !== 'bkGo') return;
+      var slot = daySlots(k, week, days[st.day], st.svc.minutes, busy)[st.slot], m = host.querySelector('#bkM');
+      if (!opts.change && st.svc.i === 'other' && st.note.trim().length < 3) { m.className = 'bz-msg bad'; m.textContent = 'Please tell them what you need.'; return; }
+      var u = (await sb.auth.getUser()).data.user;
+      var send = async function () {
+        m.className = 'bz-msg'; m.textContent = 'Sending…'; t.disabled = true;
+        var mi = host.querySelector('#bkMi'), car = (st.car.trim() + (mi && mi.value.trim() ? ' · ' + mi.value.replace(/[^\d,]/g, '') + ' mi' : '')).slice(0, 80);
+        var r = opts.change ? await sb.rpc('appt_driver', { a: opts.change.id, action: 'change', new_st: slot.iso })
+          : await sb.rpc('appt_book', { b: b.id, svc: st.svc.i === 'other' ? 'Something else' : st.svc.name, mins: st.svc.minutes, st: slot.iso, car_t: car || null, note_t: st.note.trim() || null, rem: st.remind });
+        t.disabled = false;
+        if (r.error) { m.className = 'bz-msg bad'; m.textContent = (r.error.message || '').replace(/^.*?:\s*/, '') || 'That didn’t go through. Please try again.'; if (/filled up/.test(r.error.message || '')) { busy.push({ starts_at: slot.iso, minutes: 1e4 }); } return; }
+        var auto = !opts.change && k.auto_confirm;
+        host.innerHTML = '<div class="bk-done"><span class="bk-ok">' + icon('check', 28) + '</span><h2 class="bk-h">' + (opts.change ? 'Time changed' : auto ? 'You’re booked' : 'Request sent') + '</h2>' +
+          '<p class="bk-sub">' + esc(st.svc.name) + ' · ' + esc(whenText(slot.iso, k.tz)) + ' · ' + esc(b.name) + '</p>' +
+          '<p>' + (auto || (opts.change && k.auto_confirm) ? 'It’s confirmed. We’ll remind you the day before and 1 hour before.' : 'The shop confirms it here and we email you. If they can’t, they can offer another time.') + '</p>' +
+          '<div class="bz-row"><a class="bz-btn" href="/appointments/">See my appointments</a><button type="button" class="bz-btn soft" id="bkDone">Close</button></div></div>';
+        host.querySelector('#bkDone').onclick = function () { sh.close(); if (opts.onDone) opts.onDone(); };
+        if (opts.onDone && opts.change) opts.onDone();
+      };
+      if (u) { send(); return; }
+      // Not logged in yet: sign in right here, then send. Everything they picked stays.
+      m.className = 'bz-msg'; m.textContent = 'Last step: log in or create a free account, so the shop can confirm and we can remind you.';
+      account(function () { host.querySelector('#bkAcct').innerHTML = ''; send(); }, host.querySelector('#bkAcct'));
+    });
+  }
+  // Business HQ › Appointments
+  async function hqAppts(el, cur, head) {
+    var k = (await sb.from('business_booking').select('*').eq('business_id', cur.id).maybeSingle()).data;
+    var kk = k || { active: false, slot_min: 30, capacity: 1, auto_confirm: false, tz: 'America/New_York', blocks: [] };
+    var since = new Date(Date.now() - 3 * 864e5).toISOString();
+    var r = await sb.from('appointments').select(APCOLS).eq('business_id', cur.id).gte('starts_at', since).order('starts_at').limit(400);
+    var all = r.data || [], now = Date.now(), tz = kk.tz, week = parseWeek(cur.hours).week, hasHours = WDAYS.some(function (d) { return week[d[0]].s === 'open'; });
+    var reqs = all.filter(function (a) { return a.status === 'requested'; }), offered = all.filter(function (a) { return a.status === 'offered'; });
+    var coming = all.filter(function (a) { return a.status === 'confirmed' && new Date(a.starts_at).getTime() > now - 3 * 3600e3; });
+    var unmarked = all.filter(function (a) { return a.status === 'confirmed' && new Date(a.starts_at).getTime() <= now - 3 * 3600e3; });
+    var card = function (a, btns) {
+      return '<div class="ap-c" data-a="' + a.id + '"><div class="ap-t"><b>' + esc(whenText(a.starts_at, tz)) + '</b><span>' + esc(a.minutes >= 60 ? a.minutes / 60 + ' hr' : a.minutes + ' min') + '</span></div>' +
+        '<div class="ap-w"><b>' + esc(a.driver_name) + ' · ' + esc(a.service) + '</b>' + (a.car ? '<span>' + esc(a.car) + '</span>' : '') + (a.note ? '<q>' + esc(a.note) + '</q>' : '') +
+        (a.status === 'offered' && a.offered_at ? '<span class="ap-off">You offered ' + esc(whenText(a.offered_at, tz)) + '. Waiting for ' + esc(a.driver_name) + '.</span>' : '') + '</div>' +
+        '<div class="ap-b">' + btns + '</div><div class="ap-x"></div><div class="bz-msg" role="status"></div></div>';
+    };
+    var B = function (act, lab, cls) { return '<button type="button" class="bz-btn bz-small ' + (cls || '') + '" data-act="' + act + '">' + lab + '</button>'; };
+    var byDay = {}; coming.forEach(function (a) { var d = whenText(a.starts_at, tz).split(' · ')[0]; (byDay[d] = byDay[d] || []).push(a); });
+    el.innerHTML = head('APPOINTMENTS', kk.active ? (reqs.length ? reqs.length + ' new request' + (reqs.length > 1 ? 's' : '') : 'Your week') : 'Let drivers book a time', kk.active ? 'On' : '') +
+      (!kk.active ? '<div class="hq-card"><p>Drivers pick a service, a day and an open time from your hours. You confirm each one (or turn on auto-confirm). They get reminders, so fewer no-shows. No payment on Carvessa.</p></div>' : '') +
+      (kk.active && !hasHours ? '<div class="bz-msg bad">Set your hours first (My page › Hours). Without hours, drivers can’t see open times.</div>' : '') +
+      (reqs.length ? '<h3 class="ap-h">New requests</h3>' + reqs.map(function (a) { return card(a, B('confirm', 'Confirm') + B('offer', 'Offer another time', 'soft') + B('decline', 'Decline', 'soft')); }).join('') : '') +
+      (offered.length ? '<h3 class="ap-h">Waiting for the driver</h3>' + offered.map(function (a) { return card(a, B('decline', 'Cancel it', 'soft')); }).join('') : '') +
+      (unmarked.length ? '<h3 class="ap-h">Did they come in?</h3>' + unmarked.map(function (a) { return card(a, B('came', 'Came in') + B('noshow', 'No-show', 'soft')); }).join('') : '') +
+      (kk.active ? '<h3 class="ap-h">Coming up</h3>' + (coming.length ? Object.keys(byDay).map(function (d) { return '<p class="ap-d">' + esc(d) + '</p>' + byDay[d].map(function (a) { return card(a, (new Date(a.starts_at).getTime() < now + 12 * 3600e3 ? B('came', 'Came in') + B('noshow', 'No-show', 'soft') : '') + B('offer', 'Move it', 'soft') + B('decline', 'Cancel it', 'soft')); }).join(''); }).join('') : '<p class="hq-fine">Nothing booked yet. Share your page link so drivers can book.</p>') : '') +
+      '<h3 class="ap-h">Booking settings</h3><div class="hq-card ap-set">' +
+        '<label class="bz-ck"><input type="checkbox" id="apOn"' + (kk.active ? ' checked' : '') + '><span><b>Open for booking</b> (drivers see “Book a time” on your page)</span></label>' +
+        '<div class="bz-two"><label class="bz-f"><span>Time slots</span><select id="apSlot">' + [15, 30, 60].map(function (n) { return '<option value="' + n + '"' + (kk.slot_min === n ? ' selected' : '') + '>Every ' + n + ' min</option>'; }).join('') + '</select></label>' +
+        '<label class="bz-f"><span>Cars at the same time</span><select id="apCap">' + [1, 2, 3, 4, 5, 6].map(function (n) { return '<option' + (kk.capacity === n ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select></label></div>' +
+        '<label class="bz-ck"><input type="checkbox" id="apAuto"' + (kk.auto_confirm ? ' checked' : '') + '><span>Confirm automatically (no tap needed)</span></label>' +
+        '<label class="bz-f"><span>Time zone</span><select id="apTz">' + TZS.map(function (z) { return '<option value="' + z[0] + '"' + (kk.tz === z[0] ? ' selected' : '') + '>' + z[1] + '</option>'; }).join('') + '</select></label>' +
+        '<div class="bz-f"><span>Blocked times (lunch, days off)</span><div id="apBlocks"></div><div class="ap-add"><select id="apBd"><option value="">Every…</option>' + WDAYS.map(function (d) { return '<option value="' + d[0] + '">Every ' + d[2] + '</option>'; }).join('') + '</select><input type="date" id="apBdt" aria-label="Or one date"><input type="time" id="apBf" value="12:00" aria-label="From"><input type="time" id="apBt" value="13:00" aria-label="To"><button type="button" class="bz-btn soft bz-small" id="apBadd">Add</button></div></div>' +
+        '<p class="hq-fine">Open times come from your hours (My page › Hours). How long each service takes: My page › Services and prices.</p>' +
+        '<div class="bz-row"><button type="button" class="bz-btn" id="apSave">Save settings</button></div><div class="bz-msg" id="apM" role="status"></div></div>';
+    var blocks = (kk.blocks || []).slice();
+    var drawBlocks = function () { el.querySelector('#apBlocks').innerHTML = blocks.length ? blocks.map(function (x, i) { var d = WDAYS.filter(function (w) { return w[0] === x.d; })[0]; return '<div class="ap-bl"><span>' + esc(d ? 'Every ' + d[2] : new Date(x.d + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })) + ' · ' + hm(hmToMin(x.f)) + '–' + hm(hmToMin(x.t)) + '</span><button type="button" data-rmb="' + i + '" aria-label="Remove">✕</button></div>'; }).join('') : '<p class="hq-fine">None yet.</p>'; };
+    drawBlocks();
+    el.querySelector('#apBlocks').onclick = function (e) { var i = e.target.getAttribute('data-rmb'); if (i != null) { blocks.splice(+i, 1); drawBlocks(); } };
+    el.querySelector('#apBadd').onclick = function () {
+      var d = el.querySelector('#apBdt').value || el.querySelector('#apBd').value, f = el.querySelector('#apBf').value, t = el.querySelector('#apBt').value, m = el.querySelector('#apM');
+      if (!d || !f || !t || hmToMin(t) <= hmToMin(f)) { m.className = 'bz-msg bad'; m.textContent = 'Pick a day (or a date) and a time where “to” is after “from”.'; return; }
+      blocks.push({ d: d, f: f, t: t }); drawBlocks(); m.textContent = '';
+    };
+    el.querySelector('#apSave').onclick = async function () {
+      var m = el.querySelector('#apM'), row = { business_id: cur.id, active: el.querySelector('#apOn').checked, slot_min: +el.querySelector('#apSlot').value, capacity: +el.querySelector('#apCap').value, auto_confirm: el.querySelector('#apAuto').checked, tz: el.querySelector('#apTz').value, blocks: blocks, updated_at: new Date().toISOString() };
+      m.className = 'bz-msg'; m.textContent = 'Saving…';
+      var x = k ? await sb.from('business_booking').update(row).eq('business_id', cur.id) : await sb.from('business_booking').insert(row);
+      if (x.error) { m.className = 'bz-msg bad'; m.textContent = 'That didn’t save. Please try again.'; return; }
+      hqAppts(el, cur, head);
+    };
+    el.onclick = async function (e) {
+      var bt = e.target.closest('[data-act]'); if (!bt) return;
+      var c = bt.closest('.ap-c'), id = c.getAttribute('data-a'), act = bt.getAttribute('data-act'), m = c.querySelector('.bz-msg'), a = all.filter(function (x) { return x.id === id; })[0];
+      if (act === 'offer') {
+        var days = shopDays(tz, 14), x = c.querySelector('.ap-x');
+        x.innerHTML = '<div class="ap-pick"><select data-od><option value="">Pick a day</option>' + days.map(function (d, i) { return '<option value="' + i + '">' + new Date(zoned(d.date, 720, tz)).toLocaleDateString('en-US', { timeZone: tz, weekday: 'short', month: 'short', day: 'numeric' }) + '</option>'; }).join('') + '</select><select data-ot disabled><option>Time</option></select><input data-om maxlength="200" placeholder="Short note (optional)"><button type="button" class="bz-btn bz-small" data-act="offer-go">Send this time</button></div>';
+        var busy = ((await sb.rpc('appt_busy', { b: cur.id, d0: zoned(days[0].date, 0, tz).toISOString(), d1: zoned(days[13].date, 1439, tz).toISOString() })).data || []).filter(function (y) { return y.starts_at !== a.starts_at; });
+        x.querySelector('[data-od]').onchange = function () { var sl = this.value === '' ? [] : daySlots(kk, week, days[+this.value], a.minutes, busy) || [], ot = x.querySelector('[data-ot]'); ot.disabled = !sl.length; ot.innerHTML = sl.length ? sl.filter(function (z) { return !z.full; }).map(function (z) { return '<option value="' + z.iso + '">' + hm(z.m) + '</option>'; }).join('') : '<option>No open times</option>'; };
+        return;
+      }
+      var arg = { a: id, action: act === 'offer-go' ? 'offer' : act };
+      if (act === 'offer-go') { var ot = c.querySelector('[data-ot]'); if (!ot || ot.disabled || !ot.value || !/T/.test(ot.value)) { m.className = 'bz-msg bad'; m.textContent = 'Pick a day and a time.'; return; } arg.new_st = ot.value; arg.msg = c.querySelector('[data-om]').value || null; }
+      if (act === 'decline') { var why = prompt('Tell ' + a.driver_name + ' why (optional). They’ll get an email.', ''); if (why === null) return; arg.msg = why || null; }
+      bt.disabled = true; m.className = 'bz-msg'; m.textContent = 'Saving…';
+      var res = await sb.rpc('appt_shop', arg);
+      if (res.error) { bt.disabled = false; m.className = 'bz-msg bad'; m.textContent = (res.error.message || '').replace(/^.*?:\s*/, '') || 'That didn’t save.'; return; }
+      if (act === 'came' && res.data && res.data.stamped) alert('Added a loyalty stamp for ' + a.driver_name + '.');
+      hqAppts(el, cur, head);
+    };
+  }
+
   // ---------- The business form (join step 3 and My page) ----------
   function form(b, svcs, onSave, host) {
     host = host || root.querySelector('#bzForm');
     var h = b.header || { style: b.id && WALLS[b.wallpaper] && !b.header ? 'legacy' : 'photo' };
-    var st = { kind: b.kind || 'repair', header: { style: h.style || 'photo', pattern: h.pattern || 'fade', c1: hex(h.c1, '#1F3F9F'), c2: hex(h.c2, '#5B8DEF'), photo: h.photo || null }, logo: b.logo || null, photos: (b.photos || []).slice(), svcs: svcs.length ? svcs.map(function (s) { return { name: s.name, price: s.price_from == null ? '' : s.price_from }; }) : [{ name: '', price: '' }] };
+    var st = { kind: b.kind || 'repair', header: { style: h.style || 'photo', pattern: h.pattern || 'fade', c1: hex(h.c1, '#1F3F9F'), c2: hex(h.c2, '#5B8DEF'), photo: h.photo || null }, logo: b.logo || null, photos: (b.photos || []).slice(), svcs: svcs.length ? svcs.map(function (s) { return { name: s.name, price: s.price_from == null ? '' : s.price_from, minutes: s.minutes || '' }; }) : [{ name: '', price: '', minutes: '' }] };
     var f = function (id, label, val, extra) { return '<label class="bz-f"><span>' + label + '</span><input id="' + id + '" value="' + esc(val) + '" ' + (extra || '') + '></label>'; };
     var STEPS = [
       ['Find you', 'Type your business name. We look it up on the map and fill in what we can.'],
@@ -476,7 +656,7 @@
       sec(4, '<div class="bz-f"><span>Header (optional)</span><div class="bz-hopts" id="fHopt"></div><div id="fHpanel"></div><div class="bz-hprev" id="fHprev"></div></div>' +
         '<div class="bz-f"><span>Logo (optional)</span><div class="bz-logo-row" id="fLogo"></div></div>' +
         '<div class="bz-f"><span>Photos (optional, up to 24)</span><div class="bz-pics" id="fPics"></div><small>Your shop, your work, your team. They show as a gallery on your page. No customers’ license plates please.</small></div>') +
-      sec(5, '<div class="bz-f"><span id="fSvcLab">Services and prices (you set them)</span><div id="fSvcs"></div><button type="button" class="bz-btn soft bz-small" id="fAddSvc">+ Add a service or item</button><small>Leave the price empty if it depends.</small></div>') +
+      sec(5, '<div class="bz-f"><span id="fSvcLab">Services and prices (you set them)</span><div id="fSvcs"></div><button type="button" class="bz-btn soft bz-small" id="fAddSvc">+ Add a service or item</button><small>Leave the price empty if it depends. “How long?” is used for appointments.</small></div>') +
       sec(6, '<div class="bz-check" style="margin-top:0"><p>These help us find your business record fast.</p>' +
         f('fLegal', 'Legal name, as registered with your state', b.legal_name, 'maxlength="120" placeholder="Tony’s Auto Shop LLC"') +
         '<div class="bz-two">' + f('fRegState', 'State where it’s registered', b.state || '', 'maxlength="30" placeholder="Georgia"') + f('fCtrl', 'State control or file number (optional)', b.control_no, 'maxlength="30" placeholder="Helps us find you"') + '</div>' +
@@ -489,7 +669,8 @@
       $('fSvcLab').textContent = (KINFO[st.kind] || KINFO.other).svc + ' (you set them)';
     }
     function drawSvcs() {
-      $('fSvcs').innerHTML = st.svcs.map(function (s, i) { return '<div class="bz-svc"><input data-i="' + i + '" data-f="name" maxlength="80" placeholder="Oil change" value="' + esc(s.name) + '" aria-label="Service name"><input data-i="' + i + '" data-f="price" inputmode="decimal" placeholder="From $" value="' + esc(s.price) + '" aria-label="Price from"><button type="button" data-del="' + i + '" aria-label="Remove">✕</button></div>'; }).join('');
+      var MINS = [['', 'How long?'], [15, '15 min'], [30, '30 min'], [45, '45 min'], [60, '1 hr'], [90, '1½ hr'], [120, '2 hr'], [180, '3 hr'], [240, '4 hr'], [480, 'All day']];
+      $('fSvcs').innerHTML = st.svcs.map(function (s, i) { return '<div class="bz-svc"><input data-i="' + i + '" data-f="name" maxlength="80" placeholder="Oil change" value="' + esc(s.name) + '" aria-label="Service name"><input data-i="' + i + '" data-f="price" inputmode="decimal" placeholder="From $" value="' + esc(s.price) + '" aria-label="Price from"><select data-i="' + i + '" data-f="minutes" aria-label="How long it takes">' + MINS.map(function (m) { return '<option value="' + m[0] + '"' + (String(s.minutes || '') === String(m[0]) ? ' selected' : '') + '>' + m[1] + '</option>'; }).join('') + '</select><button type="button" data-del="' + i + '" aria-label="Remove">✕</button></div>'; }).join('');
     }
     var HOPTS = [['photo', 'Free photo'], ['color', 'My colors'], ['own', 'My photo'], ['none', 'No picture']];
     var SW = ['#1F3F9F', '#5B8DEF', '#0F1B33', '#E63B2E', '#1D7A46', '#C9A45E', '#E8710A', '#13807A', '#6E3FA8', '#111111'];
@@ -627,9 +808,9 @@
       drawHeader(); drawLogo();
     });
     $('fKind').onclick = function (e) { var k = e.target.getAttribute('data-k'); if (k) { st.kind = k; drawKinds(); drawHeader(); } };
-    $('fSvcs').oninput = function (e) { var i = e.target.getAttribute('data-i'); if (i != null) st.svcs[+i][e.target.getAttribute('data-f')] = e.target.value; };
-    $('fSvcs').onclick = function (e) { var i = e.target.getAttribute('data-del'); if (i != null) { st.svcs.splice(+i, 1); if (!st.svcs.length) st.svcs.push({ name: '', price: '' }); drawSvcs(); } };
-    $('fAddSvc').onclick = function () { if (st.svcs.length < 30) { st.svcs.push({ name: '', price: '' }); drawSvcs(); } };
+    $('fSvcs').oninput = $('fSvcs').onchange = function (e) { var i = e.target.getAttribute('data-i'); if (i != null) st.svcs[+i][e.target.getAttribute('data-f')] = e.target.value; };
+    $('fSvcs').onclick = function (e) { var i = e.target.getAttribute('data-del'); if (i != null) { st.svcs.splice(+i, 1); if (!st.svcs.length) st.svcs.push({ name: '', price: '', minutes: '' }); drawSvcs(); } };
+    $('fAddSvc').onclick = function () { if (st.svcs.length < 30) { st.svcs.push({ name: '', price: '', minutes: '' }); drawSvcs(); } };
     $('fHopt').onclick = function (e) { var s = e.target.getAttribute('data-h'); if (s) { st.header.style = s; drawHeader(); } };
     $('fHpanel').onclick = function (e) {
       var p = e.target.getAttribute('data-p'), c = e.target.getAttribute('data-sw');
@@ -674,7 +855,7 @@
       else if (addrKey !== [b.address || '', b.city || ''].join('|') || b.lat == null) {
         try { var gq = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=' + encodeURIComponent([row.address, row.city].filter(Boolean).join(', '))); var gj = (await gq.json())[0]; if (gj) { row.lat = +gj.lat; row.lon = +gj.lon; } } catch (err) { /* the spot is a bonus */ }
       }
-      var list = st.svcs.map(function (s) { var n = String(s.name || '').trim(); var pr = String(s.price || '').replace(/[^\d.]/g, ''); return n ? { name: n, price_from: pr ? Number(pr) : null } : null; }).filter(Boolean);
+      var list = st.svcs.map(function (s) { var n = String(s.name || '').trim(); var pr = String(s.price || '').replace(/[^\d.]/g, ''); return n ? { name: n, price_from: pr ? Number(pr) : null, minutes: +s.minutes || null } : null; }).filter(Boolean);
       $('fSave').disabled = true; $('fNext').disabled = true; msg.className = 'bz-msg'; msg.textContent = 'Saving…';
       var okSave = true;
       try { await onSave(row, list, quiet); if (!b.id) { try { localStorage.removeItem(DKEY); } catch (err) { /* fine */ } } } catch (err) { okSave = false; msg.className = 'bz-msg bad'; msg.textContent = (err && err.message && /up to 3/.test(err.message)) ? 'You can have up to 3 business pages.' : (err && err.message && /social_ok/.test(err.message)) ? 'One of your social links didn’t look right. Check step 4.' : 'That didn’t save. Please try again.'; }
@@ -685,7 +866,7 @@
   }
   async function saveServices(id, svcs) {
     var d = await sb.from('business_services').delete().eq('business_id', id); if (d.error) throw d.error;
-    if (svcs.length) { var r = await sb.from('business_services').insert(svcs.map(function (s, i) { return { business_id: id, name: s.name, price_from: s.price_from, sort: i }; })); if (r.error) throw r.error; }
+    if (svcs.length) { var r = await sb.from('business_services').insert(svcs.map(function (s, i) { return { business_id: id, name: s.name, price_from: s.price_from, minutes: s.minutes || null, sort: i }; })); if (r.error) throw r.error; }
   }
 
 
@@ -905,7 +1086,7 @@
     sb.auth.getSession().then(function (r) {
       var u = r.data.session && r.data.session.user;
       if (u) {
-        if (mode === 'edit' || mode === 'inbox' || mode === 'ask' || mode === 'following') { next(u); return; }
+        if (mode === 'edit' || mode === 'inbox' || mode === 'ask' || mode === 'following' || mode === 'appts' || mode === 'shop') { next(u); return; }
         box.innerHTML = '<div class="bz-sec">Signed in as <b>' + esc(u.email) + '</b>. <a href="#" id="aOut">Not you?</a></div><div class="bz-row"><button class="bz-btn" id="aGo">Continue</button></div>';
         box.querySelector('#aGo').onclick = function () { next(u); };
         box.querySelector('#aOut').onclick = function (e) { e.preventDefault(); sb.auth.signOut().then(function () { account(next, boxEl); }); };
@@ -1008,7 +1189,7 @@
   // ---------- Business HQ: the owner's private dashboard ----------
   if (mode === 'edit') {
     var STATUS = { pending: 'Waiting for our check', live: 'Live', hidden: 'Hidden', rejected: 'Not approved', blocked: 'Blocked' };
-    var NAV = [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['customers', 'Customers', 'users'], ['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['posts', 'Deals and posts', 'tag'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear']];
+    var NAV = [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['customers', 'Customers', 'users'], ['reviews', 'Reviews', 'star'], ['appointments', 'Appointments', 'cal'], ['page', 'My page', 'wrench'], ['posts', 'Deals and posts', 'tag'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear']];
     account(async function (u) {
       root.querySelector('#bzAcct').hidden = true;
       var r = await sb.from('businesses').select(MINE).eq('owner', u.id).order('created_at');
@@ -1040,8 +1221,8 @@
           '<div class="hq-status"><span class="hq-st ' + esc(cur.status) + '">' + (STATUS[cur.status] || cur.status) + '</span><small>' + esc(kindName(cur.kind)) + '</small></div>' +
           '<div class="hq-pro"><b>Pro coming later</b><small>Business network and deeper reports. Your page stays free.</small></div></aside>' +
           '<main class="hq-main" id="hqBody"></main></div>' +
-          '<nav class="hq-tabs" aria-label="Business HQ">' + [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['posts', 'Deals', 'tag'], ['more', 'More', 'gear']].map(function (n) { var on = n[0] === tab || (n[0] === 'more' && ['page', 'sales', 'account', 'reviews', 'customers'].indexOf(tab) >= 0); return '<button type="button" data-tab="' + n[0] + '" class="' + (on ? 'on' : '') + '">' + icon(n[2], 20) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
-          '<div class="hq-more" id="hqMore" hidden>' + [['customers', 'Customers', 'users'], ['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear'], ['account:hqIdea', 'Send us an idea', 'msg']].map(function (n) { return '<button type="button" data-tab="' + n[0] + '">' + icon(n[2], 18) + n[1] + '</button>'; }).join('') + '<a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a></div>';
+          '<nav class="hq-tabs" aria-label="Business HQ">' + [['overview', 'Home', 'home'], ['messages', 'Messages', 'msg'], ['requests', 'Requests', 'inbox'], ['posts', 'Deals', 'tag'], ['more', 'More', 'gear']].map(function (n) { var on = n[0] === tab || (n[0] === 'more' && ['page', 'sales', 'account', 'reviews', 'customers', 'appointments'].indexOf(tab) >= 0); return '<button type="button" data-tab="' + n[0] + '" class="' + (on ? 'on' : '') + '">' + icon(n[2], 20) + '<span>' + n[1] + '</span>' + badge(n[0]) + '</button>'; }).join('') + '</nav>' +
+          '<div class="hq-more" id="hqMore" hidden>' + [['appointments', 'Appointments', 'cal'], ['customers', 'Customers', 'users'], ['reviews', 'Reviews', 'star'], ['page', 'My page', 'wrench'], ['sales', 'Sales', 'cash'], ['account', 'Settings', 'gear'], ['account:hqIdea', 'Send us an idea', 'msg']].map(function (n) { return '<button type="button" data-tab="' + n[0] + '">' + icon(n[2], 18) + n[1] + '</button>'; }).join('') + '<a href="' + pub + '" target="_blank" rel="noopener">' + icon('globe', 18) + 'View my page</a></div>';
         var navClick = function (e) {
           var b = e.target.closest('[data-tab],[data-go]'); if (!b) return;
           var t = b.getAttribute('data-tab') || b.getAttribute('data-go');
@@ -1065,7 +1246,7 @@
           var bn = shell.querySelector('#hqBellN'), n = counts.msg + counts.rev + counts.req; bn.hidden = !n; bn.textContent = n;
         });
         var body = shell.querySelector('#hqBody');
-        if (tab === 'messages') messages(body, extra); else ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, account: settings, requests: requests, customers: customers })[tab](body, extra);
+        if (tab === 'messages') messages(body, extra); else ({ overview: overview, page: myPage, posts: posts, sales: sales, reviews: reviews, account: settings, requests: requests, customers: customers, appointments: function (el) { hqAppts(el, cur, head); } })[tab](body, extra);
         var y = shell.getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
       }
       function head(k, title, badge) { return '<small class="hq-k">' + k + '</small><h2 class="hq-h">' + title + (badge ? ' <em>' + badge + '</em>' : '') + '</h2>'; }
@@ -1690,6 +1871,48 @@
   }
 
   // ---------- Shops I follow (drivers) + one-tap stop links from follower emails ----------
+  if (mode === 'appts') {
+    account(async function (u) {
+      var box = root.querySelector('#bzAp');
+      root.querySelector('#bzAcct').innerHTML = '<p class="rv-fine">Signed in as <b>' + esc(u.email) + '</b>.</p>';
+      async function load() {
+        var r = await sb.from('appointments').select(APCOLS).order('starts_at', { ascending: false }).limit(60);
+        var list = r.data || [], ids = list.map(function (a) { return a.business_id; }).filter(function (v, i, arr) { return arr.indexOf(v) === i; });
+        var bs = ids.length ? (await sb.from('businesses').select('id, name, slug, address, city, phone, hours').in('id', ids)).data || [] : [];
+        var ks = ids.length ? (await sb.from('business_booking').select('*').in('business_id', ids)).data || [] : [];
+        var bOf = function (id) { return bs.filter(function (x) { return x.id === id; })[0] || { name: 'A business', id: id }; }, kOf = function (id) { return ks.filter(function (x) { return x.business_id === id; })[0] || { tz: 'America/New_York', slot_min: 30, capacity: 1, blocks: [] }; };
+        var now = Date.now(), up = list.filter(function (a) { return ['requested', 'confirmed', 'offered'].indexOf(a.status) >= 0 && new Date(a.starts_at).getTime() > now - 3600e3; }).reverse();
+        var past = list.filter(function (a) { return up.indexOf(a) < 0; }).slice(0, 12);
+        var CH = { requested: ['Waiting for the shop', 'wait'], confirmed: ['Confirmed', 'ok'], offered: ['New time offered', 'off'], declined: ['Not available', 'no'], cancelled: ['Cancelled', 'no'], came: ['Done', 'done'], noshow: ['Missed', 'no'] };
+        var one = function (a) {
+          var b = bOf(a.business_id), k = kOf(a.business_id), ch = CH[a.status] || [a.status, ''], soon = new Date(a.starts_at).getTime() - now < 2 * 3600e3;
+          var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([b.name, b.address, b.city].filter(Boolean).join(', '));
+          var acts = '';
+          if (a.status === 'offered' && a.offered_at) acts = '<button type="button" class="bz-btn bz-small" data-x="accept">Yes, ' + esc(whenText(a.offered_at, k.tz, true)) + '</button><button type="button" class="bz-btn soft bz-small" data-x="change">Pick another time</button><button type="button" class="bz-btn soft bz-small" data-x="decline_offer">No thanks</button>';
+          else if (a.status === 'requested' || a.status === 'confirmed') acts = '<a class="bz-btn soft bz-small" href="' + maps + '" target="_blank" rel="noopener">Directions</a>' + (b.slug ? '<a class="bz-btn soft bz-small" href="/shops/?b=' + encodeURIComponent(b.slug) + '">Message</a>' : '') + '<button type="button" class="bz-btn soft bz-small" data-x="ics">Add to calendar</button>' + (soon ? '' : '<button type="button" class="bz-btn soft bz-small" data-x="change">Change time</button><button type="button" class="bz-btn soft bz-small" data-x="cancel">Cancel</button>');
+          else if (a.status === 'declined' && b.slug) acts = '<a class="bz-btn soft bz-small" href="/shops/?b=' + encodeURIComponent(b.slug) + '&book=1">Pick another time</a>';
+          return '<div class="ap-c ap-mine" data-a="' + a.id + '"><span class="ap-st ' + ch[1] + '">' + ch[0] + '</span><div class="ap-t"><b>' + esc(whenText(a.starts_at, k.tz)) + '</b></div>' +
+            '<div class="ap-w"><b>' + esc(a.service) + (a.car ? ' · ' + esc(a.car) : '') + '</b><span>' + esc(b.name) + (b.address ? ' · ' + esc(b.address) : '') + '</span>' + (a.shop_note ? '<q>' + esc(a.shop_note) + '</q>' : '') + (a.status === 'offered' && a.offered_at ? '<span class="ap-off">' + esc(b.name) + ' offered ' + esc(whenText(a.offered_at, k.tz)) + ' instead.</span>' : '') + (a.status === 'requested' ? '<span class="hq-fine">Most shops answer within a few hours. We email you.</span>' : '') + (soon && (a.status === 'requested' || a.status === 'confirmed') ? '<span class="hq-fine">Less than 2 hours away: to change it, call or message the shop.</span>' : '') + '</div>' +
+            '<div class="ap-b">' + acts + '</div><div class="bz-msg" role="status"></div></div>';
+        };
+        box.innerHTML = (up.length ? up.map(one).join('') : '<div class="bz-sec">No upcoming appointments. Book a time on any shop page that shows “Book a time”.</div>') + (past.length ? '<h3 class="ap-h">Earlier</h3>' + past.map(one).join('') : '');
+        box.onclick = async function (e) {
+          var bt = e.target.closest('[data-x]'); if (!bt) return;
+          var c = bt.closest('.ap-c'), a = list.filter(function (x) { return x.id === c.getAttribute('data-a'); })[0], b = bOf(a.business_id), k = kOf(a.business_id), m = c.querySelector('.bz-msg'), x = bt.getAttribute('data-x');
+          if (x === 'ics') { icsFile(a, b, k.tz); return; }
+          if (x === 'change') { bookFlow(b, k, { change: a, onDone: load }); return; }
+          if (x === 'cancel' && !confirm('Cancel ' + a.service + ' at ' + b.name + '?')) return;
+          bt.disabled = true; m.className = 'bz-msg'; m.textContent = 'Saving…';
+          var res = await sb.rpc('appt_driver', { a: a.id, action: x });
+          if (res.error) { bt.disabled = false; m.className = 'bz-msg bad'; m.textContent = (res.error.message || '').replace(/^.*?:\s*/, ''); return; }
+          load();
+        };
+      }
+      load();
+    });
+    return;
+  }
+
   if (mode === 'following') {
     var box = root.querySelector('#bzFol');
     if (q.get('stop') && q.get('u') && q.get('t')) {
@@ -1965,6 +2188,15 @@
         if (x.error) { e.target.checked = !v; mm.className = 'bz-msg bad'; mm.textContent = 'That didn’t save.'; return; }
         myCard.remind = v; mm.className = 'bz-msg good'; mm.textContent = v ? 'Reminders on. At most once a month.' : 'Reminders off.';
       });
+      // Picture 295: "Book a time" when the shop turned booking on.
+      var bk = (await sb.from('business_booking').select('*').eq('business_id', b.id).maybeSingle()).data;
+      if (bk && bk.active && live) {
+        var bkBtn = function (cls) { return '<button type="button" class="sp-btn ' + (cls || '') + '" data-book>' + icon('cal', 16) + 'Book a time</button>'; };
+        var acts = root.querySelector('.s2-acts'); if (acts) acts.insertAdjacentHTML('afterbegin', bkBtn());
+        var cta = root.querySelector('.s2-cta'); if (cta && !isOwner) cta.insertAdjacentHTML('afterbegin', bkBtn('s2-book'));
+        root.addEventListener('click', function (e) { if (e.target.closest('[data-book]')) { if (isOwner) { alert('This is your page. Drivers book here; you see them in Business HQ › Appointments.'); return; } bookFlow(b, bk); } });
+        if (q.get('book') === '1' && !isOwner) bookFlow(b, bk);
+      }
       // A shared deal link (?deal=…) jumps to that deal.
       var dq = q.get('deal'), dEl = dq && root.querySelector('#deal-' + CSS.escape(dq));
       if (dEl) setTimeout(function () { dEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); dEl.classList.add('hl'); }, 300);
