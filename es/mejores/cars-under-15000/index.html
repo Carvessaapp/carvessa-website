@@ -84,6 +84,8 @@ else if(/#join$|#list$/.test(h))gtag('event','tap_get_early_access',{from:locati
     <div><b>Legal</b><span><a href="/privacy/">Privacidad</a><br><a href="/terms/">Términos</a></span></div></footer>
   <div class="legalbar"><span>© 2026 Carvessa · Atlanta, GA · Carvessa™ y el logo de la V son marcas de Carvessa.</span><span>Precios y pagos son estimados, no ofertas. Datos de autos de NHTSA y EPA.</span></div></div>
 <script>(function(){
+  // My Carvessa (picture 304): logged-in people get their own pages first in the menu.
+  try{var tk=localStorage.getItem('sb-psviaekoxhmwdijdnjjw-auth-token');if(tk&&!document.querySelector('.my-mi')){var nv=document.getElementById('nav'),f0=nv&&nv.querySelector('.mi');if(f0){var d0=document.createElement('div');d0.className='mi my-mi';d0.innerHTML='<button type="button" aria-expanded="false">My Carvessa <span>▾</span></button><div class="mega" style="grid-template-columns:1fr;min-width:250px"><div><h4>My Carvessa</h4><a href="/appointments/">My appointments</a><a href="/messages/">My messages</a><a href="/following/">Shops I follow</a><a href="/ask/">Ask shops for a price</a></div></div>';nv.insertBefore(d0,f0);}}}catch(e){}
   var items=[].slice.call(document.querySelectorAll('.mi')),shut;
   function closeMenus(){items.forEach(function(m){m.classList.remove('open');m.firstElementChild.setAttribute('aria-expanded','false');});}
   items.forEach(function(m){var b=m.firstElementChild;

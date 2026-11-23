@@ -541,8 +541,8 @@
           '<p class="bk-sub">' + esc(st.svc.name) + ' · ' + esc(whenText(slot.iso, k.tz)) + ' · ' + esc(b.name) + '</p>' +
           '<p>' + (auto || (opts.change && k.auto_confirm) ? 'It’s confirmed. We’ll remind you the day before and 1 hour before.' : 'The shop confirms it here and we email you. If they can’t, they can offer another time.') + '</p>' +
           '<div class="bz-row"><a class="bz-btn" href="/appointments/">See my appointments</a><button type="button" class="bz-btn soft" id="bkDone">Close</button></div></div>';
-        host.querySelector('#bkDone').onclick = function () { sh.close(); if (opts.onDone) opts.onDone(); };
-        if (opts.onDone && opts.change) opts.onDone();
+        host.querySelector('#bkDone').onclick = function () { sh.close(); };
+        if (opts.onDone) opts.onDone();
       };
       if (u) { send(); return; }
       // Not logged in yet: sign in right here, then send. Everything they picked stays.
@@ -1874,6 +1874,23 @@
   }
 
   // ---------- Shops I follow (drivers) + one-tap stop links from follower emails ----------
+
+  // ---------- Picture 304: one bar on the driver's own pages ----------
+  var MYPAGES = [['appts', '/appointments/', 'Appointments'], ['inbox', '/messages/', 'Messages'], ['following', '/following/', 'Shops I follow'], ['ask', '/ask/', 'Ask for a price']];
+  if (MYPAGES.some(function (x) { return x[0] === mode; })) {
+    var myBar = document.createElement('nav'); myBar.className = 'my-bar'; myBar.setAttribute('aria-label', 'My Carvessa');
+    myBar.innerHTML = MYPAGES.map(function (x) { return '<a href="' + x[1] + '"' + (x[0] === mode ? ' class="on" aria-current="page"' : '') + ' data-my="' + x[0] + '">' + x[2] + '<em hidden></em></a>'; }).join('');
+    root.insertBefore(myBar, root.firstChild);
+    sb.auth.getSession().then(async function (r) {
+      var u = r.data.session && r.data.session.user; if (!u) return;
+      var put = function (k, n) { var em = myBar.querySelector('[data-my="' + k + '"] em'); if (em && n) { em.hidden = false; em.textContent = n; } };
+      var ch = await sb.from('biz_chats').select('last_at, driver_seen_at').eq('driver', u.id).limit(200);
+      put('inbox', (ch.data || []).filter(function (c) { return c.last_at > c.driver_seen_at; }).length);
+      var ap = await sb.from('appointments').select('id', { count: 'exact', head: true }).eq('status', 'offered');
+      put('appts', ap.count || 0);
+    });
+  }
+
   if (mode === 'appts') {
     account(async function (u) {
       var box = root.querySelector('#bzAp');
@@ -2194,12 +2211,25 @@
       });
       // Picture 295: "Book a time" when the shop turned booking on.
       var bk = (await sb.from('business_booking').select('*').eq('business_id', b.id).maybeSingle()).data;
+      // Picture 304: "You're booked" on the shop's page when the driver has a time here.
+      async function drawBooked() {
+        var old = root.querySelector('.bk-strip'); if (old) old.remove();
+        var uu = user || (await sb.auth.getUser()).data.user; if (!uu || isOwner) return;
+        var r2 = await sb.from('appointments').select(APCOLS).eq('business_id', b.id).in('status', ['requested', 'confirmed', 'offered']).gte('starts_at', new Date(Date.now() - 3600e3).toISOString()).order('starts_at').limit(1);
+        var a = (r2.data || [])[0]; if (!a) return;
+        var tz = (bk && bk.tz) || 'America/New_York';
+        var txt = a.status === 'confirmed' ? 'You’re booked: ' + whenText(a.starts_at, tz) : a.status === 'offered' ? b.name + ' offered a new time. Tap to answer.' : 'Waiting for ' + b.name + ' to confirm: ' + whenText(a.starts_at, tz);
+        var el = document.createElement('a'); el.className = 'bk-strip ' + a.status; el.href = '/appointments/';
+        el.innerHTML = '<i>' + icon(a.status === 'confirmed' ? 'check' : 'cal', 16) + '</i><div><b>' + esc(txt) + '</b><span>' + esc(a.service) + ' · See or change ›</span></div>';
+        var hero = root.querySelector('.s2-hero'); if (hero) hero.insertAdjacentElement('afterend', el); else root.insertBefore(el, root.firstChild);
+      }
+      drawBooked();
       if (bk && bk.active && live) {
         var bkBtn = function (cls) { return '<button type="button" class="sp-btn ' + (cls || '') + '" data-book>' + icon('cal', 16) + 'Book a time</button>'; };
         var acts = root.querySelector('.s2-acts'); if (acts) acts.insertAdjacentHTML('afterbegin', bkBtn());
         var cta = root.querySelector('.s2-cta'); if (cta && !isOwner) cta.insertAdjacentHTML('afterbegin', bkBtn('s2-book'));
-        root.addEventListener('click', function (e) { if (e.target.closest('[data-book]')) { if (isOwner) { alert('This is your page. Drivers book here; you see them in Business HQ › Appointments.'); return; } bookFlow(b, bk); } });
-        if (q.get('book') === '1' && !isOwner) bookFlow(b, bk);
+        root.addEventListener('click', function (e) { if (e.target.closest('[data-book]')) { if (isOwner) { alert('This is your page. Drivers book here; you see them in Business HQ › Appointments.'); return; } bookFlow(b, bk, { onDone: drawBooked }); } });
+        if (q.get('book') === '1' && !isOwner) bookFlow(b, bk, { onDone: drawBooked });
       }
       // A shared deal link (?deal=…) jumps to that deal.
       var dq = q.get('deal'), dEl = dq && root.querySelector('#deal-' + CSS.escape(dq));
