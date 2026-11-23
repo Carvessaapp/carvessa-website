@@ -1719,6 +1719,23 @@
   }
 
 
+  // ---------- Picture 304: one bar on the driver's own pages ----------
+  var MYPAGES = [['appts', '/appointments/', 'Appointments'], ['inbox', '/messages/', 'Messages'], ['following', '/following/', 'Shops I follow'], ['ask', '/ask/', 'Ask for a price']];
+  if (MYPAGES.some(function (x) { return x[0] === mode; })) {
+    var myBar = document.createElement('nav'); myBar.className = 'my-bar'; myBar.setAttribute('aria-label', 'My Carvessa');
+    myBar.innerHTML = MYPAGES.map(function (x) { return '<a href="' + x[1] + '"' + (x[0] === mode ? ' class="on" aria-current="page"' : '') + ' data-my="' + x[0] + '">' + x[2] + '<em hidden></em></a>'; }).join('');
+    root.insertBefore(myBar, root.firstChild);
+    sb.auth.getSession().then(async function (r) {
+      var u = r.data.session && r.data.session.user; if (!u) return;
+      var put = function (k, n) { var em = myBar.querySelector('[data-my="' + k + '"] em'); if (em && n) { em.hidden = false; em.textContent = n; } };
+      var ch = await sb.from('biz_chats').select('last_at, driver_seen_at').eq('driver', u.id).limit(200);
+      put('inbox', (ch.data || []).filter(function (c) { return c.last_at > c.driver_seen_at; }).length);
+      var ap = await sb.from('appointments').select('id', { count: 'exact', head: true }).eq('status', 'offered');
+      put('appts', ap.count || 0);
+    });
+  }
+
+
   // ---------- My messages (drivers) ----------
   if (mode === 'inbox') {
     account(async function (u) {
@@ -1874,22 +1891,6 @@
   }
 
   // ---------- Shops I follow (drivers) + one-tap stop links from follower emails ----------
-
-  // ---------- Picture 304: one bar on the driver's own pages ----------
-  var MYPAGES = [['appts', '/appointments/', 'Appointments'], ['inbox', '/messages/', 'Messages'], ['following', '/following/', 'Shops I follow'], ['ask', '/ask/', 'Ask for a price']];
-  if (MYPAGES.some(function (x) { return x[0] === mode; })) {
-    var myBar = document.createElement('nav'); myBar.className = 'my-bar'; myBar.setAttribute('aria-label', 'My Carvessa');
-    myBar.innerHTML = MYPAGES.map(function (x) { return '<a href="' + x[1] + '"' + (x[0] === mode ? ' class="on" aria-current="page"' : '') + ' data-my="' + x[0] + '">' + x[2] + '<em hidden></em></a>'; }).join('');
-    root.insertBefore(myBar, root.firstChild);
-    sb.auth.getSession().then(async function (r) {
-      var u = r.data.session && r.data.session.user; if (!u) return;
-      var put = function (k, n) { var em = myBar.querySelector('[data-my="' + k + '"] em'); if (em && n) { em.hidden = false; em.textContent = n; } };
-      var ch = await sb.from('biz_chats').select('last_at, driver_seen_at').eq('driver', u.id).limit(200);
-      put('inbox', (ch.data || []).filter(function (c) { return c.last_at > c.driver_seen_at; }).length);
-      var ap = await sb.from('appointments').select('id', { count: 'exact', head: true }).eq('status', 'offered');
-      put('appts', ap.count || 0);
-    });
-  }
 
   if (mode === 'appts') {
     account(async function (u) {
