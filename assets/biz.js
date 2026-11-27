@@ -1177,6 +1177,7 @@
         form(pre, [], async function (row, svcs) {
           row.agreed_at = agreedAt; row.terms_version = C.terms; row.source = (q.get('src') || 'website').slice(0, 60);
           row.hq_look = 'racing';
+          var bc = q.get('color') || ''; if (/^#[0-9A-Fa-f]{6}$/.test(bc)) row.brand_color = bc; // card color picked in the /partners preview (picture 316)
           var r = await sb.from('businesses').insert(row).select('id, slug').single(); if (r.error) throw r.error;
           await saveServices(r.data.id, svcs);
           root.querySelector('#bzDoneLink').href = '/shops/?b=' + encodeURIComponent(r.data.slug);
