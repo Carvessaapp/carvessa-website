@@ -382,11 +382,18 @@
     // Search near the business first (Nov 27, 2026, Loudjier: results came from Illinois). Center = the
     // street they picked, else their location if they tap "Use my location", else Atlanta. Never nationwide.
     var NEAR={lat:33.749,lon:-84.388,label:'Atlanta'};
+    // Nov 27, 2026 (Loudjier: 'Can you use IP location?'): rough city from the internet connection (BigDataCloud's
+    // free browser-only service, no key), asked once when the business starts typing its name. Only replaces
+    // the Atlanta start, never a street they picked or 'Use my location'. U.S. only. Not saved.
+    var IPT=null,MINE=false;
+    function ipNear(){if(IPT)return IPT;IPT=fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage='+(ES?'es':'en')).then(function(r){return r.json();}).then(function(j){
+      if(!MINE&&j&&j.countryCode==='US'&&isFinite(j.latitude)&&isFinite(j.longitude)&&(j.latitude||j.longitude)){var c=j.city||j.locality;if(c)NEAR={lat:+j.latitude,lon:+j.longitude,label:c};}}).catch(function(){});
+      return IPT;}
     function center(){return SPOT?{lat:SPOT.lat,lon:SPOT.lon,label:NEAR.label}:NEAR;}
     function miles(a,b){var R=3959,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lon-a.lon)*r,x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)*Math.sin(dn/2);return 2*R*Math.asin(Math.sqrt(x));}
     function nearFoot(){var c=center();return '<small class="synear"><span>'+esc(W.sy_nearp.replace('{p}',c.label))+'</span> · <button type="button" class="syme" id="syMe">'+pin+W.sy_me+'</button></small>';}
     function wireMe(){var b=$('syMe');if(!b)return;b.onmousedown=function(e){e.preventDefault();};b.onclick=function(){if(!navigator.geolocation)return;b.textContent=W.sy_finding;
-      navigator.geolocation.getCurrentPosition(function(pos){NEAR={lat:pos.coords.latitude,lon:pos.coords.longitude,label:W.sy_you};SPOT=null;nLast='';
+      navigator.geolocation.getCurrentPosition(function(pos){MINE=true;NEAR={lat:pos.coords.latitude,lon:pos.coords.longitude,label:W.sy_you};SPOT=null;nLast='';
         fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&lat='+NEAR.lat+'&lon='+NEAR.lon).then(function(r){return r.json();}).then(function(j){var ad=(j&&j.address)||{};var c=ad.city||ad.town||ad.village||ad.county;if(c)NEAR.label=c;}).catch(function(){}).then(function(){nameSug(true);});
       },function(){b.textContent=W.sy_me;},{timeout:15000,maximumAge:600000});};}
     function osmTry(q,c,d){return fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=us&addressdetails=1&extratags=1&limit=10&bounded=1&viewbox='+(c.lon-d)+','+(c.lat+d)+','+(c.lon+d)+','+(c.lat-d)+'&q='+encodeURIComponent(q),{headers:{'Accept-Language':document.documentElement.lang||'en'}}).then(function(r){return r.json();});}
@@ -405,10 +412,12 @@
       [].forEach.call(box.querySelectorAll('button[data-i]'),function(b){b.onmousedown=function(e){e.preventDefault();};b.onclick=function(){box.hidden=true;onPick(+b.getAttribute('data-i'));};});}
     function nameSug(force){var q=$('syName').value.trim(),box=$('syNameSug');clearTimeout(nT);if(q.length<4||q===W.yourBizDefault){box.hidden=true;return;}
       nT=setTimeout(function(){if(q===nLast&&force!==true)return;nLast=q;
+        var go=function(){
         if(GOFF){osmName(q,box);return;}
         fnCall({q:q,s:SES,lat:center().lat,lon:center().lon}).then(function(j){if(!j||!j.ready){GOFF=true;osmName(q,box);return;}var L=j.list||[];if(!L.length){box.hidden=true;return;}
-          showNames(L,box,function(i){fnCall({id:L[i].id,s:SES}).then(function(d){SES=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Math.random()).slice(2);if(d&&d.ready&&!d.error)fillFrom({name:d.name,address:d.address,phone:d.phone,hours:shortHours(d.hours),lat:d.lat,lon:d.lon,photos:d.photos,web:d.web},'g');}).catch(function(){});},'Google Maps');}).catch(function(){GOFF=true;osmName(q,box);});},650);}
-    $('syName').addEventListener('input',nameSug);$('syName').addEventListener('blur',function(){setTimeout(function(){$('syNameSug').hidden=true;},200);});
+          showNames(L,box,function(i){fnCall({id:L[i].id,s:SES}).then(function(d){SES=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Math.random()).slice(2);if(d&&d.ready&&!d.error)fillFrom({name:d.name,address:d.address,phone:d.phone,hours:shortHours(d.hours),lat:d.lat,lon:d.lon,photos:d.photos,web:d.web},'g');}).catch(function(){});},'Google Maps');}).catch(function(){GOFF=true;osmName(q,box);});};
+        Promise.race([ipNear(),new Promise(function(r){setTimeout(r,1500);})]).then(go);},650);}
+    $('syName').addEventListener('input',nameSug);$('syName').addEventListener('focus',ipNear);$('syName').addEventListener('blur',function(){setTimeout(function(){$('syNameSug').hidden=true;},200);});
     $('syArea').addEventListener('input',sug);$('syArea').addEventListener('blur',function(){setTimeout(function(){$('sySug').hidden=true;},200);});
     ['syPhone','syHours'].forEach(function(id){$(id).addEventListener('input',draw);});
     [].forEach.call(document.querySelectorAll('[data-sh]'),function(c){c.onchange=function(){SH[c.getAttribute('data-sh')]=c.checked;draw();};});
