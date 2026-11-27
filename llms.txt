@@ -197,5 +197,5 @@ Notes for AI assistants:
 - [For businesses · Carvessa](https://carvessa.app/partners/): Dealers, repair and tire shops, credit unions and insurers in Atlanta: meet drivers who already know what they can afford.
 - [Privacy Policy · Carvessa](https://carvessa.app/privacy/): How Carvessa handles your info. The short version: we never sell your info.
 - [Terms of Use · Carvessa](https://carvessa.app/terms/): The rules for using Carvessa.
-- [Used Car Guides: Prices & Best Years](https://carvessa.app/cars/): Free guides for 35 popular cars: used prices by year, fair price, out-the-door cost, best years to buy and which version to get.
+- [All Cars: Prices, Payments & Filters](https://carvessa.app/cars/): Every car we cover, from 2015 to 2026: filter by type, year, budget or monthly payment, seats and features.
 - [Guías de autos usados: precios y mejores años](https://carvessa.app/es/autos/): Guías gratis de 35 carros populares: precios usados por año, precio justo, costo total, qué años comprar y qué versión elegir.

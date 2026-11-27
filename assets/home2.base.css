@@ -342,3 +342,15 @@ footer .socs .soc{margin-top:0;width:40px;height:40px;justify-content:center;pad
    on narrow phones instead of 3 + 1 ('Georgia' alone). */
 @media (max-width:1199px){.buy .gaugeBox{margin-top:-46px}}
 @media (max-width:560px){.buy .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}.buy .opts span{text-align:center}}
+
+/* Picture 306 + 309 #2 (Nov 27, 2026): shorter home page. Promise block (white, gold edge) and one business bar. */
+.promo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:30px;align-items:center;background:#fff;border:2px solid #E8D8B0;border-radius:28px;padding:40px 36px;box-shadow:0 14px 34px rgba(15,27,51,.07)}
+.promo .pv{width:120px;height:110px;display:block;margin-bottom:14px}.promo .k{font-size:12.5px;letter-spacing:.16em;font-weight:800;color:#8A5A00}
+.promo h2{margin:10px 0 12px;color:#10151B}.promo .promoL p{color:#5B6575;font-size:16.5px;margin:0}
+.promoR{display:grid;grid-template-columns:1fr 1fr;gap:14px}.promoR div{background:#fff;border-radius:20px;padding:18px 16px;box-shadow:0 8px 20px rgba(15,27,51,.12)}
+.promoR .pi{display:grid;place-items:center;width:44px;height:44px;border-radius:14px}.promoR b{display:block;margin:12px 0 4px;font-size:16px;color:#10151B}.promoR p{margin:0;color:#5B6575;font-size:13.5px;line-height:1.45}
+.bizbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;background:#0F1B33;color:#fff;border-radius:20px;padding:22px 26px;text-decoration:none}
+.bizbar b{font-size:19px;display:block}.bizbar span span{color:#C9D2E3}.bizbar em{font-style:normal;background:#C9A35A;color:#0F1B33;font-weight:800;border-radius:99px;padding:12px 20px;white-space:nowrap}
+@media (max-width:860px){.promo{grid-template-columns:1fr;padding:30px 18px}}
+@media (max-width:380px){.promoR{grid-template-columns:1fr}}
+a.type{display:block;text-decoration:none}
